@@ -8,7 +8,7 @@ Open the solution file. Build the Project and Play.
 -- ART
 
 -- DESIGN
-Game Design Document
+Game Design Document: 
 https://docs.google.com/presentation/d/1bdNIXCjDR6fPQB5j_M-O8cYjn8E5UKYuZl9mrjblock/edit#slide=id.g20710da8dc0_2_5
 
 -- TECHNICAL SIDE
