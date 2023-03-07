@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "UI/CppMainMenu.h"
 
 AAutoHeroPlayerController::AAutoHeroPlayerController()
 {
@@ -16,6 +17,9 @@ AAutoHeroPlayerController::AAutoHeroPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+
+	mainMenuClass = nullptr;
+	mainMenu = nullptr;
 }
 
 void AAutoHeroPlayerController::BeginPlay()
@@ -28,6 +32,18 @@ void AAutoHeroPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	mainMenu = CreateWidget<UCppMainMenu>(this, mainMenuClass);
+	check(mainMenu);
+	mainMenu->AddToPlayerScreen();
+}
+
+void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	mainMenu->RemoveFromParent();
+	mainMenu = nullptr;
 }
 
 void AAutoHeroPlayerController::SetupInputComponent()
