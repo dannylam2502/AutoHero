@@ -39,12 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* SetDestinationTouchAction;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UCppMainMenu> mainMenuClass;
-
-	UPROPERTY()
-	UCppMainMenu* mainMenu;
-
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -53,7 +47,6 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();

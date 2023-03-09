@@ -7,6 +7,7 @@
 #include "CppMainMenu.generated.h"
 
 class UButton;
+class AAutoHeroGameMode;
 
 /**
  * 
@@ -16,6 +17,9 @@ class AUTOHERO_API UCppMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	AAutoHeroGameMode* gameMode;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnSetting;
