@@ -11,8 +11,7 @@ void UCppBaseMenu::Setup()
 void UCppBaseMenu::Init()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Init!"));
-	AddToViewport(zOder);
-	/*SetVisibility(ESlateVisibility::Visible);*/
+	AddToViewport();
 }
 
 void UCppBaseMenu::Pop()

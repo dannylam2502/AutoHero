@@ -18,7 +18,4 @@ public:
 	virtual void Setup();
 	virtual void Init();
 	virtual void Pop();
-
-	UPROPERTY(EditAnywhere)
-	int32 zOder;
 };

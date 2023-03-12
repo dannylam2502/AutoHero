@@ -8,7 +8,13 @@
 #include "CppUIManager.generated.h"
 
 class UCppMainMenu;
+class UCppPVPMenu;
+class UCppPVEMenu;
+class UCppBattleMenu;
+class UCppSummaryMenu;
+
 class UCppSettingPopup;
+class UCppRewardGiftPopup;
 
 UCLASS()
 class AUTOHERO_API ACppUIManager : public APawn
@@ -29,18 +35,27 @@ public:
 	// Sets default values for this pawn's properties
 	ACppUIManager();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMainMenu> mainMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppPVPMenu> pvpMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppPVEMenu> pveMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppBattleMenu> battleMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSummaryMenu> summaryMenuClass;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+private:
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRewardGiftPopup> rewardGiftPopupClass;
 
 public:
-	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMainMenu> mainMenuClass;
 	UCppMainMenu* mainMenu;
+	UCppPVPMenu* pvpMenu;
+	UCppPVEMenu* pveMenu;
+	UCppBattleMenu* battleMenu;
+	UCppSummaryMenu* summaryMenu;
 
-	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
+public:
 	UCppSettingPopup* settingPopup;
+	UCppRewardGiftPopup* rewardGiftPopup;
 
 public:
 	static void Push(UCppBaseMenu* menu);

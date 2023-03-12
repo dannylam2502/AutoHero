@@ -4,6 +4,8 @@
 #include "UI/CppUIManager.h"
 #include "Components/Button.h"
 #include "UI/CppSettingPopup.h"
+#include "UI/CppPVPMenu.h"
+#include "UI/CppPVEMenu.h"
 #include "EngineGlobals.h"
 
 void UCppMainMenu::Setup()
@@ -17,7 +19,6 @@ void UCppMainMenu::Setup()
 
 void UCppMainMenu::Init()
 {
-	zOder = 0;
 	UCppBaseMenu::Init();
 }
 
@@ -29,16 +30,19 @@ void UCppMainMenu::Pop()
 void UCppMainMenu::OnSettingClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnSettingClicked!"));
-	Pop();
 	ACppUIManager::Push(ACppUIManager::Instance()->settingPopup);
 }
 
 void UCppMainMenu::OnPvpClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPvpClicked!"));
+	Pop();
+	ACppUIManager::Push(ACppUIManager::Instance()->pvpMenu);
 }
 
 void UCppMainMenu::OnPveClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPveClicked!"));
+	Pop();
+	ACppUIManager::Push(ACppUIManager::Instance()->pveMenu);
 }
