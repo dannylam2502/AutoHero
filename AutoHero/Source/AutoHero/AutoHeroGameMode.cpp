@@ -8,16 +8,6 @@
 
 AAutoHeroGameMode::AAutoHeroGameMode()
 {
-	static ConstructorHelpers::FClassFinder<ACppUIManager> _uiManager(TEXT("/Game/Developers/KimVanTuyen/Collections/UI/BpUIManager"));
-	if (_uiManager.Class != NULL)
-	{
-		uiManager = _uiManager.Class.GetDefaultObject();
-	}
-
-}
-
-void AAutoHeroGameMode::GoInGame()
-{
 	//// use our custom PlayerController class
 	//PlayerControllerClass = AAutoHeroPlayerController::StaticClass();
 
@@ -34,5 +24,11 @@ void AAutoHeroGameMode::GoInGame()
 	//{
 	//	PlayerControllerClass = PlayerControllerBPClass.Class;
 	//}
+
+	/*static ConstructorHelpers::FClassFinder<ACppUIManager> _uiManager(TEXT("/Game/Developers/KimVanTuyen/Collections/UI/BpUIManager"));
+	if (_uiManager.Class != NULL)
+	{
+		uiManager = _uiManager.Class.GetDefaultObject();
+	}*/
 
 }

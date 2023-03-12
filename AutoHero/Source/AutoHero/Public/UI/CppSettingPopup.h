@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/CppBaseMenu.h"
-#include "CppMainMenu.generated.h"
+#include "CppSettingPopup.generated.h"
 
 class UButton;
 
@@ -12,7 +12,7 @@ class UButton;
  * 
  */
 UCLASS()
-class AUTOHERO_API UCppMainMenu : public UCppBaseMenu
+class AUTOHERO_API UCppSettingPopup : public UCppBaseMenu
 {
 	GENERATED_BODY()
 
@@ -23,16 +23,17 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* btnSetting;
+		UButton* btnBack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* btnPvp;
+		UButton* btnMusic;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* btnPve;
+		UButton* btnSound;
 
 private:
-	UFUNCTION() void OnSettingClicked();
-	UFUNCTION() void OnPvpClicked();
-	UFUNCTION() void OnPveClicked();
+	UFUNCTION() void OnBackClicked();
+	UFUNCTION() void OnMusicClicked();
+	UFUNCTION() void OnSoundClicked();
+
 };

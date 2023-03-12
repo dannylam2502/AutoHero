@@ -16,10 +16,7 @@ class AAutoHeroGameMode : public AGameModeBase
 public:
 	AAutoHeroGameMode();
 
-	UPROPERTY(EditAnywhere)
-		ACppUIManager* uiManager;
-
-	void GoInGame();
+	UPROPERTY(EditAnywhere) ACppUIManager* uiManager;
 
 };
 
