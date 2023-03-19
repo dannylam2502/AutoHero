@@ -12,6 +12,7 @@ void UCppMainMenu::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	btnQuit->OnClicked.AddDynamic(this, &UCppMainMenu::OnQuitClicked);
 	btnSetting->OnClicked.AddDynamic(this, &UCppMainMenu::OnSettingClicked);
 	btnPvp->OnClicked.AddDynamic(this, &UCppMainMenu::OnPvpClicked);
 	btnPve->OnClicked.AddDynamic(this, &UCppMainMenu::OnPveClicked);
@@ -25,6 +26,11 @@ void UCppMainMenu::Init()
 void UCppMainMenu::Pop()
 {
 	UCppBaseMenu::Pop();
+}
+
+void UCppMainMenu::OnQuitClicked()
+{
+	ACppUIManager::QuitGame();
 }
 
 void UCppMainMenu::OnSettingClicked()

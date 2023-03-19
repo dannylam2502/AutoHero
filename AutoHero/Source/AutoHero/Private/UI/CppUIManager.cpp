@@ -3,6 +3,7 @@
 
 #include "UI/CppUIManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "UI/CppMainMenu.h"
 #include "UI/CppPVPMenu.h"
@@ -129,4 +130,9 @@ void ACppUIManager::SetInputUI()
 void ACppUIManager::SetInputGameplay()
 {
 	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->SetInputMode(FInputModeGameOnly());
+}
+
+void ACppUIManager::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(instance->GetWorld(), UGameplayStatics::GetPlayerController(instance->GetWorld(), 0), EQuitPreference::Quit, false);
 }

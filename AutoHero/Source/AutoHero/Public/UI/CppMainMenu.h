@@ -23,6 +23,9 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UButton* btnQuit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnSetting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
@@ -32,6 +35,7 @@ private:
 		UButton* btnPve;
 
 private:
+	UFUNCTION() void OnQuitClicked();
 	UFUNCTION() void OnSettingClicked();
 	UFUNCTION() void OnPvpClicked();
 	UFUNCTION() void OnPveClicked();

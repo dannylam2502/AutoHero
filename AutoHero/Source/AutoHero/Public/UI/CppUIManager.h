@@ -74,4 +74,5 @@ public:
 	static void SetInputUI();
 	static void SetInputGameplay();
 
+	static void QuitGame();
 };
