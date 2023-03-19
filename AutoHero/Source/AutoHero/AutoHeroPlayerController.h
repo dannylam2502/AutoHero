@@ -17,6 +17,7 @@ class AAutoHeroPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+
 	AAutoHeroPlayerController();
 
 	/** Time Threshold to know if it was a short press */

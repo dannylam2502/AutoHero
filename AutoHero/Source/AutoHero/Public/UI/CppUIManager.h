@@ -46,19 +46,32 @@ private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRewardGiftPopup> rewardGiftPopupClass;
 
+#pragma region Menu.
 public:
+	TArray<UCppBaseMenu*> arrayMenu;
+
 	UCppMainMenu* mainMenu;
 	UCppPVPMenu* pvpMenu;
 	UCppPVEMenu* pveMenu;
 	UCppBattleMenu* battleMenu;
 	UCppSummaryMenu* summaryMenu;
+#pragma endregion
 
+#pragma region Popup.
 public:
 	UCppSettingPopup* settingPopup;
 	UCppRewardGiftPopup* rewardGiftPopup;
+#pragma endregion
+
+public:
+	UCppBaseMenu* SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass);
 
 public:
 	static void Push(UCppBaseMenu* menu);
 	static void Pop(UCppBaseMenu* menu);
+	static void PopAll();
+
+	static void SetInputUI();
+	static void SetInputGameplay();
 
 };

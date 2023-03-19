@@ -23,6 +23,8 @@ void AAutoHeroPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	SetInputMode(FInputModeUIOnly());
+
 	//Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{

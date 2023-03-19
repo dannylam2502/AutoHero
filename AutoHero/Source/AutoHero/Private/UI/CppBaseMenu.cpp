@@ -17,5 +17,5 @@ void UCppBaseMenu::Init()
 void UCppBaseMenu::Pop()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Pop!"));
-	RemoveFromViewport();
+	RemoveFromParent();
 }

@@ -2,6 +2,7 @@
 
 
 #include "UI/CppUIManager.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "UI/CppMainMenu.h"
 #include "UI/CppPVPMenu.h"
@@ -11,8 +12,6 @@
 
 #include "UI/CppSettingPopup.h"
 #include "UI/CppRewardGiftPopup.h"
-
-#include "AutoHero/AutoHeroGameMode.h"
 
 ACppUIManager* ACppUIManager::instance;
 
@@ -30,8 +29,24 @@ ACppUIManager::ACppUIManager()
 
 	mainMenuClass = nullptr;
 	mainMenu = nullptr;
+
+	pvpMenuClass = nullptr;
+	pvpMenu = nullptr;
+
+	pveMenuClass = nullptr;
+	pveMenu = nullptr;
+
+	battleMenuClass = nullptr;
+	battleMenu = nullptr;
+
+	summaryMenuClass = nullptr;
+	summaryMenu = nullptr;
+
 	settingPopupClass = nullptr;
 	settingPopup = nullptr;
+
+	rewardGiftPopupClass = nullptr;
+	rewardGiftPopup = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -39,36 +54,21 @@ void ACppUIManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->bShowMouseCursor = true;
+
+	SetInputUI();
+
 #pragma region Menu.
-	mainMenu = CreateWidget<UCppMainMenu>(GetWorld(), mainMenuClass);
-	check(mainMenu);
-	mainMenu->Setup();
-
-	pvpMenu = CreateWidget<UCppPVPMenu>(GetWorld(), pvpMenuClass);
-	check(pvpMenu);
-	pvpMenu->Setup();
-
-	pveMenu = CreateWidget<UCppPVEMenu>(GetWorld(), pveMenuClass);
-	check(pveMenu);
-	pveMenu->Setup();
-
-	battleMenu = CreateWidget<UCppBattleMenu>(GetWorld(), battleMenuClass);
-	check(battleMenu);
-	battleMenu->Setup();
-
-	summaryMenu = CreateWidget<UCppSummaryMenu>(GetWorld(), summaryMenuClass);
-	check(summaryMenu);
-	summaryMenu->Setup();
+	mainMenu = dynamic_cast<UCppMainMenu*>(SetupMenu(mainMenu, mainMenuClass));
+	pvpMenu = dynamic_cast<UCppPVPMenu*>(SetupMenu(pvpMenu, pvpMenuClass));
+	pveMenu = dynamic_cast<UCppPVEMenu*>(SetupMenu(pveMenu, pveMenuClass));
+	battleMenu = dynamic_cast<UCppBattleMenu*>(SetupMenu(battleMenu, battleMenuClass));
+	summaryMenu = dynamic_cast<UCppSummaryMenu*>(SetupMenu(summaryMenu, summaryMenuClass));
 #pragma endregion
 
 #pragma region Popup.
-	settingPopup = CreateWidget<UCppSettingPopup>(GetWorld(), settingPopupClass);
-	check(settingPopup);
-	settingPopup->Setup();
-
-	rewardGiftPopup = CreateWidget<UCppRewardGiftPopup>(GetWorld(), rewardGiftPopupClass);
-	check(rewardGiftPopup);
-	rewardGiftPopup->Setup();
+	settingPopup = dynamic_cast<UCppSettingPopup*>(SetupMenu(settingPopup, settingPopupClass));
+	rewardGiftPopup = dynamic_cast<UCppRewardGiftPopup*>(SetupMenu(rewardGiftPopup, rewardGiftPopupClass));
 #pragma endregion
 
 	// Init push menu.
@@ -80,7 +80,27 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	mainMenu = nullptr;
+	pvpMenu = nullptr;
+	pveMenu = nullptr;
+	battleMenu = nullptr;
+	summaryMenu = nullptr;
 	settingPopup = nullptr;
+	rewardGiftPopup = nullptr;
+
+	for (UCppBaseMenu* menu : arrayMenu)
+	{
+		menu = nullptr;
+	}
+	arrayMenu.SetNum(0);
+}
+
+UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass)
+{
+	menu = CreateWidget<UCppBaseMenu>(GetWorld(), menuClass);
+	check(menu);
+	menu->Setup();
+	arrayMenu.Add(menu);
+	return menu;
 }
 
 void ACppUIManager::Push(UCppBaseMenu* menu)
@@ -91,4 +111,22 @@ void ACppUIManager::Push(UCppBaseMenu* menu)
 void ACppUIManager::Pop(UCppBaseMenu* menu)
 {
 	menu->Pop();
+}
+
+void ACppUIManager::PopAll()
+{
+	for (UCppBaseMenu* menu : instance->arrayMenu)
+	{
+		menu->Pop();
+	}
+}
+
+void ACppUIManager::SetInputUI()
+{
+	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->SetInputMode(FInputModeUIOnly());
+}
+
+void ACppUIManager::SetInputGameplay()
+{
+	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->SetInputMode(FInputModeGameOnly());
 }
