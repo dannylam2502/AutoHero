@@ -7,6 +7,8 @@
 #include "GameFramework/Pawn.h"
 #include "CppUIManager.generated.h"
 
+class UCppLoginMenu;
+class UCppRegisterMenu;
 class UCppMainMenu;
 class UCppPVPMenu;
 class UCppPVEMenu;
@@ -36,6 +38,8 @@ public:
 	ACppUIManager();
 
 private:
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppLoginMenu> loginMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRegisterMenu> registerMenuClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMainMenu> mainMenuClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppPVPMenu> pvpMenuClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppPVEMenu> pveMenuClass;
@@ -50,6 +54,8 @@ private:
 public:
 	TArray<UCppBaseMenu*> arrayMenu;
 
+	UCppLoginMenu* loginMenu;
+	UCppRegisterMenu* registerMenu;
 	UCppMainMenu* mainMenu;
 	UCppPVPMenu* pvpMenu;
 	UCppPVEMenu* pveMenu;

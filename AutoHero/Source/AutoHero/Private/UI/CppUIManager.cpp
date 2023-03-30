@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "UI/CppLoginMenu.h"
+#include "UI/CppRegisterMenu.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppPVPMenu.h"
 #include "UI/CppPVEMenu.h"
@@ -27,6 +29,12 @@ ACppUIManager::ACppUIManager()
 	instance = this;
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	loginMenuClass = nullptr;
+	loginMenu = nullptr;
+
+	registerMenuClass = nullptr;
+	registerMenu = nullptr;
 
 	mainMenuClass = nullptr;
 	mainMenu = nullptr;
@@ -60,6 +68,8 @@ void ACppUIManager::BeginPlay()
 	SetInputUI();
 
 #pragma region Menu.
+	loginMenu = dynamic_cast<UCppLoginMenu*>(SetupMenu(loginMenu, loginMenuClass));
+	registerMenu = dynamic_cast<UCppRegisterMenu*>(SetupMenu(registerMenu, registerMenuClass));
 	mainMenu = dynamic_cast<UCppMainMenu*>(SetupMenu(mainMenu, mainMenuClass));
 	pvpMenu = dynamic_cast<UCppPVPMenu*>(SetupMenu(pvpMenu, pvpMenuClass));
 	pveMenu = dynamic_cast<UCppPVEMenu*>(SetupMenu(pveMenu, pveMenuClass));
@@ -73,13 +83,15 @@ void ACppUIManager::BeginPlay()
 #pragma endregion
 
 	// Init push menu.
-	Push(mainMenu);
+	Push(loginMenu);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	loginMenu = nullptr;
+	registerMenu = nullptr;
 	mainMenu = nullptr;
 	pvpMenu = nullptr;
 	pveMenu = nullptr;
