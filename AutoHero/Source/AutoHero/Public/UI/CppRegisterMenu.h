@@ -7,6 +7,7 @@
 #include "CppRegisterMenu.generated.h"
 
 class UButton;
+class UEditableTextBox;
 
 /**
  * 
@@ -28,7 +29,25 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnRegister;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UEditableTextBox* inputUserEmail;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UEditableTextBox* inputUserName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UEditableTextBox* inputPassword;
+
 private:
 	UFUNCTION() void OnBackClicked();
 	UFUNCTION() void OnRegisterClicked();
+
+	UFUNCTION() void OnUserEmailInput(const FText& text);
+	UFUNCTION() void OnUserNameInput(const FText& text);
+	UFUNCTION() void OnPasswordInput(const FText& text);
+
+public:
+	void OnRegisterSuccess();
+	void OnRegisterError();
+
 };

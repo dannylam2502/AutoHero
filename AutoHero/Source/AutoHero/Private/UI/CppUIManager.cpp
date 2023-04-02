@@ -4,6 +4,7 @@
 #include "UI/CppUIManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "SaveGame/CppGameData.h"
 
 #include "UI/CppLoginMenu.h"
 #include "UI/CppRegisterMenu.h"
@@ -61,6 +62,8 @@ ACppUIManager::ACppUIManager()
 // Called when the game starts or when spawned
 void ACppUIManager::BeginPlay()
 {
+	UCppGameData::Instance()->LoadGame();
+
 	Super::BeginPlay();
 
 	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->bShowMouseCursor = true;

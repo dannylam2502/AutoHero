@@ -7,6 +7,7 @@
 #include "CppLoginMenu.generated.h"
 
 class UButton;
+class UEditableTextBox;
 
 /**
  * 
@@ -26,13 +27,26 @@ private:
 		UButton* btnQuit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UEditableTextBox* inputUserName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UEditableTextBox* inputPassword;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnLogin;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* btnRegister;
+		UButton* btnSignUp;
 
 private:
 	UFUNCTION() void OnQuitClicked();
 	UFUNCTION() void OnLoginClicked();
 	UFUNCTION() void OnRegisterClicked();
+
+	UFUNCTION() void OnUserNameInput(const FText& text);
+	UFUNCTION() void OnPasswordInput(const FText& text);
+
+public:
+	void OnLoginSuccess();
+	void OnLoginError();
 };
