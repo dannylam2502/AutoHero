@@ -27,5 +27,7 @@ void UCppBattleMenu::OnEndGameClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnEndGameClicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->summaryMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->summaryMenu, initParams);
 }

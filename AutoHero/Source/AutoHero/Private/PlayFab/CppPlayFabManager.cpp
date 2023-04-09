@@ -75,7 +75,8 @@ void ACppPlayFabManager::OnLoginError(const PlayFab::FPlayFabCppError& errorResu
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorName);
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorMessage);
     
-    ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup);
+    TArray<UObject*> initParams;
+    ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup, initParams);
     FString strContent = "Your user name or password is wrong!!!\nPlease check again.";
     ACppUIManager::Instance()->messagePopup->SetTextMessage(strContent);
 }

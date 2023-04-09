@@ -95,7 +95,8 @@ void ACppUIManager::BeginPlay()
 #pragma endregion
 
 	// Init push menu.
-	Push(loginMenu, null);
+	TArray<UObject*> initParams;
+	Push(loginMenu, initParams);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)

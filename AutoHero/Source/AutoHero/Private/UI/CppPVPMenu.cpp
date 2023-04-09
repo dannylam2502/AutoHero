@@ -29,12 +29,16 @@ void UCppPVPMenu::OnBackClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
 }
 
 void UCppPVPMenu::OnFindMatchClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnFindMatchClicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->battleMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->battleMenu, initParams);
 }

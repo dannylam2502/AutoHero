@@ -51,7 +51,9 @@ void UCppLoginMenu::OnRegisterClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Register Clicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->registerMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->registerMenu, initParams);
 }
 
 void UCppLoginMenu::OnUserNameInput(const FText& text)
@@ -74,7 +76,9 @@ void UCppLoginMenu::OnLoginSuccess()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
 
 	ACppPlayFabManager::Instance()->loginUserPassword = TEXT("");
 }

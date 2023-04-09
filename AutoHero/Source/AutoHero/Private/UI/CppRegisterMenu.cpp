@@ -33,7 +33,9 @@ void UCppRegisterMenu::OnBackClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Back Clicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->loginMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->loginMenu, initParams);
 }
 
 void UCppRegisterMenu::OnRegisterClicked()
@@ -76,7 +78,9 @@ void UCppRegisterMenu::OnRegisterSuccess()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
 
 	ACppPlayFabManager::Instance()->registerUserPassword = TEXT("");
 }

@@ -19,7 +19,7 @@ void UCppSummaryMenu::Init(TArray<UObject*> initParams)
 {
 	UCppBaseMenu::Init(initParams);
 
-	ACppUIManager::Push(ACppUIManager::Instance()->rewardGiftPopup);
+	ACppUIManager::Push(ACppUIManager::Instance()->rewardGiftPopup, initParams);
 }
 
 void UCppSummaryMenu::Pop()
@@ -31,5 +31,7 @@ void UCppSummaryMenu::OnBackClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu);
+
+	TArray<UObject*> initParams;
+	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
 }
