@@ -3,13 +3,15 @@
 
 #include "UI/CppLoginMenu.h"
 #include "SaveGame/CppGameData.h"
+#include "Components/Button.h"
+#include "Components/EditableTextBox.h"
+#include "PlayFab/CppPlayFabManager.h"
 
 #include "UI/CppUIManager.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppRegisterMenu.h"
-#include "Components/Button.h"
-#include "Components/EditableTextBox.h"
-#include "PlayFab/CppPlayFabManager.h"
+
+#include "UI/CppMessagePopup.h"
 
 void UCppLoginMenu::Setup()
 {
@@ -44,6 +46,13 @@ void UCppLoginMenu::OnLoginClicked()
 	 && !ACppPlayFabManager::Instance()->loginUserPassword.IsEmpty())
 	{
 		ACppPlayFabManager::Instance()->GetLogin();
+	}
+	else
+	{
+		TArray<UObject*> initParams;// add callback
+		ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup, initParams);
+		FString strContent = "Please input your user name & password.";
+		ACppUIManager::Instance()->messagePopup->SetTextMessage(strContent);
 	}
 }
 

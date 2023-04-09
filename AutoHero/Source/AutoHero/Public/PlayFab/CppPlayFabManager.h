@@ -7,7 +7,12 @@
 #include "PlayFab.h"
 #include "Core/PlayFabError.h"
 #include "Core/PlayFabClientDataModels.h"
+#include "Core/PlayFabMultiplayerDataModels.h"
 #include "CppPlayFabManager.generated.h"
+
+using namespace PlayFab;
+using namespace PlayFab::ClientModels;
+using namespace PlayFab::MultiplayerModels;
 
 UCLASS()
 class AUTOHERO_API ACppPlayFabManager : public AActor
@@ -35,6 +40,7 @@ public:
 	const FString titleID = "B7C3F";
 
 	PlayFabClientPtr clientAPI;
+	PlayFabMultiplayerPtr multiplayerAPI;
 
 #pragma region Login.
 public:
@@ -42,8 +48,8 @@ public:
 	FString loginUserPassword;
 
 	void GetLogin();
-	void OnLoginSuccess(const PlayFab::ClientModels::FLoginResult& result) const;
-	void OnLoginError(const PlayFab::FPlayFabCppError& errorResult) const;
+	void OnLoginSuccess(const FLoginResult& result) const;
+	void OnLoginError(const FPlayFabCppError& errorResult) const;
 #pragma endregion
 
 #pragma region Register.
@@ -53,10 +59,31 @@ public:
 	FString registerUserName;
 
 	void GetRegister();
-	void OnRegisterSuccess(const PlayFab::ClientModels::FRegisterPlayFabUserResult& result) const;
-	void OnRegisterError(const PlayFab::FPlayFabCppError& errorResult) const;
+	void OnRegisterSuccess(const FRegisterPlayFabUserResult& result) const;
+	void OnRegisterError(const FPlayFabCppError& errorResult) const;
 
 #pragma endregion
 
+#pragma region Matchmaking.
+public:
+	// Create matchmaking ticket.
+	void CreateMatchmakingTicket();
+	void SuccessCreateMatchmakingTicket(const FCreateMatchmakingTicketResult& result) const;
+	void ErrorCreateMatchmakingTicket(const FPlayFabCppError& errorResult) const;
+	//.
+
+	// Get matchmaking ticket.
+	void GetMatchmakingTicket();
+	void SuccessGetMatchmakingTicket(const FGetMatchmakingTicketResult& result) const;
+	void ErrorGetMatchmakingTicket(const FPlayFabCppError& errorResult) const;
+	//.
+
+	// Get match.
+	void GetMatch();
+	void SuccessGetMatch(const FGetMatchResult& result) const;
+	void ErrorGetMatch(const FPlayFabCppError& errorResult) const;
+	//.
+
+#pragma endregion
 
 };

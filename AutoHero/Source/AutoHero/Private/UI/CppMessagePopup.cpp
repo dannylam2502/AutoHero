@@ -22,6 +22,7 @@ void UCppMessagePopup::Pop()
 {
 	UCppBaseMenu::Pop();
 
+	// invot delegate
 }
 
 void UCppMessagePopup::SetTextMessage(FString content)

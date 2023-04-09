@@ -2,7 +2,10 @@
 
 
 #include "PlayFab/CppPlayFabManager.h"
+
 #include "Core/PlayFabClientAPI.h"
+#include "Core/PlayFabMultiplayerAPI.h"
+
 #include "SaveGame/CppGameData.h"
 #include "SaveGame/CppUserData.h"
 
@@ -10,6 +13,7 @@
 #include "UI/CppMainMenu.h"
 #include "UI/CppLoginMenu.h"
 #include "UI/CppRegisterMenu.h"
+
 #include "UI/CppMessagePopup.h"
 
 ACppPlayFabManager* ACppPlayFabManager::instance;
@@ -34,6 +38,8 @@ void ACppPlayFabManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+    clientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
+    multiplayerAPI = IPlayFabModuleInterface::Get().GetMultiplayerAPI();
 }
 
 // Called every frame
@@ -46,30 +52,28 @@ void ACppPlayFabManager::Tick(float DeltaTime)
 #pragma region Login.
 void ACppPlayFabManager::GetLogin()
 {
-    clientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
-
     FString userName = ACppPlayFabManager::Instance()->loginUserName;
     FString userPassword = ACppPlayFabManager::Instance()->loginUserPassword;
 
-    PlayFab::ClientModels::FLoginWithPlayFabRequest request;
+    FLoginWithPlayFabRequest request;
     request.Username = userName;
     request.Password = userPassword;
     request.TitleId = titleID;
 
     clientAPI->LoginWithPlayFab(request,
-        PlayFab::UPlayFabClientAPI::FLoginWithPlayFabDelegate::CreateUObject(this, &ACppPlayFabManager::OnLoginSuccess),
-        PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::OnLoginError)
+        UPlayFabClientAPI::FLoginWithPlayFabDelegate::CreateUObject(this, &ACppPlayFabManager::OnLoginSuccess),
+        FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::OnLoginError)
     );
 }
 
-void ACppPlayFabManager::OnLoginSuccess(const PlayFab::ClientModels::FLoginResult& result) const
+void ACppPlayFabManager::OnLoginSuccess(const FLoginResult& result) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 
     ACppUIManager::Instance()->loginMenu->OnLoginSuccess();
 }
 
-void ACppPlayFabManager::OnLoginError(const PlayFab::FPlayFabCppError& errorResult) const
+void ACppPlayFabManager::OnLoginError(const FPlayFabCppError& errorResult) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("On Login Error!"));
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorName);
@@ -91,29 +95,116 @@ void ACppPlayFabManager::GetRegister()
         clientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
     }
 
-    PlayFab::ClientModels::FRegisterPlayFabUserRequest request;
+    FRegisterPlayFabUserRequest request;
     request.Email = userEmail;
     request.Password = registerUserPassword;
     request.Username = registerUserName;
     request.DisplayName = registerUserName;
 
-    clientAPI->RegisterPlayFabUser(request,
-        PlayFab::UPlayFabClientAPI::FRegisterPlayFabUserDelegate::CreateUObject(this, &ACppPlayFabManager::OnRegisterSuccess),
-        PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::OnRegisterError)
-    );
+    bool bRegisterPlayFabUser = clientAPI->RegisterPlayFabUser(request,
+        UPlayFabClientAPI::FRegisterPlayFabUserDelegate::CreateUObject(this, &ACppPlayFabManager::OnRegisterSuccess),
+        FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::OnRegisterError));
+
+    if (bRegisterPlayFabUser)
+    {
+
+    }
+
 }
 
-void ACppPlayFabManager::OnRegisterSuccess(const PlayFab::ClientModels::FRegisterPlayFabUserResult& result) const
+void ACppPlayFabManager::OnRegisterSuccess(const FRegisterPlayFabUserResult& result) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 
     ACppUIManager::Instance()->registerMenu->OnRegisterSuccess();
 }
 
-void ACppPlayFabManager::OnRegisterError(const PlayFab::FPlayFabCppError& errorResult) const
+void ACppPlayFabManager::OnRegisterError(const FPlayFabCppError& errorResult) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("On Register Error!"));
 }
 
 #pragma endregion
 
+#pragma region Matchmaking.
+// Create matchmaking ticket.
+void ACppPlayFabManager::CreateMatchmakingTicket()
+{
+    FCreateMatchmakingTicketRequest request;
+    request.GiveUpAfterSeconds = 120;
+    request.QueueName = TEXT("QuickMatch");
+    /*request.Creator = PlayFab::MultiplayerModels::FMatchmakingPlayer();
+    request.Creator.Entity.Id = Result.EntityToken.Get()->Entity.Get()->Id;
+    request.Creator.Entity.Type = Result.EntityToken.Get()->Entity.Get()->Type;*/
+
+    bool bCreateMatchmakingTicket = multiplayerAPI-> CreateMatchmakingTicket(request,
+        UPlayFabMultiplayerAPI::FCreateMatchmakingTicketDelegate::CreateUObject(this, &ACppPlayFabManager::SuccessCreateMatchmakingTicket),
+        FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::ErrorCreateMatchmakingTicket));
+
+    if (bCreateMatchmakingTicket)
+    {
+    }
+}
+
+void ACppPlayFabManager::SuccessCreateMatchmakingTicket(const FCreateMatchmakingTicketResult& result) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Create Matchmaking Ticket Success!"));
+}
+
+void ACppPlayFabManager::ErrorCreateMatchmakingTicket(const FPlayFabCppError& errorResult) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Create Matchmaking Ticket Error!"));
+}
+//.
+
+// Get matchmaking ticket.
+void ACppPlayFabManager::GetMatchmakingTicket()
+{
+    FGetMatchmakingTicketRequest request;
+
+    bool bGetMatchmakingTicket = multiplayerAPI->GetMatchmakingTicket(request,
+        UPlayFabMultiplayerAPI::FGetMatchmakingTicketDelegate::CreateUObject(this, &ACppPlayFabManager::SuccessGetMatchmakingTicket),
+        FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::ErrorGetMatchmakingTicket));
+
+    if (bGetMatchmakingTicket)
+    {
+    }
+}
+
+void ACppPlayFabManager::SuccessGetMatchmakingTicket(const FGetMatchmakingTicketResult& result) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Get Matchmaking Ticket Success!"));
+}
+
+void ACppPlayFabManager::ErrorGetMatchmakingTicket(const FPlayFabCppError& errorResult) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Get Matchmaking Ticket Error!"));
+}
+//.
+
+// Get match.
+void ACppPlayFabManager::GetMatch()
+{
+    FGetMatchRequest request;
+
+    bool bGetMatch = multiplayerAPI->GetMatch(request,
+        UPlayFabMultiplayerAPI::FGetMatchDelegate::CreateUObject(this, &ACppPlayFabManager::SuccessGetMatch),
+        FPlayFabErrorDelegate::CreateUObject(this, &ACppPlayFabManager::ErrorGetMatch));
+
+    if (bGetMatch)
+    {
+    }
+}
+
+void ACppPlayFabManager::SuccessGetMatch(const FGetMatchResult& result) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Get Match Success!"));
+}
+
+void ACppPlayFabManager::ErrorGetMatch(const FPlayFabCppError& errorResult) const
+{
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Get Match Error!"));
+}
+//.
+
+#pragma endregion
