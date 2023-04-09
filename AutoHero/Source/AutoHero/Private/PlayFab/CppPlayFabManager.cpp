@@ -10,6 +10,7 @@
 #include "UI/CppMainMenu.h"
 #include "UI/CppLoginMenu.h"
 #include "UI/CppRegisterMenu.h"
+#include "UI/CppMessagePopup.h"
 
 ACppPlayFabManager* ACppPlayFabManager::instance;
 
@@ -70,10 +71,13 @@ void ACppPlayFabManager::OnLoginSuccess(const PlayFab::ClientModels::FLoginResul
 
 void ACppPlayFabManager::OnLoginError(const PlayFab::FPlayFabCppError& errorResult) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("On Login Error!"));
-    GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Blue, errorResult.ErrorName);
-    GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Blue, errorResult.ErrorMessage);
-    //GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Blue, errorResult.ErrorCode.ToString());
+    GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, TEXT("On Login Error!"));
+    GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorName);
+    GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorMessage);
+    
+    ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup);
+    FString strContent = "Your user name or password is wrong!!!\nPlease check again.";
+    ACppUIManager::Instance()->messagePopup->SetTextMessage(strContent);
 }
 
 #pragma endregion

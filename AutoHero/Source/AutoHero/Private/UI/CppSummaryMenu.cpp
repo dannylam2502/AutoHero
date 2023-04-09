@@ -15,9 +15,9 @@ void UCppSummaryMenu::Setup()
 	btnBack->OnClicked.AddDynamic(this, &UCppSummaryMenu::OnBackClicked);
 }
 
-void UCppSummaryMenu::Init()
+void UCppSummaryMenu::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 
 	ACppUIManager::Push(ACppUIManager::Instance()->rewardGiftPopup);
 }

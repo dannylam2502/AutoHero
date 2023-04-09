@@ -4,15 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "UI/CppBaseMenu.h"
-#include "CppRewardGiftPopup.generated.h"
+#include "CppMessagePopup.generated.h"
 
+class UTextBlock;
 class UButton;
 
 /**
  * 
  */
 UCLASS()
-class AUTOHERO_API UCppRewardGiftPopup : public UCppBaseMenu
+class AUTOHERO_API UCppMessagePopup : public UCppBaseMenu
 {
 	GENERATED_BODY()
 
@@ -23,9 +24,15 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* btnClaim;
+		UTextBlock* textMessage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UButton* btnClose;
+
+public:
+	void SetTextMessage(FString content);
 
 private:
-	UFUNCTION() void OnClaimClicked();
-	
+	UFUNCTION() void OnCloseClicked();
+
 };

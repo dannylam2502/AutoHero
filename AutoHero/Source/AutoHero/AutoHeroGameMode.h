@@ -6,8 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "AutoHeroGameMode.generated.h"
 
-class ACppUIManager;
-
 UCLASS(minimalapi)
 class AAutoHeroGameMode : public AGameModeBase
 {
@@ -15,8 +13,6 @@ class AAutoHeroGameMode : public AGameModeBase
 
 public:
 	AAutoHeroGameMode();
-
-	UPROPERTY(EditAnywhere) ACppUIManager* uiManager;
 
 };
 

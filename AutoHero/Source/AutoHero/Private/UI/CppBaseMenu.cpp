@@ -8,14 +8,15 @@ void UCppBaseMenu::Setup()
 {
 }
 
-void UCppBaseMenu::Init()
+void UCppBaseMenu::Init(TArray<UObject*> initParams)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Init!"));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Init!"));
+
 	AddToViewport();
 }
 
 void UCppBaseMenu::Pop()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Pop!"));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Pop!"));
 	RemoveFromParent();
 }

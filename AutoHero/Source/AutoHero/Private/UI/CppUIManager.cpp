@@ -16,6 +16,7 @@
 
 #include "UI/CppSettingPopup.h"
 #include "UI/CppRewardGiftPopup.h"
+#include "UI/CppMessagePopup.h"
 
 ACppUIManager* ACppUIManager::instance;
 
@@ -57,14 +58,21 @@ ACppUIManager::ACppUIManager()
 
 	rewardGiftPopupClass = nullptr;
 	rewardGiftPopup = nullptr;
+
+	messagePopupClass = nullptr;
+	messagePopup = nullptr;
+
 }
 
 // Called when the game starts or when spawned
 void ACppUIManager::BeginPlay()
 {
 	UCppGameData::Instance()->LoadGame();
-
+	
 	Super::BeginPlay();
+
+	initCallback.BindUObject(this, &ACppUIManager::OnInitCallBack);
+	popCallback.BindUObject(this, &ACppUIManager::OnPopupCallBack);
 
 	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->bShowMouseCursor = true;
 
@@ -83,10 +91,11 @@ void ACppUIManager::BeginPlay()
 #pragma region Popup.
 	settingPopup = dynamic_cast<UCppSettingPopup*>(SetupMenu(settingPopup, settingPopupClass));
 	rewardGiftPopup = dynamic_cast<UCppRewardGiftPopup*>(SetupMenu(rewardGiftPopup, rewardGiftPopupClass));
+	messagePopup = dynamic_cast<UCppMessagePopup*>(SetupMenu(messagePopup, messagePopupClass));
 #pragma endregion
 
 	// Init push menu.
-	Push(loginMenu);
+	Push(loginMenu, null);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -102,6 +111,7 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	summaryMenu = nullptr;
 	settingPopup = nullptr;
 	rewardGiftPopup = nullptr;
+	messagePopup = nullptr;
 
 	for (UCppBaseMenu* menu : arrayMenu)
 	{
@@ -119,9 +129,9 @@ UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCp
 	return menu;
 }
 
-void ACppUIManager::Push(UCppBaseMenu* menu)
+void ACppUIManager::Push(UCppBaseMenu* menu, TArray<UObject*> initParams)
 {
-	menu->Init();
+	menu->Init(initParams);
 }
 
 void ACppUIManager::Pop(UCppBaseMenu* menu)
@@ -150,4 +160,12 @@ void ACppUIManager::SetInputGameplay()
 void ACppUIManager::QuitGame()
 {
 	UKismetSystemLibrary::QuitGame(instance->GetWorld(), UGameplayStatics::GetPlayerController(instance->GetWorld(), 0), EQuitPreference::Quit, false);
+}
+
+void ACppUIManager::OnInitCallBack()
+{
+}
+
+void ACppUIManager::OnPopupCallBack()
+{
 }

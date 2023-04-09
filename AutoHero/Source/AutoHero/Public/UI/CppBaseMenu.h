@@ -16,6 +16,7 @@ class AUTOHERO_API UCppBaseMenu : public UUserWidget
 
 public:
 	virtual void Setup();
-	virtual void Init();
+	virtual void Init(TArray<UObject*> initParams);
 	virtual void Pop();
+
 };

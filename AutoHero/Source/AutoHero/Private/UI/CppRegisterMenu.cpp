@@ -19,9 +19,9 @@ void UCppRegisterMenu::Setup()
 	inputPassword->OnTextChanged.AddDynamic(this, &UCppRegisterMenu::OnPasswordInput);
 }
 
-void UCppRegisterMenu::Init()
+void UCppRegisterMenu::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 }
 
 void UCppRegisterMenu::Pop()

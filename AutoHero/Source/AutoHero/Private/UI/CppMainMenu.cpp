@@ -18,9 +18,9 @@ void UCppMainMenu::Setup()
 	btnPve->OnClicked.AddDynamic(this, &UCppMainMenu::OnPveClicked);
 }
 
-void UCppMainMenu::Init()
+void UCppMainMenu::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 }
 
 void UCppMainMenu::Pop()

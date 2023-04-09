@@ -17,6 +17,10 @@ class UCppSummaryMenu;
 
 class UCppSettingPopup;
 class UCppRewardGiftPopup;
+class UCppMessagePopup;
+
+DECLARE_DELEGATE(InitCallback);
+DECLARE_DELEGATE(PopCallback);
 
 UCLASS()
 class AUTOHERO_API ACppUIManager : public APawn
@@ -49,6 +53,7 @@ private:
 private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRewardGiftPopup> rewardGiftPopupClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMessagePopup> messagePopupClass;
 
 #pragma region Menu.
 public:
@@ -67,13 +72,14 @@ public:
 public:
 	UCppSettingPopup* settingPopup;
 	UCppRewardGiftPopup* rewardGiftPopup;
+	UCppMessagePopup* messagePopup;
 #pragma endregion
 
 public:
 	UCppBaseMenu* SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass);
 
 public:
-	static void Push(UCppBaseMenu* menu);
+	static void Push(UCppBaseMenu* menu, TArray<UObject*> initParams);
 	static void Pop(UCppBaseMenu* menu);
 	static void PopAll();
 
@@ -81,4 +87,13 @@ public:
 	static void SetInputGameplay();
 
 	static void QuitGame();
+
+public:
+	InitCallback initCallback;
+	PopCallback popCallback;
+
+public:
+	UFUNCTION() void OnInitCallBack();
+	UFUNCTION() void OnPopupCallBack();
+
 };

@@ -15,9 +15,9 @@ void UCppPVPMenu::Setup()
 	btnFindMatch->OnClicked.AddDynamic(this, &UCppPVPMenu::OnFindMatchClicked);
 }
 
-void UCppPVPMenu::Init()
+void UCppPVPMenu::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 }
 
 void UCppPVPMenu::Pop()

@@ -13,9 +13,9 @@ void UCppBattleMenu::Setup()
 	btnEndGame->OnClicked.AddDynamic(this, &UCppBattleMenu::OnEndGameClicked);
 }
 
-void UCppBattleMenu::Init()
+void UCppBattleMenu::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 }
 
 void UCppBattleMenu::Pop()

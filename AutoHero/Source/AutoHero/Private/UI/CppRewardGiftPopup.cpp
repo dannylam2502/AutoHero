@@ -11,9 +11,9 @@ void UCppRewardGiftPopup::Setup()
 	btnClaim->OnClicked.AddDynamic(this, &UCppRewardGiftPopup::OnClaimClicked);
 }
 
-void UCppRewardGiftPopup::Init()
+void UCppRewardGiftPopup::Init(TArray<UObject*> initParams)
 {
-	UCppBaseMenu::Init();
+	UCppBaseMenu::Init(initParams);
 }
 
 void UCppRewardGiftPopup::Pop()
