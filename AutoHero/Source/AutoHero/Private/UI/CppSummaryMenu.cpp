@@ -15,11 +15,11 @@ void UCppSummaryMenu::Setup()
 	btnBack->OnClicked.AddDynamic(this, &UCppSummaryMenu::OnBackClicked);
 }
 
-void UCppSummaryMenu::Init(TArray<UObject*> initParams)
+void UCppSummaryMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 
-	ACppUIManager::Push(ACppUIManager::Instance()->rewardGiftPopup, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->rewardGiftPopup);
 }
 
 void UCppSummaryMenu::Pop()
@@ -32,6 +32,5 @@ void UCppSummaryMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 }

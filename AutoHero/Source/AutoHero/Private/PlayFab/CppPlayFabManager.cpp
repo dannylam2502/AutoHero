@@ -16,17 +16,17 @@
 
 #include "UI/CppMessagePopup.h"
 
-ACppPlayFabManager* ACppPlayFabManager::instance;
+ACppPlayFabManager* ACppPlayFabManager::i;
 
-ACppPlayFabManager* ACppPlayFabManager::Instance()
+ACppPlayFabManager* ACppPlayFabManager::I()
 {
-	return instance;
+	return i;
 }
 
 // Sets default values
 ACppPlayFabManager::ACppPlayFabManager()
 {
-    instance = this;
+    i = this;
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -52,8 +52,8 @@ void ACppPlayFabManager::Tick(float DeltaTime)
 #pragma region Login.
 void ACppPlayFabManager::GetLogin()
 {
-    FString userName = ACppPlayFabManager::Instance()->loginUserName;
-    FString userPassword = ACppPlayFabManager::Instance()->loginUserPassword;
+    FString userName = ACppPlayFabManager::I()->loginUserName;
+    FString userPassword = ACppPlayFabManager::I()->loginUserPassword;
 
     FLoginWithPlayFabRequest request;
     request.Username = userName;
@@ -70,7 +70,7 @@ void ACppPlayFabManager::OnLoginSuccess(const FLoginResult& result) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 
-    ACppUIManager::Instance()->loginMenu->OnLoginSuccess();
+    ACppUIManager::I()->loginMenu->OnLoginSuccess();
 }
 
 void ACppPlayFabManager::OnLoginError(const FPlayFabCppError& errorResult) const
@@ -79,10 +79,13 @@ void ACppPlayFabManager::OnLoginError(const FPlayFabCppError& errorResult) const
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorName);
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorMessage);
     
-    TArray<UObject*> initParams;
-    ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup, initParams);
-    FString strContent = "Your user name or password is wrong!!!\nPlease check again.";
-    ACppUIManager::Instance()->messagePopup->SetTextMessage(strContent);
+    ACppUIManager::I()->Pop(ACppUIManager::I()->loginMenu);
+    ACppUIManager::I()->messagePopup->callback.BindLambda([]
+    {
+        ACppUIManager::I()->Push(ACppUIManager::I()->loginMenu);
+    });
+    ACppUIManager::I()->Push(ACppUIManager::I()->messagePopup);
+    ACppUIManager::I()->messagePopup->SetTextMessage("Your user name or password is wrong!!!\nPlease check again.");
 }
 
 #pragma endregion
@@ -116,7 +119,7 @@ void ACppPlayFabManager::OnRegisterSuccess(const FRegisterPlayFabUserResult& res
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 
-    ACppUIManager::Instance()->registerMenu->OnRegisterSuccess();
+    ACppUIManager::I()->registerMenu->OnRegisterSuccess();
 }
 
 void ACppPlayFabManager::OnRegisterError(const FPlayFabCppError& errorResult) const
@@ -132,7 +135,7 @@ void ACppPlayFabManager::CreateMatchmakingTicket()
 {
     FCreateMatchmakingTicketRequest request;
     request.GiveUpAfterSeconds = 120;
-    request.QueueName = TEXT("QuickMatch");
+    request.QueueName = TEXT("Room01");
     /*request.Creator = PlayFab::MultiplayerModels::FMatchmakingPlayer();
     request.Creator.Entity.Id = Result.EntityToken.Get()->Entity.Get()->Id;
     request.Creator.Entity.Type = Result.EntityToken.Get()->Entity.Get()->Type;*/
@@ -148,12 +151,12 @@ void ACppPlayFabManager::CreateMatchmakingTicket()
 
 void ACppPlayFabManager::SuccessCreateMatchmakingTicket(const FCreateMatchmakingTicketResult& result) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Create Matchmaking Ticket Success!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, TEXT("Create Matchmaking Ticket Success!"));
 }
 
 void ACppPlayFabManager::ErrorCreateMatchmakingTicket(const FPlayFabCppError& errorResult) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Create Matchmaking Ticket Error!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Create Matchmaking Ticket Error!"));
 }
 //.
 
@@ -173,12 +176,12 @@ void ACppPlayFabManager::GetMatchmakingTicket()
 
 void ACppPlayFabManager::SuccessGetMatchmakingTicket(const FGetMatchmakingTicketResult& result) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Get Matchmaking Ticket Success!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, TEXT("Get Matchmaking Ticket Success!"));
 }
 
 void ACppPlayFabManager::ErrorGetMatchmakingTicket(const FPlayFabCppError& errorResult) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Get Matchmaking Ticket Error!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Get Matchmaking Ticket Error!"));
 }
 //.
 
@@ -198,12 +201,12 @@ void ACppPlayFabManager::GetMatch()
 
 void ACppPlayFabManager::SuccessGetMatch(const FGetMatchResult& result) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Get Match Success!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, TEXT("Get Match Success!"));
 }
 
 void ACppPlayFabManager::ErrorGetMatch(const FPlayFabCppError& errorResult) const
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("Get Match Error!"));
+    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Get Match Error!"));
 }
 //.
 

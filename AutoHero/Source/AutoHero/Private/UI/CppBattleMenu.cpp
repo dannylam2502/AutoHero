@@ -13,9 +13,9 @@ void UCppBattleMenu::Setup()
 	btnEndGame->OnClicked.AddDynamic(this, &UCppBattleMenu::OnEndGameClicked);
 }
 
-void UCppBattleMenu::Init(TArray<UObject*> initParams)
+void UCppBattleMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppBattleMenu::Pop()
@@ -28,6 +28,5 @@ void UCppBattleMenu::OnEndGameClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnEndGameClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->summaryMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->summaryMenu);
 }

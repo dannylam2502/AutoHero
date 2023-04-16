@@ -25,20 +25,20 @@ void UCppGameData::SaveGame()
 
 void UCppGameData::LoadGame()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("Load Game!"));
+	/*GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("Load Game!"));
 
 	UCppGameData* gamedata = dynamic_cast<UCppGameData*>(UGameplayStatics::LoadGameFromSlot(saveGameName, userIndex));
 	if (gamedata == NULL)
 	{
 		gamedata = Instance();
-	}
+	}*/
 
 #pragma region User Data.
-	userData = gamedata->userData;
+	/*userData = gamedata->userData;
 	if (userData == NULL)
 	{
 		userData = new CppUserData();
-	}
+	}*/
 
 #pragma endregion
 

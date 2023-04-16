@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "CppBaseMenu.generated.h"
 
+DECLARE_DELEGATE(Action);
+
 /**
  * 
  */
@@ -16,7 +18,10 @@ class AUTOHERO_API UCppBaseMenu : public UUserWidget
 
 public:
 	virtual void Setup();
-	virtual void Init(TArray<UObject*> initParams);
+	virtual void Init();
 	virtual void Pop();
+
+public:
+	Action callback;
 
 };

@@ -18,9 +18,9 @@ void UCppMainMenu::Setup()
 	btnPve->OnClicked.AddDynamic(this, &UCppMainMenu::OnPveClicked);
 }
 
-void UCppMainMenu::Init(TArray<UObject*> initParams)
+void UCppMainMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppMainMenu::Pop()
@@ -37,8 +37,7 @@ void UCppMainMenu::OnSettingClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnSettingClicked!"));
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->settingPopup, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->settingPopup);
 }
 
 void UCppMainMenu::OnPvpClicked()
@@ -46,8 +45,7 @@ void UCppMainMenu::OnPvpClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPvpClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->pvpMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->pvpMenu);
 }
 
 void UCppMainMenu::OnPveClicked()
@@ -55,6 +53,5 @@ void UCppMainMenu::OnPveClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPveClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->pveMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->pveMenu);
 }

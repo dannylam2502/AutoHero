@@ -18,7 +18,7 @@ class AUTOHERO_API UCppBattleMenu : public UCppBaseMenu
 	
 public:
 	virtual void Setup() override;
-	virtual void Init(TArray<UObject*> initParams) override;
+	virtual void Init() override;
 	virtual void Pop() override;
 
 private:

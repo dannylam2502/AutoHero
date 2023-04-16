@@ -15,9 +15,9 @@ void UCppSettingPopup::Setup()
 	btnSound->OnClicked.AddDynamic(this, &UCppSettingPopup::OnSoundClicked);
 }
 
-void UCppSettingPopup::Init(TArray<UObject*> initParams)
+void UCppSettingPopup::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 	
 void UCppSettingPopup::Pop()

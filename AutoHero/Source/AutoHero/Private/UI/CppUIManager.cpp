@@ -18,17 +18,17 @@
 #include "UI/CppRewardGiftPopup.h"
 #include "UI/CppMessagePopup.h"
 
-ACppUIManager* ACppUIManager::instance;
+ACppUIManager* ACppUIManager::i;
 
-ACppUIManager* ACppUIManager::Instance()
+ACppUIManager* ACppUIManager::I()
 {
-	return instance;
+	return i;
 }
 
 // Sets default values
 ACppUIManager::ACppUIManager()
 {
-	instance = this;
+	i = this;
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -67,14 +67,14 @@ ACppUIManager::ACppUIManager()
 // Called when the game starts or when spawned
 void ACppUIManager::BeginPlay()
 {
-	UCppGameData::Instance()->LoadGame();
+	//UCppGameData::Instance()->LoadGame();
 	
 	Super::BeginPlay();
 
 	initCallback.BindUObject(this, &ACppUIManager::OnInitCallBack);
 	popCallback.BindUObject(this, &ACppUIManager::OnPopupCallBack);
 
-	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->bShowMouseCursor = true;
+	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->bShowMouseCursor = true;
 
 	SetInputUI();
 
@@ -95,8 +95,7 @@ void ACppUIManager::BeginPlay()
 #pragma endregion
 
 	// Init push menu.
-	TArray<UObject*> initParams;
-	Push(loginMenu, initParams);
+	Push(loginMenu);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -130,9 +129,9 @@ UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCp
 	return menu;
 }
 
-void ACppUIManager::Push(UCppBaseMenu* menu, TArray<UObject*> initParams)
+void ACppUIManager::Push(UCppBaseMenu* menu)
 {
-	menu->Init(initParams);
+	menu->Init();
 }
 
 void ACppUIManager::Pop(UCppBaseMenu* menu)
@@ -142,7 +141,7 @@ void ACppUIManager::Pop(UCppBaseMenu* menu)
 
 void ACppUIManager::PopAll()
 {
-	for (UCppBaseMenu* menu : instance->arrayMenu)
+	for (UCppBaseMenu* menu : i->arrayMenu)
 	{
 		menu->Pop();
 	}
@@ -150,17 +149,17 @@ void ACppUIManager::PopAll()
 
 void ACppUIManager::SetInputUI()
 {
-	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->SetInputMode(FInputModeUIOnly());
+	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->SetInputMode(FInputModeUIOnly());
 }
 
 void ACppUIManager::SetInputGameplay()
 {
-	UGameplayStatics::GetPlayerController(instance->GetWorld(), 0)->SetInputMode(FInputModeGameOnly());
+	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->SetInputMode(FInputModeGameOnly());
 }
 
 void ACppUIManager::QuitGame()
 {
-	UKismetSystemLibrary::QuitGame(instance->GetWorld(), UGameplayStatics::GetPlayerController(instance->GetWorld(), 0), EQuitPreference::Quit, false);
+	UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
 }
 
 void ACppUIManager::OnInitCallBack()

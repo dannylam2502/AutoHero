@@ -2,10 +2,14 @@
 
 
 #include "UI/CppPVPMenu.h"
+
+#include "PlayFab/CppPlayFabManager.h"
 #include "UI/CppUIManager.h"
+
+#include "Components/Button.h"
+
 #include "UI/CppMainMenu.h"
 #include "UI/CppBattleMenu.h"
-#include "Components/Button.h"
 
 void UCppPVPMenu::Setup()
 {
@@ -15,9 +19,9 @@ void UCppPVPMenu::Setup()
 	btnFindMatch->OnClicked.AddDynamic(this, &UCppPVPMenu::OnFindMatchClicked);
 }
 
-void UCppPVPMenu::Init(TArray<UObject*> initParams)
+void UCppPVPMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppPVPMenu::Pop()
@@ -30,8 +34,7 @@ void UCppPVPMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 }
 
 void UCppPVPMenu::OnFindMatchClicked()
@@ -39,6 +42,7 @@ void UCppPVPMenu::OnFindMatchClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnFindMatchClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->battleMenu, initParams);
+	ACppPlayFabManager::I()->CreateMatchmakingTicket();
+
+	//ACppUIManager::Push(ACppUIManager::I()->battleMenu);
 }

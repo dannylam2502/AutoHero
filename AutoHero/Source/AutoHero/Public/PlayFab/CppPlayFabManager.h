@@ -20,9 +20,9 @@ class AUTOHERO_API ACppPlayFabManager : public AActor
 	GENERATED_BODY()
 	
 private:
-	static ACppPlayFabManager* instance;
+	static ACppPlayFabManager* i;
 public:
-	static ACppPlayFabManager* Instance();
+	static ACppPlayFabManager* I();
 
 public:	
 	// Sets default values for this actor's properties

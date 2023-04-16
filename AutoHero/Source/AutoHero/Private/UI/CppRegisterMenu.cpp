@@ -19,9 +19,9 @@ void UCppRegisterMenu::Setup()
 	inputPassword->OnTextChanged.AddDynamic(this, &UCppRegisterMenu::OnPasswordInput);
 }
 
-void UCppRegisterMenu::Init(TArray<UObject*> initParams)
+void UCppRegisterMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppRegisterMenu::Pop()
@@ -34,18 +34,17 @@ void UCppRegisterMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Back Clicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->loginMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->loginMenu);
 }
 
 void UCppRegisterMenu::OnRegisterClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Register Clicked!"));
-	if (!ACppPlayFabManager::Instance()->userEmail.IsEmpty()
-	 && !ACppPlayFabManager::Instance()->registerUserName.IsEmpty()
-	 && !ACppPlayFabManager::Instance()->registerUserPassword.IsEmpty())
+	if (!ACppPlayFabManager::I()->userEmail.IsEmpty()
+	 && !ACppPlayFabManager::I()->registerUserName.IsEmpty()
+	 && !ACppPlayFabManager::I()->registerUserPassword.IsEmpty())
 	{
-		ACppPlayFabManager::Instance()->GetRegister();
+		ACppPlayFabManager::I()->GetRegister();
 	}
 }
 
@@ -53,7 +52,7 @@ void UCppRegisterMenu::OnUserEmailInput(const FText& text)
 {
 	if (!text.IsEmptyOrWhitespace())
 	{
-		ACppPlayFabManager::Instance()->userEmail = text.ToString();
+		ACppPlayFabManager::I()->userEmail = text.ToString();
 	}
 }
 
@@ -62,7 +61,7 @@ void UCppRegisterMenu::OnUserNameInput(const FText& text)
 	if (!text.IsEmptyOrWhitespace())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, text.ToString());
-		ACppPlayFabManager::Instance()->registerUserName = text.ToString();
+		ACppPlayFabManager::I()->registerUserName = text.ToString();
 	}
 }
 
@@ -70,7 +69,7 @@ void UCppRegisterMenu::OnPasswordInput(const FText& text)
 {
 	if (!text.IsEmptyOrWhitespace())
 	{
-		ACppPlayFabManager::Instance()->registerUserPassword = text.ToString();
+		ACppPlayFabManager::I()->registerUserPassword = text.ToString();
 	}
 }
 
@@ -79,15 +78,14 @@ void UCppRegisterMenu::OnRegisterSuccess()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 
-	ACppPlayFabManager::Instance()->registerUserPassword = TEXT("");
+	ACppPlayFabManager::I()->registerUserPassword = TEXT("");
 }
 
 void UCppRegisterMenu::OnRegisterError()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("On Register Error!"));
 
-	ACppPlayFabManager::Instance()->registerUserPassword = TEXT("");
+	ACppPlayFabManager::I()->registerUserPassword = TEXT("");
 }

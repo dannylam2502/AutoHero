@@ -23,9 +23,9 @@ void UCppLoginMenu::Setup()
 	inputPassword->OnTextChanged.AddDynamic(this, &UCppLoginMenu::OnPasswordInput);
 }
 
-void UCppLoginMenu::Init(TArray<UObject*> initParams)
+void UCppLoginMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppLoginMenu::Pop()
@@ -42,17 +42,20 @@ void UCppLoginMenu::OnLoginClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Login Clicked!"));
 
-	if (!ACppPlayFabManager::Instance()->loginUserName.IsEmpty()
-	 && !ACppPlayFabManager::Instance()->loginUserPassword.IsEmpty())
+	if (!ACppPlayFabManager::I()->loginUserName.IsEmpty()
+	 && !ACppPlayFabManager::I()->loginUserPassword.IsEmpty())
 	{
-		ACppPlayFabManager::Instance()->GetLogin();
+		ACppPlayFabManager::I()->GetLogin();
 	}
 	else
 	{
-		TArray<UObject*> initParams;// add callback
-		ACppUIManager::Instance()->Push(ACppUIManager::Instance()->messagePopup, initParams);
-		FString strContent = "Please input your user name & password.";
-		ACppUIManager::Instance()->messagePopup->SetTextMessage(strContent);
+		Pop();
+		ACppUIManager::I()->messagePopup->callback.BindLambda([]
+		{
+			ACppUIManager::I()->Push(ACppUIManager::I()->loginMenu);
+		});
+		ACppUIManager::I()->Push(ACppUIManager::I()->messagePopup);
+		ACppUIManager::I()->messagePopup->SetTextMessage("Please input your user name & password.");
 	}
 }
 
@@ -61,15 +64,14 @@ void UCppLoginMenu::OnRegisterClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Register Clicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->registerMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->registerMenu);
 }
 
 void UCppLoginMenu::OnUserNameInput(const FText& text)
 {
 	if (!text.IsEmptyOrWhitespace())
 	{
-		ACppPlayFabManager::Instance()->loginUserName = text.ToString();
+		ACppPlayFabManager::I()->loginUserName = text.ToString();
 	}
 }
 
@@ -77,7 +79,7 @@ void UCppLoginMenu::OnPasswordInput(const FText& text)
 {
 	if (!text.IsEmptyOrWhitespace())
 	{
-		ACppPlayFabManager::Instance()->loginUserPassword = text.ToString();
+		ACppPlayFabManager::I()->loginUserPassword = text.ToString();
 	}
 }
 
@@ -86,15 +88,14 @@ void UCppLoginMenu::OnLoginSuccess()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 
-	ACppPlayFabManager::Instance()->loginUserPassword = TEXT("");
+	ACppPlayFabManager::I()->loginUserPassword = TEXT("");
 }
 
 void UCppLoginMenu::OnLoginError()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, TEXT("On Login Error!"));
 
-	ACppPlayFabManager::Instance()->loginUserPassword = TEXT("");
+	ACppPlayFabManager::I()->loginUserPassword = TEXT("");
 }

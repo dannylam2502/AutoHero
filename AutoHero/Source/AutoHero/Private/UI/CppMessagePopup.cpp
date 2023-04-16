@@ -13,16 +13,14 @@ void UCppMessagePopup::Setup()
 	btnClose->OnClicked.AddDynamic(this, &UCppMessagePopup::OnCloseClicked);
 }
 
-void UCppMessagePopup::Init(TArray<UObject*> initParams)
+void UCppMessagePopup::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppMessagePopup::Pop()
 {
 	UCppBaseMenu::Pop();
-
-	// invot delegate
 }
 
 void UCppMessagePopup::SetTextMessage(FString content)

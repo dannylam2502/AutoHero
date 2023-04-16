@@ -28,9 +28,9 @@ class AUTOHERO_API ACppUIManager : public APawn
 	GENERATED_BODY()
 
 private:
-	static ACppUIManager* instance;
+	static ACppUIManager* i;
 public:
-	static ACppUIManager* Instance();
+	static ACppUIManager* I();
 
 protected:
 	// Called when the game starts or when spawned
@@ -79,7 +79,7 @@ public:
 	UCppBaseMenu* SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass);
 
 public:
-	static void Push(UCppBaseMenu* menu, TArray<UObject*> initParams);
+	static void Push(UCppBaseMenu* menu);
 	static void Pop(UCppBaseMenu* menu);
 	static void PopAll();
 

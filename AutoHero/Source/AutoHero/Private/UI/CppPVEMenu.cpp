@@ -15,9 +15,9 @@ void UCppPVEMenu::Setup()
 	btnFindMatch->OnClicked.AddDynamic(this, &UCppPVEMenu::OnFindMatchClicked);
 }
 
-void UCppPVEMenu::Init(TArray<UObject*> initParams)
+void UCppPVEMenu::Init()
 {
-	UCppBaseMenu::Init(initParams);
+	UCppBaseMenu::Init();
 }
 
 void UCppPVEMenu::Pop()
@@ -30,8 +30,7 @@ void UCppPVEMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->mainMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 }
 
 void UCppPVEMenu::OnFindMatchClicked()
@@ -39,6 +38,5 @@ void UCppPVEMenu::OnFindMatchClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnFindMatchClicked!"));
 	Pop();
 
-	TArray<UObject*> initParams;
-	ACppUIManager::Push(ACppUIManager::Instance()->battleMenu, initParams);
+	ACppUIManager::Push(ACppUIManager::I()->battleMenu);
 }
