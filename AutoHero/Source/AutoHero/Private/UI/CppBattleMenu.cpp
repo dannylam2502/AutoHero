@@ -10,6 +10,8 @@ void UCppBattleMenu::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Menu;
+
 	btnEndGame->OnClicked.AddDynamic(this, &UCppBattleMenu::OnEndGameClicked);
 }
 

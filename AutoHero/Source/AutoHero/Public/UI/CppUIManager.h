@@ -18,6 +18,7 @@ class UCppSummaryMenu;
 class UCppSettingPopup;
 class UCppRewardGiftPopup;
 class UCppMessagePopup;
+class UCppChatBoxPopup;
 
 DECLARE_DELEGATE(InitCallback);
 DECLARE_DELEGATE(PopCallback);
@@ -54,6 +55,7 @@ private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRewardGiftPopup> rewardGiftPopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMessagePopup> messagePopupClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppChatBoxPopup> chatBoxPopupClass;
 
 #pragma region Menu.
 public:
@@ -73,6 +75,7 @@ public:
 	UCppSettingPopup* settingPopup;
 	UCppRewardGiftPopup* rewardGiftPopup;
 	UCppMessagePopup* messagePopup;
+	UCppChatBoxPopup* chatBoxPopup;
 #pragma endregion
 
 public:

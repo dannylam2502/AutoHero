@@ -17,7 +17,6 @@
 #include "UI/CppMessagePopup.h"
 
 ACppPlayFabManager* ACppPlayFabManager::i;
-
 ACppPlayFabManager* ACppPlayFabManager::I()
 {
 	return i;

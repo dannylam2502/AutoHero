@@ -15,6 +15,10 @@
 
 void UCppLoginMenu::Setup()
 {
+	UCppBaseMenu::Setup();
+
+	menuType = eMenuType::Menu;
+
 	btnQuit->OnClicked.AddDynamic(this, &UCppLoginMenu::OnQuitClicked);
 	btnLogin->OnClicked.AddDynamic(this, &UCppLoginMenu::OnLoginClicked);
 	btnSignUp->OnClicked.AddDynamic(this, &UCppLoginMenu::OnRegisterClicked);

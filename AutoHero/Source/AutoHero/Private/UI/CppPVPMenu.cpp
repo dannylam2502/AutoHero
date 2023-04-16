@@ -15,6 +15,8 @@ void UCppPVPMenu::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Menu;
+
 	btnBack->OnClicked.AddDynamic(this, &UCppPVPMenu::OnBackClicked);
 	btnFindMatch->OnClicked.AddDynamic(this, &UCppPVPMenu::OnFindMatchClicked);
 }

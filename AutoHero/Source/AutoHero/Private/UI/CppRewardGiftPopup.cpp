@@ -8,6 +8,8 @@ void UCppRewardGiftPopup::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Popup;
+
 	btnClaim->OnClicked.AddDynamic(this, &UCppRewardGiftPopup::OnClaimClicked);
 }
 

@@ -11,6 +11,10 @@
 
 void UCppRegisterMenu::Setup()
 {
+	UCppBaseMenu::Setup();
+
+	menuType = eMenuType::Menu;
+
 	btnBack->OnClicked.AddDynamic(this, &UCppRegisterMenu::OnBackClicked);
 	btnRegister->OnClicked.AddDynamic(this, &UCppRegisterMenu::OnRegisterClicked);
 

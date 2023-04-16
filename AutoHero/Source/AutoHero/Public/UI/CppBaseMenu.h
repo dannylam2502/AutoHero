@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumPlace/CppEMenuType.h"
 #include "Blueprint/UserWidget.h"
 #include "CppBaseMenu.generated.h"
 
@@ -15,6 +16,10 @@ UCLASS()
 class AUTOHERO_API UCppBaseMenu : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		eMenuType menuType;
 
 public:
 	virtual void Setup();

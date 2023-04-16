@@ -10,6 +10,8 @@ void UCppSettingPopup::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Popup;
+
 	btnBack->OnClicked.AddDynamic(this, &UCppSettingPopup::OnBackClicked);
 	btnMusic->OnClicked.AddDynamic(this, &UCppSettingPopup::OnMusicClicked);
 	btnSound->OnClicked.AddDynamic(this, &UCppSettingPopup::OnSoundClicked);

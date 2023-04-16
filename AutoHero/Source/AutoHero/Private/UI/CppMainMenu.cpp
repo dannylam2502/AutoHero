@@ -12,6 +12,8 @@ void UCppMainMenu::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Menu;
+
 	btnQuit->OnClicked.AddDynamic(this, &UCppMainMenu::OnQuitClicked);
 	btnSetting->OnClicked.AddDynamic(this, &UCppMainMenu::OnSettingClicked);
 	btnPvp->OnClicked.AddDynamic(this, &UCppMainMenu::OnPvpClicked);

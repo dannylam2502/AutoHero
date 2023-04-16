@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "SaveGame/CppGameData.h"
 
+#pragma region Menu
 #include "UI/CppLoginMenu.h"
 #include "UI/CppRegisterMenu.h"
 #include "UI/CppMainMenu.h"
@@ -13,13 +14,16 @@
 #include "UI/CppPVEMenu.h"
 #include "UI/CppBattleMenu.h"
 #include "UI/CppSummaryMenu.h"
+#pragma endregion
 
+#pragma region Popup
 #include "UI/CppSettingPopup.h"
 #include "UI/CppRewardGiftPopup.h"
 #include "UI/CppMessagePopup.h"
+#include "UI/CppChatBoxPopup.h"
+#pragma endregion
 
 ACppUIManager* ACppUIManager::i;
-
 ACppUIManager* ACppUIManager::I()
 {
 	return i;
@@ -32,6 +36,7 @@ ACppUIManager::ACppUIManager()
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+#pragma region Menu.
 	loginMenuClass = nullptr;
 	loginMenu = nullptr;
 
@@ -52,7 +57,9 @@ ACppUIManager::ACppUIManager()
 
 	summaryMenuClass = nullptr;
 	summaryMenu = nullptr;
+#pragma endregion
 
+#pragma region Popup.
 	settingPopupClass = nullptr;
 	settingPopup = nullptr;
 
@@ -61,6 +68,10 @@ ACppUIManager::ACppUIManager()
 
 	messagePopupClass = nullptr;
 	messagePopup = nullptr;
+
+	chatBoxPopupClass = nullptr;
+	chatBoxPopup = nullptr;
+#pragma endregion
 
 }
 
@@ -92,6 +103,7 @@ void ACppUIManager::BeginPlay()
 	settingPopup = dynamic_cast<UCppSettingPopup*>(SetupMenu(settingPopup, settingPopupClass));
 	rewardGiftPopup = dynamic_cast<UCppRewardGiftPopup*>(SetupMenu(rewardGiftPopup, rewardGiftPopupClass));
 	messagePopup = dynamic_cast<UCppMessagePopup*>(SetupMenu(messagePopup, messagePopupClass));
+	chatBoxPopup = dynamic_cast<UCppChatBoxPopup*>(SetupMenu(chatBoxPopup, chatBoxPopupClass));
 #pragma endregion
 
 	// Init push menu.
@@ -102,6 +114,7 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+#pragma region Menu.
 	loginMenu = nullptr;
 	registerMenu = nullptr;
 	mainMenu = nullptr;
@@ -109,9 +122,14 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	pveMenu = nullptr;
 	battleMenu = nullptr;
 	summaryMenu = nullptr;
+#pragma endregion
+
+#pragma region Popup.
 	settingPopup = nullptr;
 	rewardGiftPopup = nullptr;
 	messagePopup = nullptr;
+	chatBoxPopup = nullptr;
+#pragma endregion
 
 	for (UCppBaseMenu* menu : arrayMenu)
 	{

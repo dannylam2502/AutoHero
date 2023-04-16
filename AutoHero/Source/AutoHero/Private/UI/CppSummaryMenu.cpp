@@ -12,6 +12,8 @@ void UCppSummaryMenu::Setup()
 {
 	UCppBaseMenu::Setup();
 
+	menuType = eMenuType::Menu;
+
 	btnBack->OnClicked.AddDynamic(this, &UCppSummaryMenu::OnBackClicked);
 }
 

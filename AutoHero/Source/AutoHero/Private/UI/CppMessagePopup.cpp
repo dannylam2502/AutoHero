@@ -3,12 +3,15 @@
 
 #include "UI/CppMessagePopup.h"
 #include "UI/CppUIManager.h"
+
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
 void UCppMessagePopup::Setup()
 {
 	UCppBaseMenu::Setup();
+
+	menuType = eMenuType::Popup;
 
 	btnClose->OnClicked.AddDynamic(this, &UCppMessagePopup::OnCloseClicked);
 }
@@ -30,5 +33,7 @@ void UCppMessagePopup::SetTextMessage(FString content)
 
 void UCppMessagePopup::OnCloseClicked()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnCloseClicked!"));
+
 	Pop();
 }
