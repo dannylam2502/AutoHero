@@ -120,19 +120,39 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 #pragma region Menu.
+	loginMenuClass = nullptr;
 	loginMenu = nullptr;
+
+	registerMenuClass = nullptr;
 	registerMenu = nullptr;
+
+	mainMenuClass = nullptr;
 	mainMenu = nullptr;
+
+	pvpMenuClass = nullptr;
 	pvpMenu = nullptr;
+
+	pveMenuClass = nullptr;
 	pveMenu = nullptr;
+
+	battleMenuClass = nullptr;
 	battleMenu = nullptr;
+
+	summaryMenuClass = nullptr;
 	summaryMenu = nullptr;
 #pragma endregion
 
 #pragma region Popup.
+	settingPopupClass = nullptr;
 	settingPopup = nullptr;
+
+	rewardGiftPopupClass = nullptr;
 	rewardGiftPopup = nullptr;
+
+	messagePopupClass = nullptr;
 	messagePopup = nullptr;
+
+	chatBoxPopupClass = nullptr;
 	chatBoxPopup = nullptr;
 #pragma endregion
 
