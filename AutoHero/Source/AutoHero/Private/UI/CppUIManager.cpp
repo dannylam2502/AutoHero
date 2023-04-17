@@ -36,6 +36,12 @@ ACppUIManager::ACppUIManager()
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	SetNullAllVariable();
+
+}
+
+void ACppUIManager::SetNullAllVariable()
+{
 #pragma region Menu.
 	loginMenuClass = nullptr;
 	loginMenu = nullptr;
@@ -72,7 +78,6 @@ ACppUIManager::ACppUIManager()
 	chatBoxPopupClass = nullptr;
 	chatBoxPopup = nullptr;
 #pragma endregion
-
 }
 
 // Called when the game starts or when spawned
@@ -119,42 +124,7 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		menu->OnExitGame();
 	}
 
-#pragma region Menu.
-	loginMenuClass = nullptr;
-	loginMenu = nullptr;
-
-	registerMenuClass = nullptr;
-	registerMenu = nullptr;
-
-	mainMenuClass = nullptr;
-	mainMenu = nullptr;
-
-	pvpMenuClass = nullptr;
-	pvpMenu = nullptr;
-
-	pveMenuClass = nullptr;
-	pveMenu = nullptr;
-
-	battleMenuClass = nullptr;
-	battleMenu = nullptr;
-
-	summaryMenuClass = nullptr;
-	summaryMenu = nullptr;
-#pragma endregion
-
-#pragma region Popup.
-	settingPopupClass = nullptr;
-	settingPopup = nullptr;
-
-	rewardGiftPopupClass = nullptr;
-	rewardGiftPopup = nullptr;
-
-	messagePopupClass = nullptr;
-	messagePopup = nullptr;
-
-	chatBoxPopupClass = nullptr;
-	chatBoxPopup = nullptr;
-#pragma endregion
+	SetNullAllVariable();
 
 	arrayMenu.SetNum(0);
 }

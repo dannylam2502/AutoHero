@@ -33,6 +33,9 @@ private:
 public:
 	static ACppUIManager* I();
 
+private:
+	void SetNullAllVariable();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
