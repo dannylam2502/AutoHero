@@ -24,3 +24,8 @@ void UCppBaseMenu::Pop()
 	}
 	callback = nullptr;
 }
+
+void UCppBaseMenu::OnExitGame()
+{
+	callback = nullptr;
+}

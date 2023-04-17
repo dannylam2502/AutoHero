@@ -103,3 +103,14 @@ void UCppLoginMenu::OnLoginError()
 
 	ACppPlayFabManager::I()->loginUserPassword = TEXT("");
 }
+
+void UCppLoginMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnQuit = nullptr;
+	inputUserName = nullptr;
+	inputPassword = nullptr;
+	btnLogin = nullptr;
+	btnSignUp = nullptr;
+}

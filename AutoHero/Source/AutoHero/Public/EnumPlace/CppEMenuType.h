@@ -7,11 +7,6 @@
 ///**
 // *
 // */
-//class AUTOHERO_API CppEMenuType
-//{
-//
-//};
-
 UENUM(BlueprintType)
 enum class eMenuType : uint8
 {

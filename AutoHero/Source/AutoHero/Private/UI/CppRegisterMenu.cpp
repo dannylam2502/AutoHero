@@ -93,3 +93,14 @@ void UCppRegisterMenu::OnRegisterError()
 
 	ACppPlayFabManager::I()->registerUserPassword = TEXT("");
 }
+
+void UCppRegisterMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnBack = nullptr;
+	btnRegister = nullptr;
+	inputUserEmail = nullptr;
+	inputUserName = nullptr;
+	inputPassword = nullptr;
+}

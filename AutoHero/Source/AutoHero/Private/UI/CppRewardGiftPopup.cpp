@@ -28,3 +28,10 @@ void UCppRewardGiftPopup::OnClaimClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnClaimClicked!"));
 	Pop();
 }
+
+void UCppRewardGiftPopup::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnClaim = nullptr;
+}

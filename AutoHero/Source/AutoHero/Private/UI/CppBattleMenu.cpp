@@ -32,3 +32,10 @@ void UCppBattleMenu::OnEndGameClicked()
 
 	ACppUIManager::Push(ACppUIManager::I()->summaryMenu);
 }
+
+void UCppBattleMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnEndGame = nullptr;
+}

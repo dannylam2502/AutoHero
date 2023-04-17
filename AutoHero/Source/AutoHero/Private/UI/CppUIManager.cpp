@@ -114,6 +114,11 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	for (UCppBaseMenu* menu : arrayMenu)
+	{
+		menu->OnExitGame();
+	}
+
 #pragma region Menu.
 	loginMenu = nullptr;
 	registerMenu = nullptr;
@@ -131,10 +136,6 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	chatBoxPopup = nullptr;
 #pragma endregion
 
-	for (UCppBaseMenu* menu : arrayMenu)
-	{
-		menu = nullptr;
-	}
 	arrayMenu.SetNum(0);
 }
 

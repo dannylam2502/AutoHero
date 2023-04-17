@@ -7,14 +7,10 @@
 /**
  *
  */
-class AUTOHERO_API CppEChatSystemChannels
+UENUM(BlueprintType)
+enum class eChatSystemChannels : uint8
 {
-public:
-    UENUM(BlueprintType)
-        enum class eChatSystemChannels : uint8
-    {
-        Global UMETA(DisplayName = "Global"),
-        Trade UMETA(DisplayName = "Trade"),
-        Local UMETA(DisplayName = "Local")
-    };
+    Global UMETA(DisplayName = "Global"),
+    Trade UMETA(DisplayName = "Trade"),
+    Local UMETA(DisplayName = "Local")
 };

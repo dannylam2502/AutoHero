@@ -42,3 +42,12 @@ void UCppSettingPopup::OnSoundClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnSoundClicked!"));
 }
+
+void UCppSettingPopup::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnBack = nullptr;
+	btnMusic = nullptr;
+	btnSound = nullptr;
+}

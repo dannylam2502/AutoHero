@@ -37,3 +37,11 @@ void UCppMessagePopup::OnCloseClicked()
 
 	Pop();
 }
+
+void UCppMessagePopup::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	textMessage = nullptr;
+	btnClose = nullptr;
+}

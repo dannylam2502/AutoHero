@@ -57,3 +57,13 @@ void UCppMainMenu::OnPveClicked()
 
 	ACppUIManager::Push(ACppUIManager::I()->pveMenu);
 }
+
+void UCppMainMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnQuit = nullptr;
+	btnSetting = nullptr;
+	btnPvp = nullptr;
+	btnPve = nullptr;
+}

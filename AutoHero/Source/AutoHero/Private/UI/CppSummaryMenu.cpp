@@ -36,3 +36,10 @@ void UCppSummaryMenu::OnBackClicked()
 
 	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
 }
+
+void UCppSummaryMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnBack = nullptr;
+}

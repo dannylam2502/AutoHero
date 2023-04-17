@@ -21,6 +21,7 @@ public:
 	virtual void Setup() override;
 	virtual void Init() override;
 	virtual void Pop() override;
+	virtual void OnExitGame() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))

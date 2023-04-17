@@ -48,3 +48,11 @@ void UCppPVPMenu::OnFindMatchClicked()
 
 	//ACppUIManager::Push(ACppUIManager::I()->battleMenu);
 }
+
+void UCppPVPMenu::OnExitGame()
+{
+	UCppBaseMenu::OnExitGame();
+
+	btnBack = nullptr;
+	btnFindMatch = nullptr;
+}
