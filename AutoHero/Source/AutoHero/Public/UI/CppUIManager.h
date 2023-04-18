@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "CppUIManager.generated.h"
 
+#pragma region Menu.
 class UCppLoginMenu;
 class UCppRegisterMenu;
 class UCppMainMenu;
@@ -14,11 +15,15 @@ class UCppPVPMenu;
 class UCppPVEMenu;
 class UCppBattleMenu;
 class UCppSummaryMenu;
+#pragma endregion
 
+#pragma region Popup.
 class UCppSettingPopup;
 class UCppRewardGiftPopup;
 class UCppMessagePopup;
 class UCppChatBoxPopup;
+class UCppChatBoxMessagePopup;
+#pragma endregion
 
 DECLARE_DELEGATE(InitCallback);
 DECLARE_DELEGATE(PopCallback);
@@ -59,6 +64,7 @@ private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppRewardGiftPopup> rewardGiftPopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMessagePopup> messagePopupClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppChatBoxPopup> chatBoxPopupClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppChatBoxMessagePopup> chatBoxMessagePopupClass;
 
 #pragma region Menu.
 public:
@@ -79,6 +85,7 @@ public:
 	UCppRewardGiftPopup* rewardGiftPopup;
 	UCppMessagePopup* messagePopup;
 	UCppChatBoxPopup* chatBoxPopup;
+	UCppChatBoxMessagePopup* chatBoxMessagePopup;
 #pragma endregion
 
 public:
