@@ -74,6 +74,8 @@ void UCppChatBoxPopup::OnbtnSendMessageButtonClicked()
 		chatInfo->authorPlayerId = player->GetPlayerState()->PlayerId;
 
 		CallSendMessage(chatInfo);
+
+		chatInfo = nullptr;
 	}
 }
 
