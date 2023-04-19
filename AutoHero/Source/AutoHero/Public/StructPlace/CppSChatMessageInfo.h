@@ -3,12 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Object.h"
 #include "EnumPlace/CppEChatSystemChannels.h"
 #include "CppSChatMessageInfo.generated.h"
 
 /**
  * 
  */
+UCLASS()
+class AUTOHERO_API UCppSChatMessageInfo : public UObject
+{
+	GENERATED_BODY()
+};
+
 USTRUCT(BlueprintType)
 struct FSChatMessageInfo
 {
