@@ -24,5 +24,5 @@ struct FSChannel
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) eChatSystemChannels channelType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) FSChatMessageInfo messageInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) TArray<FSChatMessageInfo> arrayMessageInfo;
 };

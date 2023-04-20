@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
 #include "Interface/ChatSystem/CppIChatSystemInterface.h"
+#include "EnumPlace/CppEChatSystemChannels.h"
 #include "StructPlace/CppSChannel.h"
 #include "CppGameState.generated.h"
+
+class APlayerController;
 
 /**
  * 
@@ -19,8 +22,8 @@ class AUTOHERO_API ACppGameState : public AGameStateBase, public ICppIChatSystem
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-private:
-	FSChannel channelMessage;
+public:
+	TArray<FSChannel> arraychannelMessage;
 
 public:
 	virtual void SendChatMessage(FSChatMessageInfo message) override;
@@ -28,6 +31,16 @@ public:
 	virtual void WatchChatChannel(eChatSystemChannels channelType, APlayerController* playerController) override;
 
 private:
+#pragma region SendChatMessage.
 	void AddChannelMessage(FSChatMessageInfo message);
+	void FindMessageChannel(eChatSystemChannels channelType, bool& isChannelFound, FSChannel& messageChannel, int& index);
+	bool isMessageChannelCreated(eChatSystemChannels channelType, FSChannel& messageChannel, int& index);
+	void NotifyChannelUpdated(eChatSystemChannels channelType);
+#pragma endregion
+
+#pragma region WatchChatChannel.
+	void AddChannelListener(eChatSystemChannels channelType, APlayerController* playerContronller);
+	bool isChannelListenerCreated(eChatSystemChannels channelType, int&index, eChatSystemChannels listener);
+#pragma endregion
 
 };
