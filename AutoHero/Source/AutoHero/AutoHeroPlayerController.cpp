@@ -115,3 +115,10 @@ void AAutoHeroPlayerController::OnTouchReleased()
 	bIsTouch = false;
 	OnSetDestinationReleased();
 }
+
+#pragma region Interface
+void AAutoHeroPlayerController::OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage)
+{
+
+}
+#pragma endregion

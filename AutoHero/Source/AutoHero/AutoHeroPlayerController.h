@@ -6,13 +6,14 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "Interface/ChatSystem/CppIChatSystemChannelListener.h"
 #include "AutoHeroPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
 
 UCLASS()
-class AAutoHeroPlayerController : public APlayerController
+class AAutoHeroPlayerController : public APlayerController, public ICppIChatSystemChannelListener
 {
 	GENERATED_BODY()
 
@@ -61,6 +62,12 @@ private:
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+
+#pragma region Interface
+public:
+	virtual void OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage) override;
+#pragma endregion
+
 };
 
 

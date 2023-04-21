@@ -44,7 +44,7 @@ void ACppChatSystem::SendChatMessage(FSChatMessageInfo message)
 
 }
 
-void ACppChatSystem::GetChatChannelMessage(eChatSystemChannels channelType, bool& isChannelFound, FSChatMessageInfo& message)
+void ACppChatSystem::GetChatChannelMessages(eChatSystemChannels channelType, bool& isChannelFound, TArray<FSChatMessageInfo>& arrayMessage)
 {
 
 }

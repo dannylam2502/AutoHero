@@ -36,7 +36,7 @@ public:
 
 public:
 	virtual void SendChatMessage(FSChatMessageInfo message) override;
-	virtual void GetChatChannelMessage(eChatSystemChannels channelType, bool& isChannelFound, FSChatMessageInfo& message) override;
+	virtual void GetChatChannelMessages(eChatSystemChannels channelType, bool& isChannelFound, TArray<FSChatMessageInfo>& arrayMessage) override;
 	virtual void WatchChatChannel(eChatSystemChannels channelType, APlayerController* playerController) override;
 
 };

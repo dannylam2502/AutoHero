@@ -26,7 +26,7 @@ public:
 	UFUNCTION(Category = "Chat System")
 		virtual void SendChatMessage(FSChatMessageInfo message) = 0;
 	UFUNCTION(Category = "Chat System")
-		virtual void GetChatChannelMessage(eChatSystemChannels channelType, bool& isChannelFound, FSChatMessageInfo& message) = 0;
+		virtual void GetChatChannelMessages(eChatSystemChannels channelType, bool& isChannelFound, TArray<FSChatMessageInfo>& arrayMessage) = 0;
 	UFUNCTION(Category = "Chat System")
 		virtual void WatchChatChannel(eChatSystemChannels channelType, APlayerController* playerController) = 0;
 };

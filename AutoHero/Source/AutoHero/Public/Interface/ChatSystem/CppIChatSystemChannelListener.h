@@ -23,6 +23,6 @@ class ICppIChatSystemChannelListener
 
 public:
 	UFUNCTION(Category = "Chat System")
-		virtual void OnChatChannelUpdated(eChatSystemChannels channelType, FSChatMessageInfo message) = 0;
+		virtual void OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage) = 0;
 
 };

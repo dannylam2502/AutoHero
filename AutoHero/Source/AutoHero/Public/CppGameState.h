@@ -7,6 +7,7 @@
 #include "Interface/ChatSystem/CppIChatSystemInterface.h"
 #include "EnumPlace/CppEChatSystemChannels.h"
 #include "StructPlace/CppSChannel.h"
+#include "StructPlace/CppSChannelListeners.h"
 #include "CppGameState.generated.h"
 
 class APlayerController;
@@ -24,23 +25,21 @@ protected:
 
 public:
 	TArray<FSChannel> arraychannelMessage;
+	TArray<FSChannelListeners> arrayChannelListener;
 
+#pragma region Interface
 public:
 	virtual void SendChatMessage(FSChatMessageInfo message) override;
-	virtual void GetChatChannelMessage(eChatSystemChannels channelType, bool& isChannelFound, FSChatMessageInfo& message) override;
+	virtual void GetChatChannelMessages(eChatSystemChannels channelType, bool& isChannelFound, TArray<FSChatMessageInfo>& arrayMessage) override;
 	virtual void WatchChatChannel(eChatSystemChannels channelType, APlayerController* playerController) override;
+#pragma endregion
 
 private:
-#pragma region SendChatMessage.
 	void AddChannelMessage(FSChatMessageInfo message);
 	void FindMessageChannel(eChatSystemChannels channelType, bool& isChannelFound, FSChannel& messageChannel, int& index);
 	bool isMessageChannelCreated(eChatSystemChannels channelType, FSChannel& messageChannel, int& index);
 	void NotifyChannelUpdated(eChatSystemChannels channelType);
-#pragma endregion
-
-#pragma region WatchChatChannel.
 	void AddChannelListener(eChatSystemChannels channelType, APlayerController* playerContronller);
-	bool isChannelListenerCreated(eChatSystemChannels channelType, int&index, eChatSystemChannels listener);
-#pragma endregion
+	bool isChannelListenerCreated(eChatSystemChannels channelType, FSChannelListeners listener, int&index);
 
 };
