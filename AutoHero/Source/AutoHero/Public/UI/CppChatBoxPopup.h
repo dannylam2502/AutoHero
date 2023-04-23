@@ -16,6 +16,11 @@ class UMultiLineEditableTextBox;
 
 class AAutoHeroCharacter;
 
+class UCppChatBoxMessagePopup;
+
+DECLARE_DELEGATE_OneParam(OnSendMessageCallback, FSChatMessageInfo);
+DECLARE_DELEGATE_OneParam(OnChannelChangedCallback, eChatSystemChannels);
+
 /**
  * 
  */
@@ -44,7 +49,7 @@ private:
 		UButton* btnSendMessage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UVerticalBox* channelMessage;
+		UVerticalBox* VchannelMessages;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UMultiLineEditableTextBox* textMessageToSend;
@@ -67,9 +72,20 @@ private:
 	UFUNCTION() void OnbtnSendMessageButtonClicked();
 
 public:
-	void CallSendMessage(FSChatMessageInfo* chatInfo);
+	void CallSendMessage(FSChatMessageInfo chatInfo);
 
 	void ClearEnteredMessage();
 	void ClearChannelMessage();
+	void SetChannelMessages(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage);
+
+public:
+	OnSendMessageCallback onSendMessageCallback;
+	OnChannelChangedCallback onChannelChangedCallback;
+
+private:
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppChatBoxMessagePopup> chatBoxMessagePopupClass;
+public:
+	TArray<UCppChatBoxMessagePopup*> arrayChatBoxMessagePopup;
+	UCppChatBoxMessagePopup* CreateBoxMessage(FSChatMessageInfo chatInfo);
 
 };

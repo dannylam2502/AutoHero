@@ -35,6 +35,6 @@ private:
 		UMultiLineEditableTextBox* textMessage;
 
 public:
-	void SetMessage(FSChatMessageInfo* chatInfo);
+	void SetMessage(FSChatMessageInfo chatInfo);
 
 };

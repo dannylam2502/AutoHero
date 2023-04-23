@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "SaveGame/CppGameData.h"
+#include "AutoHero/AutoHeroGameMode.h"
 
 #pragma region Menu
 #include "UI/CppLoginMenu.h"
@@ -21,7 +22,6 @@
 #include "UI/CppRewardGiftPopup.h"
 #include "UI/CppMessagePopup.h"
 #include "UI/CppChatBoxPopup.h"
-#include "UI/CppChatBoxMessagePopup.h"
 #pragma endregion
 
 ACppUIManager* ACppUIManager::i;
@@ -79,8 +79,6 @@ void ACppUIManager::SetNullAllVariable()
 	chatBoxPopupClass = nullptr;
 	chatBoxPopup = nullptr;
 	
-	chatBoxMessagePopupClass = nullptr;
-	chatBoxMessagePopup = nullptr;
 #pragma endregion
 }
 
@@ -113,21 +111,27 @@ void ACppUIManager::BeginPlay()
 	rewardGiftPopup = dynamic_cast<UCppRewardGiftPopup*>(SetupMenu(rewardGiftPopup, rewardGiftPopupClass));
 	messagePopup = dynamic_cast<UCppMessagePopup*>(SetupMenu(messagePopup, messagePopupClass));
 	chatBoxPopup = dynamic_cast<UCppChatBoxPopup*>(SetupMenu(chatBoxPopup, chatBoxPopupClass));
-	chatBoxMessagePopup = dynamic_cast<UCppChatBoxMessagePopup*>(SetupMenu(chatBoxMessagePopup, chatBoxMessagePopupClass));
+	
 #pragma endregion
 
 	// Init push menu.
-	Push(loginMenu);
+	//Push(loginMenu);
+	Push(chatBoxPopup);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	for (UCppBaseMenu* menu : arrayMenu)
+	/*for (UCppBaseMenu* menu : arrayMenu)
 	{
-		menu->OnExitGame();
-	}
+		if (menu)
+		{
+			menu->OnExitGame();
+		}
+	}*/
+
+	chatBoxPopup->OnExitGame();
 
 	SetNullAllVariable();
 
@@ -173,7 +177,8 @@ void ACppUIManager::SetInputGameplay()
 
 void ACppUIManager::QuitGame()
 {
-	UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+	AAutoHeroGameMode* currentGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(i->GetWorld()));
+	UKismetSystemLibrary::QuitGame(i->GetWorld(), currentGameMode->PlayerControllerClass.GetDefaultObject(), EQuitPreference::Quit, false);
 }
 
 void ACppUIManager::OnInitCallBack()

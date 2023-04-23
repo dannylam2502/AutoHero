@@ -29,9 +29,9 @@ void UCppChatBoxMessagePopup::OnExitGame()
 	textMessage = nullptr;
 }
 
-void UCppChatBoxMessagePopup::SetMessage(FSChatMessageInfo* chatInfo)
+void UCppChatBoxMessagePopup::SetMessage(FSChatMessageInfo chatInfo)
 {
-	textMessageTimeNode->SetText(FText::AsDateTime(chatInfo->messageTime));
-	textMessage->SetText(chatInfo->message);
-	textAuthorNode->SetText(FText::AsNumber(chatInfo->authorPlayerId));
+	textMessageTimeNode->SetText(FText::AsDateTime(chatInfo.messageTime));
+	textMessage->SetText(chatInfo.message);
+	textAuthorNode->SetText(FText::AsNumber(chatInfo.authorPlayerId));
 }

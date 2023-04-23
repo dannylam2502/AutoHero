@@ -5,6 +5,19 @@
 #include "GameFramework/PlayerController.h"
 #include "AutoHero/AutoHeroPlayerController.h"
 
+//ACppGameState* ACppGameState::i;
+//ACppGameState* ACppGameState::I()
+//{
+//	return i;
+//}
+
+void ACppGameState::BeginPlay()
+{
+	//i = this;
+
+	Super::BeginPlay();
+}
+
 void ACppGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -27,7 +40,7 @@ void ACppGameState::GetChatChannelMessages(eChatSystemChannels channelType, bool
 
 	if (HasAuthority())
 	{
-		isChannelFound = isMessageChannelCreated(channelType, channelMessage, index);
+		isChannelFound = IsMessageChannelCreated(channelType, channelMessage, index);
 		if (!isChannelFound)
 		{
 			arrayMessage.SetNum(0);	
@@ -70,10 +83,10 @@ void ACppGameState::AddChannelMessage(FSChatMessageInfo message)
 
 void ACppGameState::FindMessageChannel(eChatSystemChannels channelType, bool& isChannelFound, FSChannel& messageChannel, int& index)
 {
-	isMessageChannelCreated(channelType, messageChannel, index);
+	IsMessageChannelCreated(channelType, messageChannel, index);
 }
 
-bool ACppGameState::isMessageChannelCreated(eChatSystemChannels channelType, FSChannel& messageChannel, int& index)
+bool ACppGameState::IsMessageChannelCreated(eChatSystemChannels channelType, FSChannel& messageChannel, int& index)
 {
 	for (int i = 0; i < arraychannelMessage.Num(); i++)
 	{
@@ -96,14 +109,15 @@ void ACppGameState::NotifyChannelUpdated(eChatSystemChannels channelType)
 	{
 		FSChannelListeners listener;
 		int index = -1;
-		if (isChannelListenerCreated(channelType, listener, index))
+		if (IsChannelListenerCreated(channelType, listener, index))
 		{
 			bool isChannelFound = false;
 			TArray<FSChatMessageInfo> arrayMessage;
 			GetChatChannelMessages(channelType, isChannelFound, arrayMessage);
 
-			for (APlayerController* playerController : listener.arrayPlayerController)
+			for (int i = 0; i < listener.arrayPlayerController.Num(); i++)
 			{
+				APlayerController* playerController = listener.arrayPlayerController[i];
 				AAutoHeroPlayerController* autoHeroPlayerController = dynamic_cast<AAutoHeroPlayerController*>(playerController);
 				if (autoHeroPlayerController)
 				{
@@ -118,7 +132,7 @@ void ACppGameState::AddChannelListener(eChatSystemChannels channelType, APlayerC
 {
 	FSChannelListeners channelListener;
 	int index = -1;
-	if (isChannelListenerCreated(channelType, channelListener, index))
+	if (IsChannelListenerCreated(channelType, channelListener, index))
 	{
 		TArray<APlayerController*> arrayNotify = channelListener.arrayPlayerController;
 		int _index = arrayNotify.Find(playerContronller);
@@ -138,7 +152,7 @@ void ACppGameState::AddChannelListener(eChatSystemChannels channelType, APlayerC
 	}
 }
 
-bool ACppGameState::isChannelListenerCreated(eChatSystemChannels channelType, FSChannelListeners listener, int& index)
+bool ACppGameState::IsChannelListenerCreated(eChatSystemChannels channelType, FSChannelListeners& listener, int& index)
 {
 	for (int i = 0; i < arrayChannelListener.Num(); i++)
 	{
@@ -153,4 +167,9 @@ bool ACppGameState::isChannelListenerCreated(eChatSystemChannels channelType, FS
 
 	index = -1;
 	return false;
+}
+
+ICppIChatSystemInterface* ACppGameState::GetChatSystem()
+{
+	return this;
 }

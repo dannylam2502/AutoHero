@@ -9,6 +9,10 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
+#include "CppGameState.h"
+#include "UI/CppUIManager.h"
+#include "UI/CppChatBoxPopup.h"
 
 AAutoHeroPlayerController::AAutoHeroPlayerController()
 {
@@ -28,6 +32,14 @@ void AAutoHeroPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	BootstrapAll();
+	BootstrapAuthority();
+	BootstrapClient();
+}
+
+void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 }
 
 void AAutoHeroPlayerController::SetupInputComponent()
@@ -116,9 +128,83 @@ void AAutoHeroPlayerController::OnTouchReleased()
 	OnSetDestinationReleased();
 }
 
-#pragma region Interface
+#pragma region Interface.
 void AAutoHeroPlayerController::OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage)
 {
+	// Push channel messages to client.
+	PushChannelMessageToCliend(channelType, arrayMessage);
+}
+#pragma endregion
+
+void AAutoHeroPlayerController::BootstrapAll()
+{
+	// Executes on authority and local player controllers.
+	ACppGameState* gameState = dynamic_cast<ACppGameState*>(UGameplayStatics::GetGameState(GetWorld()));
+	if (gameState)
+	{
+		iChatSystem = gameState->GetChatSystem();
+	}
 
 }
+
+void AAutoHeroPlayerController::BootstrapAuthority()
+{
+	// Executes on authority machine.
+	if (HasAuthority())
+	{
+		iChatSystem->WatchChatChannel(eChatSystemChannels::Global, this);
+		//BootstrapClient();
+	}
+}
+
+void AAutoHeroPlayerController::BootstrapClient()
+{
+	if (IsLocalPlayerController())
+	{
+		// Executes on machines that have a local player controller.
+		UCppChatBoxPopup* chatBoxPopup = ACppUIManager::I()->chatBoxPopup;
+		ACppUIManager::I()->Push(chatBoxPopup);
+		chatBoxPopup->onChannelChangedCallback.BindUObject(this, &AAutoHeroPlayerController::OnChatChannelChanged);
+		chatBoxPopup->onSendMessageCallback.BindUObject(this, &AAutoHeroPlayerController::OnChatSendMessage);
+	}
+}
+
+#pragma region Chat Cliend.
+void AAutoHeroPlayerController::OnChatSendMessage(FSChatMessageInfo message)
+{
+	// Send chat message.
+	SendChatMessageToServer(message);
+}
+
+void AAutoHeroPlayerController::OnChatChannelChanged(eChatSystemChannels channelType)
+{
+	// Watch chat channel for updates.
+	SendWatchChannelToServer(channelType);
+}
+
+#pragma endregion
+
+#pragma region Sever.
+void AAutoHeroPlayerController::SendChatMessageToServer_Implementation(FSChatMessageInfo message)
+{
+	iChatSystem->SendChatMessage(message);
+}
+
+void AAutoHeroPlayerController::SendWatchChannelToServer_Implementation(eChatSystemChannels channelType)
+{
+	// Register for channel updates.
+	iChatSystem->WatchChatChannel(channelType, this);
+
+	// Get existing messages for this channel we are now watching.
+	bool isChannelFound = false;
+	TArray<FSChatMessageInfo> arrayMessage;
+	iChatSystem->GetChatChannelMessages(channelType, isChannelFound, arrayMessage);
+	PushChannelMessageToCliend(channelType, arrayMessage);
+}
+
+void AAutoHeroPlayerController::PushChannelMessageToCliend_Implementation(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage)
+{
+	ACppUIManager::I()->chatBoxPopup->SetChannelMessages(channelType, arrayMessage);
+}
+
 #pragma endregion

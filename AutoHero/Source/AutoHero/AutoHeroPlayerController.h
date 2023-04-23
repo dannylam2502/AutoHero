@@ -6,7 +6,10 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "EnumPlace/CppEChatSystemChannels.h"
 #include "Interface/ChatSystem/CppIChatSystemChannelListener.h"
+#include "Interface/ChatSystem/CppIChatSystemInterface.h"
+#include "StructPlace/CppSChatMessageInfo.h"
 #include "AutoHeroPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -49,6 +52,7 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
@@ -63,10 +67,37 @@ private:
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
 
-#pragma region Interface
+#pragma region Interface.
 public:
 	virtual void OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage) override;
 #pragma endregion
+
+private:
+	void BootstrapAll();
+	void BootstrapAuthority();
+	void BootstrapClient();
+
+#pragma region Chat Cliend.
+private:
+	UFUNCTION() void OnChatSendMessage(FSChatMessageInfo message);
+	UFUNCTION() void OnChatChannelChanged(eChatSystemChannels channelType);
+#pragma endregion
+
+#pragma region Sever.
+public:
+	UFUNCTION(server, unreliable)
+		void SendChatMessageToServer(FSChatMessageInfo message);
+
+	UFUNCTION(server, unreliable)
+		void SendWatchChannelToServer(eChatSystemChannels channelType);
+
+	UFUNCTION(server, unreliable)
+		void PushChannelMessageToCliend(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage);
+
+#pragma endregion
+
+private:
+	ICppIChatSystemInterface* iChatSystem;
 
 };
 
