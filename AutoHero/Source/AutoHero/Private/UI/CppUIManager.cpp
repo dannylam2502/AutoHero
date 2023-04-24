@@ -46,7 +46,7 @@ void ACppUIManager::SetNullAllVariable()
 #pragma region Menu.
 	loginMenuClass = nullptr;
 	loginMenu = nullptr;
-
+	
 	registerMenuClass = nullptr;
 	registerMenu = nullptr;
 
@@ -69,16 +69,15 @@ void ACppUIManager::SetNullAllVariable()
 #pragma region Popup.
 	settingPopupClass = nullptr;
 	settingPopup = nullptr;
-
+	
 	rewardGiftPopupClass = nullptr;
 	rewardGiftPopup = nullptr;
 
 	messagePopupClass = nullptr;
 	messagePopup = nullptr;
-
+	
 	chatBoxPopupClass = nullptr;
 	chatBoxPopup = nullptr;
-	
 #pragma endregion
 }
 
@@ -123,13 +122,13 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	/*for (UCppBaseMenu* menu : arrayMenu)
+	for (UCppBaseMenu* menu : arrayMenu)
 	{
-		if (menu)
+		if (menu && menu->WidgetTree != nullptr)
 		{
 			menu->OnExitGame();
 		}
-	}*/
+	}
 
 	chatBoxPopup->OnExitGame();
 
@@ -167,7 +166,7 @@ void ACppUIManager::PopAll()
 
 void ACppUIManager::SetInputUI()
 {
-	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->SetInputMode(FInputModeUIOnly());
+	//UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->SetInputMode(FInputModeUIOnly());
 }
 
 void ACppUIManager::SetInputGameplay()
