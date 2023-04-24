@@ -163,7 +163,6 @@ void AAutoHeroPlayerController::BootstrapClient()
 	{
 		// Executes on machines that have a local player controller.
 		UCppChatBoxPopup* chatBoxPopup = ACppUIManager::I()->chatBoxPopup;
-		ACppUIManager::I()->Push(chatBoxPopup);
 		chatBoxPopup->onChannelChangedCallback.BindUObject(this, &AAutoHeroPlayerController::OnChatChannelChanged);
 		chatBoxPopup->onSendMessageCallback.BindUObject(this, &AAutoHeroPlayerController::OnChatSendMessage);
 	}
