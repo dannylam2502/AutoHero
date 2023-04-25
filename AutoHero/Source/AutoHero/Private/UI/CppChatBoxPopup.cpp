@@ -44,7 +44,10 @@ void UCppChatBoxPopup::OnExitGame()
 	chatBoxMessagePopupClass = nullptr;
 	for (UCppChatBoxMessagePopup* boxMessagePopup : arrayChatBoxMessagePopup)
 	{
-		boxMessagePopup->OnExitGame();
+		if (boxMessagePopup)
+		{
+			boxMessagePopup->OnExitGame();
+		}
 	}
 	arrayChatBoxMessagePopup.SetNum(0);
 
@@ -66,7 +69,11 @@ void UCppChatBoxPopup::OnChannelGlobalButtonClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnChannelGlobalButtonClicked!"));
 
 	currentChannelType = eChatSystemChannels::Global;
-	ClearChannelMessage();
+	ClearChannelMessages();
+	if (onChannelChangedCallback.GetHandle().IsValid())
+	{
+		onChannelChangedCallback.Execute(currentChannelType);
+	}
 }
 
 void UCppChatBoxPopup::OnChannelTradeButtonClicked()
@@ -74,7 +81,11 @@ void UCppChatBoxPopup::OnChannelTradeButtonClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnChannelTradeButtonClicked!"));
 
 	currentChannelType = eChatSystemChannels::Trade;
-	ClearChannelMessage();
+	ClearChannelMessages();
+	if (onChannelChangedCallback.GetHandle().IsValid())
+	{
+		onChannelChangedCallback.Execute(currentChannelType);
+	}
 }
 
 void UCppChatBoxPopup::OnChannelLocalButtonClicked()
@@ -82,22 +93,31 @@ void UCppChatBoxPopup::OnChannelLocalButtonClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnChannelLocalButtonClicked!"));
 
 	currentChannelType = eChatSystemChannels::Local;
-	ClearChannelMessage();
+	ClearChannelMessages();
+	if (onChannelChangedCallback.GetHandle().IsValid())
+	{
+		onChannelChangedCallback.Execute(currentChannelType);
+	}
 }
 
 void UCppChatBoxPopup::OnbtnSendMessageButtonClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnbtnSendMessageButtonClicked!"));
+
+	// Verify user entered message
 	if (!FText::TrimPrecedingAndTrailing(textMessageToSend->GetText()).IsEmptyOrWhitespace())
 	{
+		// Make message
 		FSChatMessageInfo chatInfo = FSChatMessageInfo();
-		chatInfo.messageId = currentMessageId;
+		chatInfo.messageId = MakeMessageId();
 		chatInfo.message = textMessageToSend->GetText();
 		chatInfo.channelType = currentChannelType;
 		chatInfo.messageTime = FDateTime::UtcNow();
 		chatInfo.authorPlayerId = player->GetPlayerState()->PlayerId;
 
+		// Dispatch message event
 		CallSendMessage(chatInfo);
+		ClearEnteredMessages();
 	}
 }
 
@@ -108,40 +128,40 @@ void UCppChatBoxPopup::CallSendMessage(FSChatMessageInfo chatInfo)
 	{
 		onSendMessageCallback.Execute(chatInfo);
 	}
-	ClearEnteredMessage();
 }
 
-void UCppChatBoxPopup::ClearEnteredMessage()
+void UCppChatBoxPopup::ClearEnteredMessages()
 {
 	FText emtyText;
 	textMessageToSend->SetText(emtyText);
 }
 
-void UCppChatBoxPopup::ClearChannelMessage()
+void UCppChatBoxPopup::ClearChannelMessages()
 {
 	VchannelMessages->ClearChildren();
-	if (onChannelChangedCallback.GetHandle().IsValid())
-	{
-		onChannelChangedCallback.Execute(currentChannelType);
-	}
 }
 
 void UCppChatBoxPopup::SetChannelMessages(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage)
 {
 	if (currentChannelType == channelType)
 	{
+		ClearChannelMessages();
 		for (FSChatMessageInfo message : arrayMessage)
 		{
 			CreateBoxMessage(message);
 		}
-		//ClearChannelMessage();
 	}
 
 }
 
+FGuid UCppChatBoxPopup::MakeMessageId()
+{
+	return FGuid::NewGuid();
+}
+
 UCppChatBoxMessagePopup* UCppChatBoxPopup::CreateBoxMessage(FSChatMessageInfo chatInfo)
 {
-	UCppChatBoxMessagePopup* boxMessagePopup = dynamic_cast<UCppChatBoxMessagePopup*>(CreateWidget<UCppBaseMenu>(GetWorld(), chatBoxMessagePopupClass));
+	UCppChatBoxMessagePopup* boxMessagePopup = dynamic_cast<UCppChatBoxMessagePopup*>(CreateWidget<UCppBaseMenu>(GetOwningPlayer(), chatBoxMessagePopupClass));
 	check(boxMessagePopup);
 	boxMessagePopup->Setup();
 	boxMessagePopup->SetMessage(chatInfo);

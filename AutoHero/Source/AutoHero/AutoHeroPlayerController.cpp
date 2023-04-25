@@ -40,6 +40,8 @@ void AAutoHeroPlayerController::BeginPlay()
 
 void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	//chatBoxPopup->OnExitGame();
+	//chatBoxPopup = nullptr;
 }
 
 void AAutoHeroPlayerController::SetupInputComponent()
@@ -132,7 +134,7 @@ void AAutoHeroPlayerController::OnTouchReleased()
 void AAutoHeroPlayerController::OnChatChannelUpdated(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage)
 {
 	// Push channel messages to client.
-	PushChannelMessageToCliend(channelType, arrayMessage);
+	PushChannelMessagesToCliend(channelType, arrayMessage);
 }
 #pragma endregion
 
@@ -153,7 +155,6 @@ void AAutoHeroPlayerController::BootstrapAuthority()
 	if (HasAuthority())
 	{
 		iChatSystem->WatchChatChannel(eChatSystemChannels::Global, this);
-		//BootstrapClient();
 	}
 }
 
@@ -186,24 +187,33 @@ void AAutoHeroPlayerController::OnChatChannelChanged(eChatSystemChannels channel
 #pragma region Sever.
 void AAutoHeroPlayerController::SendChatMessageToServer_Implementation(FSChatMessageInfo message)
 {
-	iChatSystem->SendChatMessage(message);
+	if (HasAuthority())
+	{
+		iChatSystem->SendChatMessage(message);
+	}
 }
 
 void AAutoHeroPlayerController::SendWatchChannelToServer_Implementation(eChatSystemChannels channelType)
 {
-	// Register for channel updates.
-	iChatSystem->WatchChatChannel(channelType, this);
+	if (HasAuthority())
+	{
+		// Register for channel updates.
+		iChatSystem->WatchChatChannel(channelType, this);
 
-	// Get existing messages for this channel we are now watching.
-	bool isChannelFound = false;
-	TArray<FSChatMessageInfo> arrayMessage;
-	iChatSystem->GetChatChannelMessages(channelType, isChannelFound, arrayMessage);
-	PushChannelMessageToCliend(channelType, arrayMessage);
+		// Get existing messages for this channel we are now watching.
+		bool isChannelFound = false;
+		TArray<FSChatMessageInfo> arrayMessage;
+		iChatSystem->GetChatChannelMessages(channelType, isChannelFound, arrayMessage);
+		PushChannelMessagesToCliend(channelType, arrayMessage);
+	}
 }
 
-void AAutoHeroPlayerController::PushChannelMessageToCliend_Implementation(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage)
+void AAutoHeroPlayerController::PushChannelMessagesToCliend_Implementation(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage)
 {
-	ACppUIManager::I()->chatBoxPopup->SetChannelMessages(channelType, arrayMessage);
+	if (HasAuthority())
+	{
+		ACppUIManager::I()->chatBoxPopup->SetChannelMessages(channelType, arrayMessage);
+	}
 }
 
 #pragma endregion

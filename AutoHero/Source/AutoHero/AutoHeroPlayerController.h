@@ -92,7 +92,7 @@ public:
 		void SendWatchChannelToServer(eChatSystemChannels channelType);
 
 	UFUNCTION(server, unreliable)
-		void PushChannelMessageToCliend(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage);
+		void PushChannelMessagesToCliend(eChatSystemChannels channelType, const TArray<FSChatMessageInfo>& arrayMessage);
 
 #pragma endregion
 

@@ -20,16 +20,6 @@ class AUTOHERO_API ACppGameState : public AGameStateBase, public ICppIChatSystem
 {
 	GENERATED_BODY()
 
-//private:
-//	static ACppGameState* i;
-//public:
-//	static ACppGameState* I();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 public:
 	TArray<FSChannel> arraychannelMessage;
 	TArray<FSChannelListeners> arrayChannelListener;

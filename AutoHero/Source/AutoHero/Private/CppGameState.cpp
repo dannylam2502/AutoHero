@@ -5,25 +5,6 @@
 #include "GameFramework/PlayerController.h"
 #include "AutoHero/AutoHeroPlayerController.h"
 
-//ACppGameState* ACppGameState::i;
-//ACppGameState* ACppGameState::I()
-//{
-//	return i;
-//}
-
-void ACppGameState::BeginPlay()
-{
-	//i = this;
-
-	Super::BeginPlay();
-}
-
-void ACppGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-}
-
 #pragma region Interface.
 void ACppGameState::SendChatMessage(FSChatMessageInfo message)
 {
@@ -35,18 +16,20 @@ void ACppGameState::SendChatMessage(FSChatMessageInfo message)
 
 void ACppGameState::GetChatChannelMessages(eChatSystemChannels channelType, bool& isChannelFound, TArray<FSChatMessageInfo>& arrayMessage)
 {
-	FSChannel channelMessage;
-	int index = -1;
-
 	if (HasAuthority())
 	{
+		FSChannel channelMessage;
+		int index = -1;
 		isChannelFound = IsMessageChannelCreated(channelType, channelMessage, index);
-		if (!isChannelFound)
+		if (isChannelFound)
+		{
+			arrayMessage = channelMessage.arrayMessageInfo;
+		}
+		else
 		{
 			arrayMessage.SetNum(0);	
 		}
 
-		arrayMessage = channelMessage.arrayMessageInfo;
 	}
 }
 
@@ -61,41 +44,50 @@ void ACppGameState::WatchChatChannel(eChatSystemChannels channelType, APlayerCon
 
 void ACppGameState::AddChannelMessage(FSChatMessageInfo message)
 {
-	bool isChannelFound = false;
-	FSChannel messageChannel;
-	int index = -1;
-	FindMessageChannel(message.channelType, isChannelFound, messageChannel, index);
-
-	if (isChannelFound)
+	if (HasAuthority())
 	{
-		messageChannel.arrayMessageInfo.Add(message);
-		arraychannelMessage.Add(messageChannel);
-	}
-	else
-	{
-		messageChannel.channelType = message.channelType;
-		messageChannel.arrayMessageInfo.Add(message);
-		arraychannelMessage.Add(messageChannel);
-	}
+		eChatSystemChannels channelType = message.channelType;
+		bool isChannelFound = false;
+		FSChannel messageChannel;
+		int index = -1;
+		FindMessageChannel(channelType, isChannelFound, messageChannel, index);
 
-	NotifyChannelUpdated(message.channelType);
+		if (isChannelFound)
+		{
+			// Add message to the existing channel
+			messageChannel.arrayMessageInfo.Add(message);
+			arraychannelMessage[index] = messageChannel;
+		}
+		else
+		{
+			// Create message channel because it does not exist yet
+			messageChannel.channelType = channelType;
+			messageChannel.arrayMessageInfo.Add(message);
+			arraychannelMessage.Add(messageChannel);
+		}
+
+		NotifyChannelUpdated(channelType);
+	}
 }
 
 void ACppGameState::FindMessageChannel(eChatSystemChannels channelType, bool& isChannelFound, FSChannel& messageChannel, int& index)
 {
-	IsMessageChannelCreated(channelType, messageChannel, index);
+	isChannelFound = IsMessageChannelCreated(channelType, messageChannel, index);
 }
 
 bool ACppGameState::IsMessageChannelCreated(eChatSystemChannels channelType, FSChannel& messageChannel, int& index)
 {
-	for (int i = 0; i < arraychannelMessage.Num(); i++)
+	if (HasAuthority())
 	{
-		FSChannel channel = arraychannelMessage[i];
-		if (channel.channelType == channelType)
+		for (int i = 0; i < arraychannelMessage.Num(); i++)
 		{
-			index = i;
-			messageChannel = channel;
-			return true;
+			FSChannel channel = arraychannelMessage[i];
+			if (channel.channelType == channelType)
+			{
+				index = i;
+				messageChannel = channel;
+				return true;
+			}
 		}
 	}
 
@@ -105,6 +97,7 @@ bool ACppGameState::IsMessageChannelCreated(eChatSystemChannels channelType, FSC
 
 void ACppGameState::NotifyChannelUpdated(eChatSystemChannels channelType)
 {
+	// Notify channel listeners that a new message arrived
 	if (HasAuthority())
 	{
 		FSChannelListeners listener;
@@ -121,6 +114,7 @@ void ACppGameState::NotifyChannelUpdated(eChatSystemChannels channelType)
 				AAutoHeroPlayerController* autoHeroPlayerController = dynamic_cast<AAutoHeroPlayerController*>(playerController);
 				if (autoHeroPlayerController)
 				{
+					// Notify each channel listener with an updated list of messagees
 					autoHeroPlayerController->OnChatChannelUpdated(channelType, arrayMessage);
 				}
 			}
@@ -130,25 +124,30 @@ void ACppGameState::NotifyChannelUpdated(eChatSystemChannels channelType)
 
 void ACppGameState::AddChannelListener(eChatSystemChannels channelType, APlayerController* playerContronller)
 {
-	FSChannelListeners channelListener;
-	int index = -1;
-	if (IsChannelListenerCreated(channelType, channelListener, index))
+	if (HasAuthority())
 	{
-		TArray<APlayerController*> arrayNotify = channelListener.arrayPlayerController;
-		int _index = arrayNotify.Find(playerContronller);
-		if (_index <= -1)
+		FSChannelListeners channelListener;
+		int index = -1;
+		if (IsChannelListenerCreated(channelType, channelListener, index))
 		{
-			arrayNotify.Add(playerContronller);
-			channelListener.arrayPlayerController = arrayNotify;
-			arrayChannelListener[index] = channelListener;
+			// If channel listener struct exisits, add player to the player list
+			TArray<APlayerController*> arrayNotify = channelListener.arrayPlayerController;
+			int indexElement = arrayNotify.Find(playerContronller);
+			if (indexElement <= -1)
+			{
+				arrayNotify.Add(playerContronller);
+				channelListener.arrayPlayerController = arrayNotify;
+				arrayChannelListener[index] = channelListener;
+			}
 		}
-	}
-	else
-	{
-		channelListener.channelType = channelType;
-		channelListener.arrayPlayerController.SetNum(1);
-		channelListener.arrayPlayerController[0] = playerContronller;
-		arrayChannelListener.Add(channelListener);
+		else
+		{
+			// Channel listener dosen't exist, create it
+			channelListener.channelType = channelType;
+			channelListener.arrayPlayerController.SetNum(1);
+			channelListener.arrayPlayerController[0] = playerContronller;
+			arrayChannelListener.Add(channelListener);
+		}
 	}
 }
 

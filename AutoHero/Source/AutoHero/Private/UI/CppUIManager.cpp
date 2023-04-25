@@ -91,8 +91,6 @@ void ACppUIManager::BeginPlay()
 	initCallback.BindUObject(this, &ACppUIManager::OnInitCallBack);
 	popCallback.BindUObject(this, &ACppUIManager::OnPopupCallBack);
 
-	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->bShowMouseCursor = true;
-
 	SetInputUI();
 
 #pragma region Menu.
@@ -124,7 +122,7 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	for (UCppBaseMenu* menu : arrayMenu)
 	{
-		if (menu && menu->WidgetTree != nullptr)
+		if (menu)
 		{
 			menu->OnExitGame();
 		}

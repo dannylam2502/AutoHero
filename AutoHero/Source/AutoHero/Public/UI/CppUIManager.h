@@ -21,7 +21,7 @@ class UCppSummaryMenu;
 class UCppSettingPopup;
 class UCppRewardGiftPopup;
 class UCppMessagePopup;
-class UCppChatBoxPopup;
+//class UCppChatBoxPopup;
 #pragma endregion
 
 DECLARE_DELEGATE(InitCallback);

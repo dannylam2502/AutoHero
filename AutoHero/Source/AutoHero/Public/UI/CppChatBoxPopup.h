@@ -62,21 +62,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		eChatSystemChannels currentChannelType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		FGuid currentMessageId;
-
 private:
 	UFUNCTION() void OnChannelGlobalButtonClicked();
 	UFUNCTION() void OnChannelTradeButtonClicked();
 	UFUNCTION() void OnChannelLocalButtonClicked();
 	UFUNCTION() void OnbtnSendMessageButtonClicked();
 
+
 public:
 	void CallSendMessage(FSChatMessageInfo chatInfo);
 
-	void ClearEnteredMessage();
-	void ClearChannelMessage();
+	void ClearEnteredMessages();
+	void ClearChannelMessages();
 	void SetChannelMessages(eChatSystemChannels channelType, TArray<FSChatMessageInfo> arrayMessage);
+
+private:
+	FGuid MakeMessageId();
 
 public:
 	OnSendMessageCallback onSendMessageCallback;
