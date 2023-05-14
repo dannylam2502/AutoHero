@@ -3,6 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Object.h"
+#include "CppEMenuType.generated.h"
+
+/**
+ *
+ */
+UCLASS()
+class AUTOHERO_API UCppEMenuType : public UObject
+{
+    GENERATED_BODY()
+
+};
 
 ///**
 // *

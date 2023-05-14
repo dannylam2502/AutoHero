@@ -3,6 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Object.h"
+#include "CppEChatSystemChannels.generated.h"
+
+/**
+ *
+ */
+UCLASS()
+class AUTOHERO_API UCppEChatSystemChannels : public UObject
+{
+    GENERATED_BODY()
+
+};
 
 /**
  *

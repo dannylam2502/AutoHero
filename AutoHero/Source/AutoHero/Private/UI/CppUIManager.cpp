@@ -14,6 +14,7 @@
 #include "UI/CppPVEMenu.h"
 #include "UI/CppBattleMenu.h"
 #include "UI/CppSummaryMenu.h"
+#include "UI/CppMultiplayerMenu.h"
 #pragma endregion
 
 #pragma region Popup
@@ -63,6 +64,9 @@ void ACppUIManager::SetNullAllVariable()
 
 	summaryMenuClass = nullptr;
 	summaryMenu = nullptr;
+
+	multiplayerMenuClass = nullptr;
+	multiplayerMenu = nullptr;
 #pragma endregion
 
 #pragma region Popup.
@@ -102,6 +106,7 @@ void ACppUIManager::BeginPlay()
 	pveMenu = dynamic_cast<UCppPVEMenu*>(SetupMenu(pveMenu, pveMenuClass));
 	battleMenu = dynamic_cast<UCppBattleMenu*>(SetupMenu(battleMenu, battleMenuClass));
 	summaryMenu = dynamic_cast<UCppSummaryMenu*>(SetupMenu(summaryMenu, summaryMenuClass));
+	multiplayerMenu = dynamic_cast<UCppMultiplayerMenu*>(SetupMenu(multiplayerMenu, multiplayerMenuClass));
 #pragma endregion
 
 #pragma region Popup.
@@ -112,19 +117,21 @@ void ACppUIManager::BeginPlay()
 #pragma endregion
 
 	// Init push menu.
-	Push(loginMenu);
+	Push(multiplayerMenu);
 }
 
 void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+#if !UE_EDITOR
 	for (UCppBaseMenu* menu : arrayMenu)
 	{
 		menu->OnExitGame();
 	}
 
 	SetNullAllVariable();
+#endif
 
 	arrayMenu.SetNum(0);
 }
