@@ -62,4 +62,5 @@ private:
 public:
 	bool isHost;
 	bool isClent;
+
 };

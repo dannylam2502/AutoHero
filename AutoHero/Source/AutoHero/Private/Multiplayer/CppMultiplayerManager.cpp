@@ -1,9 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Multiplayer/CppMultiplayerManager.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "AutoHero/AutoHeroGameMode.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "UI/CppMultiplayerMenu.h"
+#include "UI/CppUIManager.h"
 
 ACppMultiplayerManager* ACppMultiplayerManager::i;
 ACppMultiplayerManager* ACppMultiplayerManager::I()
@@ -120,6 +125,18 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
     if (isHost)
     {
         UE_LOG(LogTemp, Log, TEXT("Session created successfully: %s"), *SessionName.ToString());
+
+        UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
+        if (World)
+        {
+            AAutoHeroGameMode* autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));
+            if (autoHeroGameMode)
+            {
+                autoHeroGameMode->CreatePlayer();
+            }
+        }
+
+        ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
     }
     else
     {

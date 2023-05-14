@@ -14,6 +14,9 @@ class AAutoHeroGameMode : public AGameModeBase
 public:
 	AAutoHeroGameMode();
 
+public:
+	void CreatePlayer();
+
 };
 
 
