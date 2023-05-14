@@ -22,6 +22,7 @@
 #include "UI/CppRewardGiftPopup.h"
 #include "UI/CppMessagePopup.h"
 #include "UI/CppChatBoxPopup.h"
+#include "UI/CppBlockPopup.h"
 #pragma endregion
 
 ACppUIManager* ACppUIManager::i;
@@ -81,6 +82,9 @@ void ACppUIManager::SetNullAllVariable()
 
 	chatBoxPopupClass = nullptr;
 	chatBoxPopup = nullptr;
+
+	blockPopupClass = nullptr;
+	blockPopup = nullptr;
 #pragma endregion
 }
 
@@ -114,6 +118,7 @@ void ACppUIManager::BeginPlay()
 	rewardGiftPopup = dynamic_cast<UCppRewardGiftPopup*>(SetupMenu(rewardGiftPopup, rewardGiftPopupClass));
 	messagePopup = dynamic_cast<UCppMessagePopup*>(SetupMenu(messagePopup, messagePopupClass));
 	chatBoxPopup = dynamic_cast<UCppChatBoxPopup*>(SetupMenu(chatBoxPopup, chatBoxPopupClass));
+	blockPopup = dynamic_cast<UCppBlockPopup*>(SetupMenu(blockPopup, blockPopupClass));
 #pragma endregion
 
 	// Init push menu.
@@ -124,7 +129,7 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-#if !UE_EDITOR
+#if UE_EDITOR
 	for (UCppBaseMenu* menu : arrayMenu)
 	{
 		menu->OnExitGame();

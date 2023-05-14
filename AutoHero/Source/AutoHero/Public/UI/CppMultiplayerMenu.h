@@ -39,9 +39,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* findSession;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UButton* joinSession;
+
 private:
 	UFUNCTION() void OnCreateSessionClicked();
 	UFUNCTION() void OnFindSessionClicked();
+	UFUNCTION() void OnJoinSessionClicked();
 
 	UFUNCTION() void OnMaxPlayerInput(const FText& text);
 

@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "AutoHeroGameMode.generated.h"
 
+class AAutoHeroCharacter;
+
 UCLASS(minimalapi)
 class AAutoHeroGameMode : public AGameModeBase
 {
@@ -14,10 +16,4 @@ class AAutoHeroGameMode : public AGameModeBase
 public:
 	AAutoHeroGameMode();
 
-public:
-	void CreatePlayer();
-
 };
-
-
-

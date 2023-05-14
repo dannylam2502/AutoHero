@@ -14,51 +14,63 @@
 #include "Engine/Engine.h"
 #include "BaseProjectile.h"
 
+
 AAutoHeroCharacter::AAutoHeroCharacter()
 {
-	// Set size for player capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+    // Set size for player capsule
+    GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Don't rotate character to camera direction
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+    // Don't rotate character to camera direction
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+    // Configure character movement
+    GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+    GetCharacterMovement()->bConstrainToPlane = true;
+    GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	// Create a camera boom...
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	CameraBoom->TargetArmLength = 800.f;
-	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
+    // Create a camera boom...
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
+    CameraBoom->TargetArmLength = 800.f;
+    CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+    CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
-	// Create a camera...
-	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+    // Create a camera...
+    TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
+    TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Activate ticking in order to update the cursor every frame.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+    // Activate ticking in order to update the cursor every frame.
+    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bStartWithTickEnabled = true;
 
-	//Initialize the player's Health
-	MaxHealth = 100.0f;
-	CurrentHealth = MaxHealth;
+    //Initialize the player's Health
+    MaxHealth = 100.0f;
+    CurrentHealth = MaxHealth;
 
-	//Initialize projectile class
-	ProjectileClass = ABaseProjectile::StaticClass();
-	//Initialize fire rate
-	FireRate = 0.25f;
-	bIsFiringWeapon = false;
+    //Initialize projectile class
+    ProjectileClass = ABaseProjectile::StaticClass();
+    //Initialize fire rate
+    FireRate = 0.25f;
+    bIsFiringWeapon = false;
 
-	// Handle firing projectiles
-	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AAutoHeroCharacter::StartFire);
+    // Handle firing projectiles
+    //PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AAutoHeroCharacter::StartFire);
+}
+
+void AAutoHeroCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
+void AAutoHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
 }
 
 void AAutoHeroCharacter::Tick(float DeltaSeconds)

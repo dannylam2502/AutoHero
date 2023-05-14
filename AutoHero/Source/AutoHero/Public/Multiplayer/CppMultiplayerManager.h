@@ -8,6 +8,8 @@
 #include "OnlineSessionSettings.h"
 #include "CppMultiplayerManager.generated.h"
 
+class ACppSpawnCharacterManager;
+
 UCLASS()
 class AUTOHERO_API ACppMultiplayerManager : public AActor
 {
@@ -35,6 +37,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
 		void FindSessions(bool bIsLAN);
+	FString sessionName;
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
 		bool JoinSession(FName SessionName);
@@ -52,12 +55,6 @@ private:
 	void OnFindSessionsComplete(bool bWasSuccessful);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
-
-private:
-	FDelegateHandle OnCreateSessionCompleteDelegateHandle;
-	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
-	FDelegateHandle OnJoinSessionCompleteDelegateHandle;
-	FDelegateHandle OnDestroySessionCompleteDelegateHandle;
 
 public:
 	bool isHost;
