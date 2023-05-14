@@ -36,8 +36,16 @@ void UCppExitGamePlayMenu::OnExitClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Exit Clicked!"));
 	ACppUIManager::I()->Push(ACppUIManager::I()->blockPopup);
 
-	ACppMultiplayerManager::I()->DestroySession(FName(*ACppMultiplayerManager::I()->sessionName));
-	ACppUIManager::I()->SetInputUI();
+	if (ACppMultiplayerManager::I()->isHost)
+	{
+		ACppMultiplayerManager::I()->DestroySession(FName(*ACppMultiplayerManager::I()->sessionName));
+		ACppUIManager::I()->SetInputUI();
+	}
+	else if (ACppMultiplayerManager::I()->isClent)
+	{
+		ACppMultiplayerManager::I()->UnregisterPlayer(FName(*ACppMultiplayerManager::I()->sessionName));
+		ACppUIManager::I()->SetInputUI();
+	}
 }
 
 void UCppExitGamePlayMenu::OnQuitClicked()

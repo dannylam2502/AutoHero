@@ -32,12 +32,7 @@ void ACppSpawnCharacterManager::BeginPlay()
 	UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
 	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));
 	autoHeroCharacter = dynamic_cast<AAutoHeroCharacter*>(autoHeroGameMode->DefaultPawnClass.GetDefaultObject());
-	if (autoHeroCharacter)
-	{
-		autoHeroCharacter->SetActorHiddenInGame(true);
-		//autoHeroCharacter->SetActorEnableCollision(false);
-		//autoHeroCharacter->SetActorTickEnabled(false);
-	}
+	aPlayerController = dynamic_cast<APlayerController*>(autoHeroGameMode->PlayerControllerClass.GetDefaultObject());
 }
 
 // Called every frame
@@ -56,35 +51,9 @@ void ACppSpawnCharacterManager::SetupPlayerInputComponent(UInputComponent* Playe
 
 void ACppSpawnCharacterManager::LoadCharacter()
 {
-	/*UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
-	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));*/
-
-	// use our custom PlayerController class
-	//autoHeroGameMode->PlayerControllerClass = AAutoHeroPlayerController::StaticClass();
-
-	//FVector location = FVector(1000.0f, 1810.0f, 92.012604f);
-	//FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
-
-	/*autoHeroGameMode->DefaultPawnClass = autoHeroCharacterClass;
-	autoHeroCharacter = autoHeroCharacterClass.GetDefaultObject();
-	if (autoHeroCharacter)
+	/*if (autoHeroCharacter)
 	{
-		autoHeroCharacter->SetActorHiddenInGame(true);
-		autoHeroCharacter->SetActorEnableCollision(false);
-		autoHeroCharacter->SetActorTickEnabled(false);
-	}
-	World->SpawnActor<AAutoHeroCharacter>(autoHeroGameMode->DefaultPawnClass, location, rotation);*/
-
-	//autoHeroGameMode->PlayerControllerClass = aPlayerControllerClass;
-	/*aPlayerController = aPlayerControllerClass.GetDefaultObject();
-	World->SpawnActor<APlayerController>(aPlayerControllerClass, location, rotation);*/
-
-	if (autoHeroCharacter)
-	{
-		autoHeroCharacter->SetActorHiddenInGame(false);
-		/*autoHeroCharacter->SetActorEnableCollision(true);
-		autoHeroCharacter->SetActorTickEnabled(true);*/
-	}
-
+		autoHeroCharacter->SetReplicates(true);
+	}*/
 }
 

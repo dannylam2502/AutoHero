@@ -41,8 +41,11 @@ void ACppMultiplayerManager::BeginPlay()
 		OnlineSessionPtr = OnlineSubsystem->GetSessionInterface();
 
         OnlineSessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnCreateSessionComplete);
+        OnlineSessionPtr->OnRegisterPlayersCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnRegisterPlayerSessionComplete);
+        OnlineSessionPtr->OnUnregisterPlayersCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnUnregisterPlayerSessionComplete);
         OnlineSessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnFindSessionsComplete);
         OnlineSessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnJoinSessionComplete);
+        OnlineSessionPtr->OnEndSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnEndSessionComplete);
         OnlineSessionPtr->OnDestroySessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnDestroySessionComplete);
 	}
 }
@@ -70,6 +73,28 @@ bool ACppMultiplayerManager::CreateSession(FName SessionName, int32 MaxNumPlayer
     OnlineSessionPtr->CreateSession(0, SessionName, SessionSettings);
 
     return true;
+}
+
+void ACppMultiplayerManager::RegisterPlayer(FName SessionName)
+{
+    if (!OnlineSessionPtr.IsValid())
+    {
+        return;
+    }
+
+    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->aPlayerController->GetLocalPlayer();
+    OnlineSessionPtr->RegisterPlayer(SessionName, *localPlayer->GetCachedUniqueNetId(), true);
+}
+
+void ACppMultiplayerManager::UnregisterPlayer(FName SessionName)
+{
+    if (!OnlineSessionPtr.IsValid())
+    {
+        return;
+    }
+
+    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->aPlayerController->GetLocalPlayer();
+    OnlineSessionPtr->UnregisterPlayer(SessionName, *localPlayer->GetCachedUniqueNetId());
 }
 
 void ACppMultiplayerManager::FindSessions(bool bIsLAN)
@@ -108,13 +133,30 @@ bool ACppMultiplayerManager::JoinSession(FName SessionName)
     return false;
 }
 
-bool ACppMultiplayerManager::DestroySession(FName SessionName)
+bool ACppMultiplayerManager::EndSession(FName SessionName)
 {
     if (!OnlineSessionPtr.IsValid())
     {
         return false;
     }
 
+    if (OnlineSessionPtr->GetNamedSession(SessionName) != nullptr)
+    {
+        return OnlineSessionPtr->EndSession(SessionName);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool ACppMultiplayerManager::DestroySession(FName SessionName)
+{
+    if (!OnlineSessionPtr.IsValid())
+    {
+        return false;
+    }
+    
     if (OnlineSessionPtr->GetNamedSession(SessionName) != nullptr)
     {
         return OnlineSessionPtr->DestroySession(SessionName);
@@ -138,17 +180,13 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
 
         sessionName = SessionName.ToString();
 
-        /*for (int32 j = 0; j < SessionSearch->SearchResults.Num(); j++)
-        {
-            FString FoundSessionName = SessionSearch->SearchResults[j].Session.GetSessionIdStr();
-            sessionName = FoundSessionName;
-        }*/
-
         ACppSpawnCharacterManager::I()->LoadCharacter();
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
         ACppUIManager::I()->SetInputGameplay();
+
+        RegisterPlayer(SessionName);
     }
     else
     {
@@ -156,6 +194,37 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
     }
 
     ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+}
+
+void ACppMultiplayerManager::OnRegisterPlayerSessionComplete(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasSuccessful)
+{
+    if (bWasSuccessful && SessionSearch.IsValid())
+    {
+        UE_LOG(LogTemp, Log, TEXT("Register player successfully: %s"), *SessionName.ToString());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Log, TEXT("Failed to register player successfully: %s"), *SessionName.ToString());
+    }
+}
+
+void ACppMultiplayerManager::OnUnregisterPlayerSessionComplete(FName SessionName, const TArray<FUniqueNetIdRef>& Players, bool bWasSuccessful)
+{
+    if (bWasSuccessful && SessionSearch.IsValid())
+    {
+        UE_LOG(LogTemp, Log, TEXT("Unregister player successfully: %s"), *SessionName.ToString());
+
+        isHost = false;
+        isClent = false;
+
+        ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+        ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
+        ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Log, TEXT("Failed to unregister player successfully: %s"), *SessionName.ToString());
+    }
 }
 
 void ACppMultiplayerManager::OnFindSessionsComplete(bool bWasSuccessful)
@@ -203,30 +272,61 @@ void ACppMultiplayerManager::OnJoinSessionComplete(FName SessionName, EOnJoinSes
     ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
 }
 
+void ACppMultiplayerManager::OnEndSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+
+    if (bWasSuccessful)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Session end successfully: %s"), *SessionName.ToString());
+
+        isHost = false;
+        isClent = false;
+
+        if (isQuitGame)
+        {
+            ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+            UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+        }
+        else
+        {
+            ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+            ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
+            ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Log, TEXT("Failed to end session: %s"), *SessionName.ToString());
+    }
+
+}
+
 void ACppMultiplayerManager::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
-    isHost = false;
-    isClent = false;
 
     if (bWasSuccessful)
     {
         UE_LOG(LogTemp, Log, TEXT("Session destroyed successfully: %s"), *SessionName.ToString());
+
+        isHost = false;
+        isClent = false;
+
+        if (isQuitGame)
+        {
+            ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+            UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+        }
+        else
+        {
+            ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+            ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
+            ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
+        }
     }
     else
     {
         UE_LOG(LogTemp, Log, TEXT("Failed to destroy session: %s"), *SessionName.ToString());
     }
 
-    if (isQuitGame)
-    {
-        ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
-        UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
-    }
-    else
-    {
-        ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
-        ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
-        ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
-    }
 }
 #pragma endregion

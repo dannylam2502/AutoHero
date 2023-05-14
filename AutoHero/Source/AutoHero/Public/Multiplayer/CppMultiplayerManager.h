@@ -36,11 +36,20 @@ public:
 		bool CreateSession(FName SessionName, int32 MaxNumPlayers, bool bIsLAN);
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
+		void RegisterPlayer(FName SessionName);
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
+		void UnregisterPlayer(FName SessionName);
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
 		void FindSessions(bool bIsLAN);
 	FString sessionName;
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
 		bool JoinSession(FName SessionName);
+
+	UFUNCTION(BlueprintCallable, Category = "Session")
+		bool EndSession(FName SessionName);
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
 		bool DestroySession(FName SessionName);
@@ -52,8 +61,11 @@ private:
 
 
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+	void OnRegisterPlayerSessionComplete(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasSuccessful);
+	void OnUnregisterPlayerSessionComplete(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasSuccessful);
 	void OnFindSessionsComplete(bool bWasSuccessful);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	void OnEndSessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 public:

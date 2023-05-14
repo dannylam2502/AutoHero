@@ -17,6 +17,8 @@
 
 AAutoHeroCharacter::AAutoHeroCharacter()
 {
+    SetReplicates(true);
+
     // Set size for player capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
