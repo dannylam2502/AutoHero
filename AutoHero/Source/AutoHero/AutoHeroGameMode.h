@@ -16,4 +16,7 @@ class AAutoHeroGameMode : public AGameModeBase
 public:
 	AAutoHeroGameMode();
 
+protected:
+	virtual void BeginPlay() override;
+
 };

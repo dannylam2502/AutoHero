@@ -3,11 +3,12 @@
 #include "AutoHeroGameMode.h"
 #include "AutoHero/AutoHeroPlayerController.h"
 #include "AutoHero/AutoHeroCharacter.h"
+#include "System/CppSpawnCharacterManager.h"
 
 AAutoHeroGameMode::AAutoHeroGameMode()
 {
 	// use our custom PlayerController class
-	/*PlayerControllerClass = AAutoHeroPlayerController::StaticClass();*/
+	//PlayerControllerClass = AAutoHeroPlayerController::StaticClass();
 
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));
@@ -23,4 +24,11 @@ AAutoHeroGameMode::AAutoHeroGameMode()
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 
+}
+
+void AAutoHeroGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ACppSpawnCharacterManager::I()->autoHeroGameMode = this;
 }

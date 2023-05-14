@@ -29,10 +29,6 @@ void ACppSpawnCharacterManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
-	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));
-	autoHeroCharacter = dynamic_cast<AAutoHeroCharacter*>(autoHeroGameMode->DefaultPawnClass.GetDefaultObject());
-	aPlayerController = dynamic_cast<APlayerController*>(autoHeroGameMode->PlayerControllerClass.GetDefaultObject());
 }
 
 // Called every frame
@@ -51,9 +47,6 @@ void ACppSpawnCharacterManager::SetupPlayerInputComponent(UInputComponent* Playe
 
 void ACppSpawnCharacterManager::LoadCharacter()
 {
-	/*if (autoHeroCharacter)
-	{
-		autoHeroCharacter->SetReplicates(true);
-	}*/
+	
 }
 

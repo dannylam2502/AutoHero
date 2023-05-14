@@ -45,6 +45,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnQuit;
 
+public:
+	UButton* GetBtnJoinSession() const { return btnJoinSession; }
+
 private:
 	UFUNCTION() void OnCreateSessionClicked();
 	UFUNCTION() void OnFindSessionClicked();

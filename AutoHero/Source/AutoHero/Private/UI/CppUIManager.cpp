@@ -136,6 +136,11 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 #if UE_EDITOR
 	for (UCppBaseMenu* menu : arrayMenu)
 	{
+		if (menu->GetName() == "None")
+		{
+			continue;
+		}
+
 		if (menu && menu->isHaveUse)
 		{
 			menu->OnExitGame();

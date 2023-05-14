@@ -25,6 +25,8 @@ void UCppMultiplayerMenu::Setup()
 void UCppMultiplayerMenu::Init()
 {
 	UCppBaseMenu::Init();
+
+	btnJoinSession->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UCppMultiplayerMenu::Pop()

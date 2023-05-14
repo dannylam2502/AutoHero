@@ -5,9 +5,12 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "AutoHero/AutoHeroGameMode.h"
+#include "AutoHero/AutoHeroPlayerController.h"
 #include "System/CppSpawnCharacterManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/Button.h"
+#include "Templates/SharedPointer.h"
 
 #include "UI/CppMultiplayerMenu.h"
 #include "UI/CppExitGamePlayMenu.h"
@@ -82,8 +85,15 @@ void ACppMultiplayerManager::RegisterPlayer(FName SessionName)
         return;
     }
 
-    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->aPlayerController->GetLocalPlayer();
-    OnlineSessionPtr->RegisterPlayer(SessionName, *localPlayer->GetCachedUniqueNetId(), true);
+    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->autoHeroPlayerController->GetLocalPlayer();
+    FUniqueNetIdRepl PlayerIdRepl = localPlayer->GetPreferredUniqueNetId();
+    TSharedPtr<const FUniqueNetId> PlayerId;
+    if (PlayerIdRepl.IsValid())
+    {
+        PlayerId = PlayerIdRepl.GetUniqueNetId();
+    }
+
+    OnlineSessionPtr->RegisterPlayer(SessionName, *PlayerId, true);
 }
 
 void ACppMultiplayerManager::UnregisterPlayer(FName SessionName)
@@ -93,8 +103,14 @@ void ACppMultiplayerManager::UnregisterPlayer(FName SessionName)
         return;
     }
 
-    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->aPlayerController->GetLocalPlayer();
-    OnlineSessionPtr->UnregisterPlayer(SessionName, *localPlayer->GetCachedUniqueNetId());
+    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->autoHeroPlayerController->GetLocalPlayer();
+    FUniqueNetIdRepl PlayerIdRepl = localPlayer->GetPreferredUniqueNetId();
+    TSharedPtr<const FUniqueNetId> PlayerId;
+    if (PlayerIdRepl.IsValid())
+    {
+        PlayerId = PlayerIdRepl.GetUniqueNetId();
+    }
+    OnlineSessionPtr->UnregisterPlayer(SessionName, *PlayerId);
 }
 
 void ACppMultiplayerManager::FindSessions(bool bIsLAN)
@@ -185,8 +201,6 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
         ACppUIManager::I()->SetInputGameplay();
-
-        RegisterPlayer(SessionName);
     }
     else
     {
@@ -240,6 +254,11 @@ void ACppMultiplayerManager::OnFindSessionsComplete(bool bWasSuccessful)
             sessionName = FoundSessionName;
             UE_LOG(LogTemp, Log, TEXT("Found session: %s"), *FoundSessionName);
         }
+
+        if (SessionSearch->SearchResults.Num() > 0)
+        {
+            ACppUIManager::I()->multiplayerMenu->GetBtnJoinSession()->SetVisibility(ESlateVisibility::Visible);
+        }
     }
     else
     {
@@ -263,6 +282,8 @@ void ACppMultiplayerManager::OnJoinSessionComplete(FName SessionName, EOnJoinSes
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
         ACppUIManager::I()->SetInputGameplay();
+
+        RegisterPlayer(SessionName);
     }
     else
     {

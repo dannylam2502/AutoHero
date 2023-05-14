@@ -8,7 +8,7 @@
 
 class AAutoHeroGameMode;
 class AAutoHeroCharacter;
-class APlayerController;
+class AAutoHeroPlayerController;
 
 UCLASS()
 class AUTOHERO_API ACppSpawnCharacterManager : public APawn
@@ -37,12 +37,8 @@ public:
 
 public:
 	AAutoHeroGameMode* autoHeroGameMode;
-
-	UPROPERTY(EditAnywhere) TSubclassOf<class AAutoHeroCharacter> autoHeroCharacterClass;
 	AAutoHeroCharacter* autoHeroCharacter;
-
-	UPROPERTY(EditAnywhere) TSubclassOf<class APlayerController> aPlayerControllerClass;
-	APlayerController* aPlayerController;
+	AAutoHeroPlayerController* autoHeroPlayerController;
 
 public:
 	void LoadCharacter();

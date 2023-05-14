@@ -13,6 +13,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "BaseProjectile.h"
+#include "System/CppSpawnCharacterManager.h"
 
 
 AAutoHeroCharacter::AAutoHeroCharacter()
@@ -67,6 +68,8 @@ AAutoHeroCharacter::AAutoHeroCharacter()
 void AAutoHeroCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    ACppSpawnCharacterManager::I()->autoHeroCharacter = this;
 }
 
 void AAutoHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
