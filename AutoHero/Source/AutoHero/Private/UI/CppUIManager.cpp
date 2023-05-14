@@ -130,15 +130,15 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 #if UE_EDITOR
-	for (UCppBaseMenu* menu : arrayMenu)
+	/*for (UCppBaseMenu* menu : arrayMenu)
 	{
 		menu->OnExitGame();
-	}
+	}*/
 
 	SetNullAllVariable();
 #endif
 
-	arrayMenu.SetNum(0);
+	//arrayMenu.SetNum(0);
 }
 
 UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass)

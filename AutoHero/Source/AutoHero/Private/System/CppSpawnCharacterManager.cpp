@@ -29,6 +29,15 @@ void ACppSpawnCharacterManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
+	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));
+	autoHeroCharacter = dynamic_cast<AAutoHeroCharacter*>(autoHeroGameMode->DefaultPawnClass.GetDefaultObject());
+	if (autoHeroCharacter)
+	{
+		autoHeroCharacter->SetActorHiddenInGame(true);
+		//autoHeroCharacter->SetActorEnableCollision(false);
+		//autoHeroCharacter->SetActorTickEnabled(false);
+	}
 }
 
 // Called every frame
@@ -47,27 +56,35 @@ void ACppSpawnCharacterManager::SetupPlayerInputComponent(UInputComponent* Playe
 
 void ACppSpawnCharacterManager::LoadCharacter()
 {
-	UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
-	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));
+	/*UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull);
+	autoHeroGameMode = dynamic_cast<AAutoHeroGameMode*>(UGameplayStatics::GetGameMode(World));*/
 
 	// use our custom PlayerController class
-	autoHeroGameMode->PlayerControllerClass = AAutoHeroPlayerController::StaticClass();
+	//autoHeroGameMode->PlayerControllerClass = AAutoHeroPlayerController::StaticClass();
 
-	FVector location = FVector(1000.0f, 1810.0f, 92.012604f);
-	FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
+	//FVector location = FVector(1000.0f, 1810.0f, 92.012604f);
+	//FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
 
-	World->SpawnActor<AAutoHeroCharacter>(autoHeroCharacterClass, location, rotation);
-	autoHeroGameMode->DefaultPawnClass = autoHeroCharacterClass;
+	/*autoHeroGameMode->DefaultPawnClass = autoHeroCharacterClass;
 	autoHeroCharacter = autoHeroCharacterClass.GetDefaultObject();
-	/*if (autoHeroCharacter)
+	if (autoHeroCharacter)
 	{
 		autoHeroCharacter->SetActorHiddenInGame(true);
 		autoHeroCharacter->SetActorEnableCollision(false);
 		autoHeroCharacter->SetActorTickEnabled(false);
-	}*/
+	}
+	World->SpawnActor<AAutoHeroCharacter>(autoHeroGameMode->DefaultPawnClass, location, rotation);*/
 
-	World->SpawnActor<APlayerController>(aPlayerControllerClass, location, rotation);
-	autoHeroGameMode->PlayerControllerClass = aPlayerControllerClass;
-	aPlayerController = aPlayerControllerClass.GetDefaultObject();
+	//autoHeroGameMode->PlayerControllerClass = aPlayerControllerClass;
+	/*aPlayerController = aPlayerControllerClass.GetDefaultObject();
+	World->SpawnActor<APlayerController>(aPlayerControllerClass, location, rotation);*/
+
+	if (autoHeroCharacter)
+	{
+		autoHeroCharacter->SetActorHiddenInGame(false);
+		/*autoHeroCharacter->SetActorEnableCollision(true);
+		autoHeroCharacter->SetActorTickEnabled(true);*/
+	}
+
 }
 
