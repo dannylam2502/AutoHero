@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "SaveGame/CppGameData.h"
+#include "Multiplayer/CppMultiplayerManager.h"
 
 #pragma region Menu
 #include "UI/CppLoginMenu.h"
@@ -15,6 +16,7 @@
 #include "UI/CppBattleMenu.h"
 #include "UI/CppSummaryMenu.h"
 #include "UI/CppMultiplayerMenu.h"
+#include "UI/CppExitGamePlayMenu.h"
 #pragma endregion
 
 #pragma region Popup
@@ -37,8 +39,6 @@ ACppUIManager::ACppUIManager()
 	i = this;
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	SetNullAllVariable();
 
 }
 
@@ -68,6 +68,9 @@ void ACppUIManager::SetNullAllVariable()
 
 	multiplayerMenuClass = nullptr;
 	multiplayerMenu = nullptr;
+
+	exitGamePlayMenuClass = nullptr;
+	exitGamePlayMenu = nullptr;
 #pragma endregion
 
 #pragma region Popup.
@@ -111,6 +114,7 @@ void ACppUIManager::BeginPlay()
 	battleMenu = dynamic_cast<UCppBattleMenu*>(SetupMenu(battleMenu, battleMenuClass));
 	summaryMenu = dynamic_cast<UCppSummaryMenu*>(SetupMenu(summaryMenu, summaryMenuClass));
 	multiplayerMenu = dynamic_cast<UCppMultiplayerMenu*>(SetupMenu(multiplayerMenu, multiplayerMenuClass));
+	exitGamePlayMenu = dynamic_cast<UCppExitGamePlayMenu*>(SetupMenu(exitGamePlayMenu, exitGamePlayMenuClass));
 #pragma endregion
 
 #pragma region Popup.
@@ -130,15 +134,18 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 #if UE_EDITOR
-	/*for (UCppBaseMenu* menu : arrayMenu)
+	for (UCppBaseMenu* menu : arrayMenu)
 	{
-		menu->OnExitGame();
-	}*/
+		if (menu && menu->isHaveUse)
+		{
+			menu->OnExitGame();
+		}
+	}
 
 	SetNullAllVariable();
 #endif
 
-	//arrayMenu.SetNum(0);
+	arrayMenu.SetNum(0);
 }
 
 UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass)
@@ -180,7 +187,17 @@ void ACppUIManager::SetInputGameplay()
 
 void ACppUIManager::QuitGame()
 {
-	UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+	if (ACppMultiplayerManager::I()->isHost)
+	{
+		Push(i->blockPopup);
+		ACppMultiplayerManager::I()->isQuitGame = true;
+		ACppMultiplayerManager::I()->DestroySession(FName(*ACppMultiplayerManager::I()->sessionName));
+	}
+	else
+	{
+		UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+	}
+
 }
 
 void ACppUIManager::OnInitCallBack()

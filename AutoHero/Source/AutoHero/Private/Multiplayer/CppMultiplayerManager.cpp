@@ -6,8 +6,11 @@
 #include "OnlineSessionSettings.h"
 #include "AutoHero/AutoHeroGameMode.h"
 #include "System/CppSpawnCharacterManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "UI/CppMultiplayerMenu.h"
+#include "UI/CppExitGamePlayMenu.h"
 #include "UI/CppUIManager.h"
 #include "UI/CppBlockPopup.h"
 
@@ -39,6 +42,7 @@ void ACppMultiplayerManager::BeginPlay()
 
         OnlineSessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnCreateSessionComplete);
         OnlineSessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnFindSessionsComplete);
+        OnlineSessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnJoinSessionComplete);
         OnlineSessionPtr->OnDestroySessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnDestroySessionComplete);
 	}
 }
@@ -91,11 +95,10 @@ bool ACppMultiplayerManager::JoinSession(FName SessionName)
         return false;
     }
 
-    OnlineSessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &ACppMultiplayerManager::OnJoinSessionComplete);
-
     for (int32 j = 0; j < SessionSearch->SearchResults.Num(); j++)
     {
         FString FoundSessionName = SessionSearch->SearchResults[j].Session.GetSessionIdStr();
+        sessionName = FoundSessionName;
         if (FoundSessionName.Equals(SessionName.ToString(), ESearchCase::IgnoreCase))
         {
             return OnlineSessionPtr->JoinSession(0, SessionName, SessionSearch->SearchResults[j]);
@@ -112,7 +115,14 @@ bool ACppMultiplayerManager::DestroySession(FName SessionName)
         return false;
     }
 
-    return OnlineSessionPtr->DestroySession(SessionName);
+    if (OnlineSessionPtr->GetNamedSession(SessionName) != nullptr)
+    {
+        return OnlineSessionPtr->DestroySession(SessionName);
+    }
+    else
+    {
+        return false;
+    }
 }
 #pragma endregion
 
@@ -126,9 +136,19 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
     {
         UE_LOG(LogTemp, Log, TEXT("Session created successfully: %s"), *SessionName.ToString());
 
+        sessionName = SessionName.ToString();
+
+        /*for (int32 j = 0; j < SessionSearch->SearchResults.Num(); j++)
+        {
+            FString FoundSessionName = SessionSearch->SearchResults[j].Session.GetSessionIdStr();
+            sessionName = FoundSessionName;
+        }*/
+
         ACppSpawnCharacterManager::I()->LoadCharacter();
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
+        ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
+        ACppUIManager::I()->SetInputGameplay();
     }
     else
     {
@@ -172,6 +192,8 @@ void ACppMultiplayerManager::OnJoinSessionComplete(FName SessionName, EOnJoinSes
         ACppSpawnCharacterManager::I()->LoadCharacter();
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
+        ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
+        ACppUIManager::I()->SetInputGameplay();
     }
     else
     {
@@ -193,6 +215,18 @@ void ACppMultiplayerManager::OnDestroySessionComplete(FName SessionName, bool bW
     else
     {
         UE_LOG(LogTemp, Log, TEXT("Failed to destroy session: %s"), *SessionName.ToString());
+    }
+
+    if (isQuitGame)
+    {
+        ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+        UKismetSystemLibrary::QuitGame(i->GetWorld(), UGameplayStatics::GetPlayerController(i->GetWorld(), 0), EQuitPreference::Quit, false);
+    }
+    else
+    {
+        ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
+        ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
+        ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
     }
 }
 #pragma endregion

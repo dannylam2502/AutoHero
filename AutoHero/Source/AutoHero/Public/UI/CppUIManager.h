@@ -15,6 +15,7 @@ class UCppPVEMenu;
 class UCppBattleMenu;
 class UCppSummaryMenu;
 class UCppMultiplayerMenu;
+class UCppExitGamePlayMenu;
 
 class UCppSettingPopup;
 class UCppRewardGiftPopup;
@@ -56,6 +57,7 @@ private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppBattleMenu> battleMenuClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSummaryMenu> summaryMenuClass;
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppMultiplayerMenu> multiplayerMenuClass;
+	UPROPERTY(EditAnywhere) TSubclassOf<class UCppExitGamePlayMenu> exitGamePlayMenuClass;
 
 private:
 	UPROPERTY(EditAnywhere) TSubclassOf<class UCppSettingPopup> settingPopupClass;
@@ -76,6 +78,7 @@ public:
 	UCppBattleMenu* battleMenu;
 	UCppSummaryMenu* summaryMenu;
 	UCppMultiplayerMenu* multiplayerMenu;
+	UCppExitGamePlayMenu* exitGamePlayMenu;
 #pragma endregion
 
 #pragma region Popup.

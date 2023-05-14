@@ -28,6 +28,9 @@ public:
 	virtual void OnExitGame();
 
 public:
+	bool isHaveUse;
+
+public:
 	Action callback;
 
 };

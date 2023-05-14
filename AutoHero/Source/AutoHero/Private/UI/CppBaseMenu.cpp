@@ -8,6 +8,8 @@ void UCppBaseMenu::Setup() { }
 
 void UCppBaseMenu::Init()
 {
+	isHaveUse = true;
+
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Init!"));
 
 	AddToViewport();

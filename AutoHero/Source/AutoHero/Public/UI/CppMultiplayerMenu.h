@@ -26,7 +26,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* createSession;
+		UButton* btnCreateSession;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UEditableTextBox* inputMaxPlayer;
@@ -37,10 +37,13 @@ private:
 	bool isHostLAN;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* findSession;
+		UButton* btnFindSession;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
-		UButton* joinSession;
+		UButton* btnJoinSession;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UButton* btnQuit;
 
 private:
 	UFUNCTION() void OnCreateSessionClicked();
@@ -50,5 +53,7 @@ private:
 	UFUNCTION() void OnMaxPlayerInput(const FText& text);
 
 	UFUNCTION() void OnCheckBoxLAN(bool bIsChecked);
+
+	UFUNCTION() void OnQuitClicked();
 
 };

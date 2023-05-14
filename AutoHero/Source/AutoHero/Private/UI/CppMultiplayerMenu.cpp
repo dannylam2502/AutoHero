@@ -14,11 +14,12 @@
 
 void UCppMultiplayerMenu::Setup()
 {
-	createSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnCreateSessionClicked);
-	findSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnFindSessionClicked);
-	joinSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnJoinSessionClicked);
+	btnCreateSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnCreateSessionClicked);
+	btnFindSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnFindSessionClicked);
+	btnJoinSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnJoinSessionClicked);
 	inputMaxPlayer->OnTextChanged.AddDynamic(this, &UCppMultiplayerMenu::OnMaxPlayerInput);
 	checkBoxLAN->OnCheckStateChanged.AddDynamic(this, &UCppMultiplayerMenu::OnCheckBoxLAN);
+	btnQuit->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnQuitClicked);
 }
 
 void UCppMultiplayerMenu::Init()
@@ -35,8 +36,10 @@ void UCppMultiplayerMenu::OnExitGame()
 {
 	UCppBaseMenu::OnExitGame();
 
-	createSession = nullptr;
-	findSession = nullptr;
+	btnCreateSession = nullptr;
+	btnFindSession = nullptr;
+	btnJoinSession = nullptr;
+	inputMaxPlayer = nullptr;
 	checkBoxLAN = nullptr;
 }
 
@@ -80,4 +83,9 @@ void UCppMultiplayerMenu::OnMaxPlayerInput(const FText& text)
 void UCppMultiplayerMenu::OnCheckBoxLAN(bool bIsChecked)
 {
 	isHostLAN = bIsChecked;
+}
+
+void UCppMultiplayerMenu::OnQuitClicked()
+{
+	ACppUIManager::QuitGame();
 }

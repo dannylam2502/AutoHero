@@ -60,4 +60,6 @@ public:
 	bool isHost;
 	bool isClent;
 
+	bool isQuitGame;
+
 };
