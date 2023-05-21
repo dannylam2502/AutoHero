@@ -3,19 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Object.h"
+#include "CppGlobalInfo.generated.h"
 
 /**
  * 
  */
-class AUTOHERO_API CppGlobalInfo
+UCLASS()
+class AUTOHERO_API UCppGlobalInfo : public UObject
 {
+	GENERATED_BODY()
+
 private:
-	static CppGlobalInfo* i;
+	static UCppGlobalInfo* i;
 public:
-	static CppGlobalInfo* I();
+	static UCppGlobalInfo* I();
 
 public:
-	CppGlobalInfo();
-	~CppGlobalInfo();
+	static const FName nameLevelMain;
+	static const FName nameLevelGameplay;
+
+public:
+	UCppGlobalInfo();
+	~UCppGlobalInfo();
 
 };

@@ -3,17 +3,21 @@
 
 #include "Systems/CppGlobalInfo.h"
 
-CppGlobalInfo* CppGlobalInfo::i;
-CppGlobalInfo* CppGlobalInfo::I()
+UCppGlobalInfo* UCppGlobalInfo::i;
+UCppGlobalInfo* UCppGlobalInfo::I()
 {
 	return i;
 }
 
-CppGlobalInfo::CppGlobalInfo()
+const FName UCppGlobalInfo::nameLevelMain = TEXT("Main");
+const FName UCppGlobalInfo::nameLevelGameplay = TEXT("Gameplay");
+
+UCppGlobalInfo::UCppGlobalInfo()
 {
 	i = this;
 }
 
-CppGlobalInfo::~CppGlobalInfo()
+UCppGlobalInfo::~UCppGlobalInfo()
 {
+	i = nullptr;
 }

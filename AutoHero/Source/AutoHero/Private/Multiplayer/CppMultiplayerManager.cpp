@@ -6,11 +6,11 @@
 #include "OnlineSessionSettings.h"
 #include "AutoHero/AutoHeroGameMode.h"
 #include "AutoHero/AutoHeroPlayerController.h"
-#include "System/CppSpawnCharacterManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/Button.h"
 #include "Templates/SharedPointer.h"
+#include "Systems/CppGlobalInfo.h"
 
 #include "UI/CppMultiplayerMenu.h"
 #include "UI/CppExitGamePlayMenu.h"
@@ -85,7 +85,7 @@ void ACppMultiplayerManager::RegisterPlayer(FName SessionName)
         return;
     }
 
-    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->autoHeroPlayerController->GetLocalPlayer();
+    ULocalPlayer* localPlayer = AAutoHeroGameMode::I()->PlayerControllerClass.GetDefaultObject()->GetLocalPlayer();
     FUniqueNetIdRepl PlayerIdRepl = localPlayer->GetPreferredUniqueNetId();
     TSharedPtr<const FUniqueNetId> PlayerId;
     if (PlayerIdRepl.IsValid())
@@ -103,7 +103,7 @@ void ACppMultiplayerManager::UnregisterPlayer(FName SessionName)
         return;
     }
 
-    ULocalPlayer* localPlayer = ACppSpawnCharacterManager::I()->autoHeroPlayerController->GetLocalPlayer();
+    ULocalPlayer* localPlayer = AAutoHeroGameMode::I()->PlayerControllerClass.GetDefaultObject()->GetLocalPlayer();
     FUniqueNetIdRepl PlayerIdRepl = localPlayer->GetPreferredUniqueNetId();
     TSharedPtr<const FUniqueNetId> PlayerId;
     if (PlayerIdRepl.IsValid())
@@ -196,7 +196,8 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
 
         sessionName = SessionName.ToString();
 
-        ACppSpawnCharacterManager::I()->LoadCharacter();
+        AAutoHeroGameMode::I()->LoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
+        AAutoHeroGameMode::I()->SpawnCharacter();
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
@@ -230,6 +231,8 @@ void ACppMultiplayerManager::OnUnregisterPlayerSessionComplete(FName SessionName
 
         isHost = false;
         isClent = false;
+
+        AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
         ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
@@ -277,7 +280,7 @@ void ACppMultiplayerManager::OnJoinSessionComplete(FName SessionName, EOnJoinSes
     {
         UE_LOG(LogTemp, Log, TEXT("Joined session: %s"), *SessionName.ToString());
 
-        ACppSpawnCharacterManager::I()->LoadCharacter();
+        AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
@@ -310,6 +313,8 @@ void ACppMultiplayerManager::OnEndSessionComplete(FName SessionName, bool bWasSu
         }
         else
         {
+            AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
+
             ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
             ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
             ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);
@@ -339,6 +344,8 @@ void ACppMultiplayerManager::OnDestroySessionComplete(FName SessionName, bool bW
         }
         else
         {
+            AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
+
             ACppUIManager::I()->Pop(ACppUIManager::I()->blockPopup);
             ACppUIManager::I()->Pop(ACppUIManager::I()->exitGamePlayMenu);
             ACppUIManager::I()->Push(ACppUIManager::I()->multiplayerMenu);

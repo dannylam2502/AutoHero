@@ -9,7 +9,6 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "System/CppSpawnCharacterManager.h"
 
 AAutoHeroPlayerController::AAutoHeroPlayerController()
 {
@@ -29,8 +28,6 @@ void AAutoHeroPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
-
-	ACppSpawnCharacterManager::I()->autoHeroPlayerController = this;
 }
 
 void AAutoHeroPlayerController::SetupInputComponent()

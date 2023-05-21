@@ -13,12 +13,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "BaseProjectile.h"
-#include "System/CppSpawnCharacterManager.h"
-
 
 AAutoHeroCharacter::AAutoHeroCharacter()
 {
     SetReplicates(true);
+    SetReplicateMovement(true);
 
     // Set size for player capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -68,8 +67,6 @@ AAutoHeroCharacter::AAutoHeroCharacter()
 void AAutoHeroCharacter::BeginPlay()
 {
     Super::BeginPlay();
-
-    ACppSpawnCharacterManager::I()->autoHeroCharacter = this;
 }
 
 void AAutoHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

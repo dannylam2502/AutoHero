@@ -37,9 +37,11 @@ ACppUIManager* ACppUIManager::I()
 ACppUIManager::ACppUIManager()
 {
 	i = this;
+
  	// Set this pawn to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	SetNullAllVariable();
 }
 
 void ACppUIManager::SetNullAllVariable()
@@ -101,7 +103,7 @@ void ACppUIManager::BeginPlay()
 	initCallback.BindUObject(this, &ACppUIManager::OnInitCallBack);
 	popCallback.BindUObject(this, &ACppUIManager::OnPopupCallBack);
 
-	UGameplayStatics::GetPlayerController(i->GetWorld(), 0)->bShowMouseCursor = true;
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->bShowMouseCursor = true;
 
 	SetInputUI();
 
@@ -134,23 +136,29 @@ void ACppUIManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 #if UE_EDITOR
-	for (UCppBaseMenu* menu : arrayMenu)
+	if (!arrayMenu.IsEmpty())
 	{
-		if (menu->GetName() == "None")
+		for (UCppBaseMenu* menu : arrayMenu)
 		{
-			continue;
-		}
+			if (menu->GetName() == "None")
+			{
+				continue;
+			}
 
-		if (menu && menu->isHaveUse)
-		{
-			menu->OnExitGame();
+			if (menu && menu->isHaveUse)
+			{
+				menu->OnExitGame();
+			}
 		}
 	}
 
 	SetNullAllVariable();
 #endif
 
-	arrayMenu.SetNum(0);
+	if (!arrayMenu.IsEmpty())
+	{
+		arrayMenu.Empty();
+	}
 }
 
 UCppBaseMenu* ACppUIManager::SetupMenu(UCppBaseMenu* menu, TSubclassOf<class UCppBaseMenu> menuClass)
