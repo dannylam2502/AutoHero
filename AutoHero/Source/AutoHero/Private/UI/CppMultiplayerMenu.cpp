@@ -9,6 +9,7 @@
 
 #include "UI/CppUIManager.h"
 #include "UI/CppBlockPopup.h"
+#include "UI/CppExitGamePlayMenu.h"
 
 #include "Multiplayer/CppMultiplayerManager.h"
 
@@ -19,6 +20,7 @@ void UCppMultiplayerMenu::Setup()
 	btnJoinSession->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnJoinSessionClicked);
 	inputMaxPlayer->OnTextChanged.AddDynamic(this, &UCppMultiplayerMenu::OnMaxPlayerInput);
 	checkBoxLAN->OnCheckStateChanged.AddDynamic(this, &UCppMultiplayerMenu::OnCheckBoxLAN);
+	btnExitGamePlayMenu->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnExitGamePlayClicked);
 	btnQuit->OnClicked.AddDynamic(this, &UCppMultiplayerMenu::OnQuitClicked);
 }
 
@@ -85,6 +87,13 @@ void UCppMultiplayerMenu::OnMaxPlayerInput(const FText& text)
 void UCppMultiplayerMenu::OnCheckBoxLAN(bool bIsChecked)
 {
 	isHostLAN = bIsChecked;
+}
+
+void UCppMultiplayerMenu::OnExitGamePlayClicked()
+{
+	Pop();
+	ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
+	ACppUIManager::I()->SetInputGameplay();
 }
 
 void UCppMultiplayerMenu::OnQuitClicked()

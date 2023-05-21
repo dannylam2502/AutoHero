@@ -41,7 +41,7 @@ void UCppExitGamePlayMenu::OnExitClicked()
 		ACppMultiplayerManager::I()->DestroySession(FName(*ACppMultiplayerManager::I()->sessionName));
 		ACppUIManager::I()->SetInputUI();
 	}
-	else if (ACppMultiplayerManager::I()->isClent)
+	else if (ACppMultiplayerManager::I()->isClient)
 	{
 		ACppMultiplayerManager::I()->UnregisterPlayer(FName(*ACppMultiplayerManager::I()->sessionName));
 		ACppUIManager::I()->SetInputUI();

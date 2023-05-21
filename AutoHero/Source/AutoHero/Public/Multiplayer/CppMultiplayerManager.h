@@ -59,7 +59,6 @@ private:
 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	void OnRegisterPlayerSessionComplete(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasSuccessful);
 	void OnUnregisterPlayerSessionComplete(FName SessionName, const TArray< FUniqueNetIdRef >& Players, bool bWasSuccessful);
@@ -70,7 +69,7 @@ private:
 
 public:
 	bool isHost;
-	bool isClent;
+	bool isClient;
 
 	bool isQuitGame;
 

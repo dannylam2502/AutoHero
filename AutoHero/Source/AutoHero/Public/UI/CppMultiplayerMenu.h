@@ -43,6 +43,9 @@ private:
 		UButton* btnJoinSession;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
+		UButton* btnExitGamePlayMenu;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = true))
 		UButton* btnQuit;
 
 public:
@@ -57,6 +60,7 @@ private:
 
 	UFUNCTION() void OnCheckBoxLAN(bool bIsChecked);
 
+	UFUNCTION() void OnExitGamePlayClicked();
 	UFUNCTION() void OnQuitClicked();
 
 };

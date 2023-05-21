@@ -188,7 +188,7 @@ bool ACppMultiplayerManager::DestroySession(FName SessionName)
 void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
     isHost = bWasSuccessful;
-    isClent = false;
+    isClient = false;
 
     if (isHost)
     {
@@ -196,8 +196,8 @@ void ACppMultiplayerManager::OnCreateSessionComplete(FName SessionName, bool bWa
 
         sessionName = SessionName.ToString();
 
-        AAutoHeroGameMode::I()->LoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
-        AAutoHeroGameMode::I()->SpawnCharacter();
+        AAutoHeroGameMode::I()->ServerTravel(UCppGlobalInfo::nameLevelGameplay.ToString());
+        /*AAutoHeroGameMode::I()->SpawnCharacter();*/
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
@@ -230,7 +230,7 @@ void ACppMultiplayerManager::OnUnregisterPlayerSessionComplete(FName SessionName
         UE_LOG(LogTemp, Log, TEXT("Unregister player successfully: %s"), *SessionName.ToString());
 
         isHost = false;
-        isClent = false;
+        isClient = false;
 
         AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
 
@@ -247,7 +247,7 @@ void ACppMultiplayerManager::OnUnregisterPlayerSessionComplete(FName SessionName
 void ACppMultiplayerManager::OnFindSessionsComplete(bool bWasSuccessful)
 {
     isHost = false;
-    isClent = false;
+    isClient = false;
 
     if (bWasSuccessful && SessionSearch.IsValid())
     {
@@ -274,19 +274,22 @@ void ACppMultiplayerManager::OnFindSessionsComplete(bool bWasSuccessful)
 void ACppMultiplayerManager::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
     isHost = false;
-    isClent = Result == EOnJoinSessionCompleteResult::Success;
+    isClient = Result == EOnJoinSessionCompleteResult::Success;
 
-    if (isClent)
+    if (isClient)
     {
         UE_LOG(LogTemp, Log, TEXT("Joined session: %s"), *SessionName.ToString());
-
-        AAutoHeroGameMode::I()->UnLoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
 
         ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
         ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
         ACppUIManager::I()->SetInputGameplay();
 
-        RegisterPlayer(SessionName);
+        //RegisterPlayer(SessionName);
+
+        FString joinAddress = "";
+        OnlineSessionPtr->GetResolvedConnectString(SessionName, joinAddress);
+        AAutoHeroGameMode::I()->ClientTravel(joinAddress);
+        /*AAutoHeroGameMode::I()->SpawnCharacter();*/
     }
     else
     {
@@ -304,7 +307,7 @@ void ACppMultiplayerManager::OnEndSessionComplete(FName SessionName, bool bWasSu
         UE_LOG(LogTemp, Log, TEXT("Session end successfully: %s"), *SessionName.ToString());
 
         isHost = false;
-        isClent = false;
+        isClient = false;
 
         if (isQuitGame)
         {
@@ -335,7 +338,7 @@ void ACppMultiplayerManager::OnDestroySessionComplete(FName SessionName, bool bW
         UE_LOG(LogTemp, Log, TEXT("Session destroyed successfully: %s"), *SessionName.ToString());
 
         isHost = false;
-        isClent = false;
+        isClient = false;
 
         if (isQuitGame)
         {
