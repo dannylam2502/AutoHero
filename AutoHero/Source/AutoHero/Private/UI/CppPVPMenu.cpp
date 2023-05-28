@@ -4,7 +4,7 @@
 #include "UI/CppPVPMenu.h"
 
 #include "PlayFab/CppPlayFabManager.h"
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 
 #include "Components/Button.h"
 
@@ -36,7 +36,7 @@ void UCppPVPMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->mainMenu);
 }
 
 void UCppPVPMenu::OnFindMatchClicked()
@@ -46,7 +46,7 @@ void UCppPVPMenu::OnFindMatchClicked()
 
 	ACppPlayFabManager::I()->CreateMatchmakingTicket();
 
-	//ACppUIManager::Push(ACppUIManager::I()->battleMenu);
+	//UCppGameInstance::Push(UCppGameInstance::I()->battleMenu);
 }
 
 void UCppPVPMenu::OnExitGame()

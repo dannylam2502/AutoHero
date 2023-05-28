@@ -8,10 +8,6 @@
 
 class AAutoHeroCharacter;
 
-class ACppMultiplayerManager;
-class ACppPlayFabManager;
-class ACppUIManager;
-
 UCLASS(minimalapi)
 class AAutoHeroGameMode : public AGameModeBase
 {
@@ -32,21 +28,7 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:
-	void ServerTravel(const FString& levelName);
-	void ClientTravel(const FString& joinAddress);
-	void LoadLevelStreamingByName(const FName& levelName);
-	void UnLoadLevelStreamingByName(const FName& levelName);
-
-public:
 	void SpawnCharacter();
 	UPROPERTY(EditAnywhere) TSubclassOf<class AAutoHeroCharacter> myCharacterClass;
 	AAutoHeroCharacter* myCharacter;
-
-	UPROPERTY(EditAnywhere) TSubclassOf<class ACppMultiplayerManager> multipPlayerManagerClass;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ACppPlayFabManager> playerFabManagerClass;
-	UPROPERTY(EditAnywhere) TSubclassOf<class ACppUIManager> uiManagerClass;
-
-	ACppMultiplayerManager* multipPlayerManager;
-	ACppPlayFabManager* playerFabManager;
-	ACppUIManager* uiManager;
 };

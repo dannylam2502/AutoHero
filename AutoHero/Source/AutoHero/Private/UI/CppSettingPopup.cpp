@@ -2,7 +2,6 @@
 
 
 #include "UI/CppSettingPopup.h"
-#include "UI/CppUIManager.h"
 #include "Components/Button.h"
 #include "EngineGlobals.h"
 

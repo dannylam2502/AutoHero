@@ -2,7 +2,7 @@
 
 
 #include "UI/CppPVEMenu.h"
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppBattleMenu.h"
 #include "Components/Button.h"
@@ -32,7 +32,7 @@ void UCppPVEMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->mainMenu);
 }
 
 void UCppPVEMenu::OnFindMatchClicked()
@@ -40,7 +40,7 @@ void UCppPVEMenu::OnFindMatchClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnFindMatchClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->battleMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->battleMenu);
 }
 
 void UCppPVEMenu::OnExitGame()

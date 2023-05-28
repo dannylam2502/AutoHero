@@ -7,7 +7,7 @@
 #include "Components/EditableTextBox.h"
 #include "PlayFab/CppPlayFabManager.h"
 
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppRegisterMenu.h"
 
@@ -39,7 +39,7 @@ void UCppLoginMenu::Pop()
 
 void UCppLoginMenu::OnQuitClicked()
 {
-	ACppUIManager::QuitGame();
+	UCppGameInstance::QuitGame();
 }
 
 void UCppLoginMenu::OnLoginClicked()
@@ -54,12 +54,12 @@ void UCppLoginMenu::OnLoginClicked()
 	else
 	{
 		Pop();
-		ACppUIManager::I()->messagePopup->callback.BindLambda([]
+		UCppGameInstance::I()->messagePopup->callback.BindLambda([]
 		{
-			ACppUIManager::I()->Push(ACppUIManager::I()->loginMenu);
+			UCppGameInstance::I()->Push(UCppGameInstance::I()->loginMenu);
 		});
-		ACppUIManager::I()->Push(ACppUIManager::I()->messagePopup);
-		ACppUIManager::I()->messagePopup->SetTextMessage("Please input your user name & password.");
+		UCppGameInstance::I()->Push(UCppGameInstance::I()->messagePopup);
+		UCppGameInstance::I()->messagePopup->SetTextMessage("Please input your user name & password.");
 	}
 }
 
@@ -68,7 +68,7 @@ void UCppLoginMenu::OnRegisterClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Register Clicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->registerMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->registerMenu);
 }
 
 void UCppLoginMenu::OnUserNameInput(const FText& text)
@@ -92,7 +92,7 @@ void UCppLoginMenu::OnLoginSuccess()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->mainMenu);
 
 	ACppPlayFabManager::I()->loginUserPassword = TEXT("");
 }

@@ -2,7 +2,7 @@
 
 
 #include "UI/CppRegisterMenu.h"
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppLoginMenu.h"
 #include "Components/Button.h"
@@ -38,7 +38,7 @@ void UCppRegisterMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Back Clicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->loginMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->loginMenu);
 }
 
 void UCppRegisterMenu::OnRegisterClicked()
@@ -82,7 +82,7 @@ void UCppRegisterMenu::OnRegisterSuccess()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->mainMenu);
 
 	ACppPlayFabManager::I()->registerUserPassword = TEXT("");
 }

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UI/CppMainMenu.h"
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "Components/Button.h"
 #include "UI/CppSettingPopup.h"
 #include "UI/CppPVPMenu.h"
@@ -32,14 +32,14 @@ void UCppMainMenu::Pop()
 
 void UCppMainMenu::OnQuitClicked()
 {
-	ACppUIManager::QuitGame();
+	UCppGameInstance::QuitGame();
 }
 
 void UCppMainMenu::OnSettingClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnSettingClicked!"));
 
-	ACppUIManager::Push(ACppUIManager::I()->settingPopup);
+	UCppGameInstance::Push(UCppGameInstance::I()->settingPopup);
 }
 
 void UCppMainMenu::OnPvpClicked()
@@ -47,7 +47,7 @@ void UCppMainMenu::OnPvpClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPvpClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->pvpMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->pvpMenu);
 }
 
 void UCppMainMenu::OnPveClicked()
@@ -55,7 +55,7 @@ void UCppMainMenu::OnPveClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnPveClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->pveMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->pveMenu);
 }
 
 void UCppMainMenu::OnExitGame()

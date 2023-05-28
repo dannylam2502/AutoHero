@@ -2,7 +2,6 @@
 
 
 #include "UI/CppMessagePopup.h"
-#include "UI/CppUIManager.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"

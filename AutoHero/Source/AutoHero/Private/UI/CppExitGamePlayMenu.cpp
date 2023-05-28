@@ -3,9 +3,8 @@
 
 #include "UI/CppExitGamePlayMenu.h"
 #include "Components/Button.h"
-#include "Multiplayer/CppMultiplayerManager.h"
 
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppBlockPopup.h"
 
 void UCppExitGamePlayMenu::Setup()
@@ -34,21 +33,21 @@ void UCppExitGamePlayMenu::OnExitGame()
 void UCppExitGamePlayMenu::OnExitClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Exit Clicked!"));
-	ACppUIManager::I()->Push(ACppUIManager::I()->blockPopup);
+	UCppGameInstance::I()->Push(UCppGameInstance::I()->blockPopup);
 
-	if (ACppMultiplayerManager::I()->isHost)
+	if (UCppGameInstance::I()->isHost)
 	{
-		ACppMultiplayerManager::I()->DestroySession(FName(*ACppMultiplayerManager::I()->sessionName));
-		ACppUIManager::I()->SetInputUI();
+		UCppGameInstance::I()->DestroySession(FName(*UCppGameInstance::I()->sessionName));
+		UCppGameInstance::I()->SetInputUI();
 	}
-	else if (ACppMultiplayerManager::I()->isClient)
+	else if (UCppGameInstance::I()->isClient)
 	{
-		ACppMultiplayerManager::I()->UnregisterPlayer(FName(*ACppMultiplayerManager::I()->sessionName));
-		ACppUIManager::I()->SetInputUI();
+		UCppGameInstance::I()->UnregisterPlayer(FName(*UCppGameInstance::I()->sessionName));
+		UCppGameInstance::I()->SetInputUI();
 	}
 }
 
 void UCppExitGamePlayMenu::OnQuitClicked()
 {
-	ACppUIManager::QuitGame();
+	UCppGameInstance::QuitGame();
 }

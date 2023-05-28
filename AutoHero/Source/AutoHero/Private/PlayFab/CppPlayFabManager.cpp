@@ -9,7 +9,7 @@
 #include "SaveGame/CppGameData.h"
 #include "SaveGame/CppUserData.h"
 
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppLoginMenu.h"
 #include "UI/CppRegisterMenu.h"
@@ -69,7 +69,7 @@ void ACppPlayFabManager::OnLoginSuccess(const FLoginResult& result) const
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Login Success!"));
 
-    ACppUIManager::I()->loginMenu->OnLoginSuccess();
+    UCppGameInstance::I()->loginMenu->OnLoginSuccess();
 }
 
 void ACppPlayFabManager::OnLoginError(const FPlayFabCppError& errorResult) const
@@ -78,13 +78,13 @@ void ACppPlayFabManager::OnLoginError(const FPlayFabCppError& errorResult) const
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorName);
     GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, errorResult.ErrorMessage);
     
-    ACppUIManager::I()->Pop(ACppUIManager::I()->loginMenu);
-    ACppUIManager::I()->messagePopup->callback.BindLambda([]
+    UCppGameInstance::I()->Pop(UCppGameInstance::I()->loginMenu);
+    UCppGameInstance::I()->messagePopup->callback.BindLambda([]
     {
-        ACppUIManager::I()->Push(ACppUIManager::I()->loginMenu);
+        UCppGameInstance::I()->Push(UCppGameInstance::I()->loginMenu);
     });
-    ACppUIManager::I()->Push(ACppUIManager::I()->messagePopup);
-    ACppUIManager::I()->messagePopup->SetTextMessage("Your user name or password is wrong!!!\nPlease check again.");
+    UCppGameInstance::I()->Push(UCppGameInstance::I()->messagePopup);
+    UCppGameInstance::I()->messagePopup->SetTextMessage("Your user name or password is wrong!!!\nPlease check again.");
 }
 
 #pragma endregion
@@ -118,7 +118,7 @@ void ACppPlayFabManager::OnRegisterSuccess(const FRegisterPlayFabUserResult& res
 {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("On Register Success!"));
 
-    ACppUIManager::I()->registerMenu->OnRegisterSuccess();
+    UCppGameInstance::I()->registerMenu->OnRegisterSuccess();
 }
 
 void ACppPlayFabManager::OnRegisterError(const FPlayFabCppError& errorResult) const

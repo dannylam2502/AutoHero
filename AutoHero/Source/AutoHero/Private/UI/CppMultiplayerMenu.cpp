@@ -7,11 +7,9 @@
 #include "Components/CheckBox.h"
 #include "PlayFab/CppPlayFabManager.h"
 
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppBlockPopup.h"
 #include "UI/CppExitGamePlayMenu.h"
-
-#include "Multiplayer/CppMultiplayerManager.h"
 
 void UCppMultiplayerMenu::Setup()
 {
@@ -50,32 +48,32 @@ void UCppMultiplayerMenu::OnExitGame()
 void UCppMultiplayerMenu::OnCreateSessionClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Create Session Clicked!"));
-	ACppUIManager::I()->Push(ACppUIManager::I()->blockPopup);
+	UCppGameInstance::I()->Push(UCppGameInstance::I()->blockPopup);
 
-	if (!ACppMultiplayerManager::I()->isHost)
+	if (!UCppGameInstance::I()->isHost)
 	{
-		ACppMultiplayerManager::I()->CreateSession("Host", maxPlayerValue, isHostLAN);
+		UCppGameInstance::I()->CreateSession("Host", maxPlayerValue, isHostLAN);
 	}
 	else
 	{
-		ACppUIManager::I()->Pop(ACppUIManager::I()->multiplayerMenu);
+		UCppGameInstance::I()->Pop(UCppGameInstance::I()->multiplayerMenu);
 	}
 }
 
 void UCppMultiplayerMenu::OnFindSessionClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Find Session Clicked!"));
-	ACppUIManager::I()->Push(ACppUIManager::I()->blockPopup);
+	UCppGameInstance::I()->Push(UCppGameInstance::I()->blockPopup);
 
-	ACppMultiplayerManager::I()->FindSessions(isHostLAN);
+	UCppGameInstance::I()->FindSessions(isHostLAN);
 }
 
 void UCppMultiplayerMenu::OnJoinSessionClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("On Join Session Clicked!"));
-	ACppUIManager::I()->Push(ACppUIManager::I()->blockPopup);
+	UCppGameInstance::I()->Push(UCppGameInstance::I()->blockPopup);
 
-	ACppMultiplayerManager::I()->JoinSession(FName(*ACppMultiplayerManager::I()->sessionName));
+	UCppGameInstance::I()->JoinSessionNew(FName(*UCppGameInstance::I()->sessionName));
 }
 
 void UCppMultiplayerMenu::OnMaxPlayerInput(const FText& text)
@@ -92,11 +90,11 @@ void UCppMultiplayerMenu::OnCheckBoxLAN(bool bIsChecked)
 void UCppMultiplayerMenu::OnExitGamePlayClicked()
 {
 	Pop();
-	ACppUIManager::I()->Push(ACppUIManager::I()->exitGamePlayMenu);
-	ACppUIManager::I()->SetInputGameplay();
+	UCppGameInstance::I()->Push(UCppGameInstance::I()->exitGamePlayMenu);
+	UCppGameInstance::I()->SetInputGameplay();
 }
 
 void UCppMultiplayerMenu::OnQuitClicked()
 {
-	ACppUIManager::QuitGame();
+	UCppGameInstance::QuitGame();
 }

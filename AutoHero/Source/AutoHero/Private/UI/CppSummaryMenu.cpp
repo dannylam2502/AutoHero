@@ -2,7 +2,7 @@
 
 
 #include "UI/CppSummaryMenu.h"
-#include "UI/CppUIManager.h"
+#include "Systems/CppGameInstance.h"
 #include "UI/CppMainMenu.h"
 #include "UI/CppRewardGiftPopup.h"
 
@@ -21,7 +21,7 @@ void UCppSummaryMenu::Init()
 {
 	UCppBaseMenu::Init();
 
-	ACppUIManager::Push(ACppUIManager::I()->rewardGiftPopup);
+	UCppGameInstance::Push(UCppGameInstance::I()->rewardGiftPopup);
 }
 
 void UCppSummaryMenu::Pop()
@@ -34,7 +34,7 @@ void UCppSummaryMenu::OnBackClicked()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("OnBackClicked!"));
 	Pop();
 
-	ACppUIManager::Push(ACppUIManager::I()->mainMenu);
+	UCppGameInstance::Push(UCppGameInstance::I()->mainMenu);
 }
 
 void UCppSummaryMenu::OnExitGame()
