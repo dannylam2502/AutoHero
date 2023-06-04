@@ -28,7 +28,9 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:
-	void SpawnCharacter();
 	UPROPERTY(EditAnywhere) TSubclassOf<class AAutoHeroCharacter> myCharacterClass;
 	AAutoHeroCharacter* myCharacter;
+
+	UPROPERTY(EditAnywhere) TSubclassOf<class AAutoHeroPlayerController> myPlayerControllerClass;
+	AAutoHeroPlayerController* myPlayerController;
 };

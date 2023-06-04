@@ -78,7 +78,7 @@ void AAutoHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AAutoHeroCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    StartFire();
+    /*StartFire();*/
 }
 
 //////////////////////////////////////////////////////////////////////////

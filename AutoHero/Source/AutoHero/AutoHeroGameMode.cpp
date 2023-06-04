@@ -43,13 +43,9 @@ void AAutoHeroGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*multipPlayerManager = GetWorld()->SpawnActor<UCppGameInstance>(multipPlayerManagerClass);
-	playerFabManager = GetWorld()->SpawnActor<ACppPlayFabManager>(playerFabManagerClass);
-	uiManager = GetWorld()->SpawnActor<ACppUIManager>(uiManagerClass);*/
+	PlayerControllerClass = GetWorld()->GetFirstPlayerController()->GetClass();
 
 	UCppGameInstance::I()->gameMode = this;
-
-	PlayerControllerClass = GetWorld()->GetFirstPlayerController()->GetClass();
 }
 
 void AAutoHeroGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -71,15 +67,12 @@ void AAutoHeroGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		// Spawn character
 		FActorSpawnParameters SpawnParams;
-		//SpawnParams.Owner = this;
-		//SpawnParams.Instigator = GetInstigator();
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		FVector local = FVector(1000.0, 1810.0, 98.3375);
 		FRotator rota = FRotator(0, 0, 0);
-		myCharacter = GetWorld()->SpawnActor<AAutoHeroCharacter>(myCharacterClass, local, rota, SpawnParams);
 
-		// Possess character
+		myCharacter = GetWorld()->SpawnActor<AAutoHeroCharacter>(myCharacterClass, local, rota, SpawnParams);
 		if (myCharacter != nullptr)
 		{
 			NewPlayer->Possess(myCharacter);
@@ -97,24 +90,4 @@ void AAutoHeroGameMode::PostLogin(APlayerController* NewPlayer)
 			UCppGameInstance::I()->RegisterPlayer(FName(*UCppGameInstance::I()->sessionName));
 		}
 	}
-}
-
-void AAutoHeroGameMode::SpawnCharacter()
-{
-	// Spawn character
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	FVector local = FVector(1000.0, 1810.0, 98.3375);
-	FRotator rota = FRotator(0, 0, 0);
-	myCharacter = GetWorld()->SpawnActor<AAutoHeroCharacter>(myCharacterClass, local, rota, SpawnParams);
-
-	DefaultPawnClass = myCharacterClass;
-
-	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
-	playerController->SetViewTargetWithBlend(myCharacter);
-	playerController->Possess(myCharacter);
-	playerController->SetInputMode(FInputModeGameAndUI());
-
-	PlayerControllerClass = playerController->GetClass();
 }

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Systems/CppGameInstance.h"
@@ -9,6 +9,7 @@
 
 #include "AutoHero/AutoHeroPlayerController.h"
 #include "AutoHero/AutoHeroGameMode.h"
+#include "AutoHero/AutoHeroCharacter.h"
 #include "Systems/CppGlobalInfo.h"
 
 #pragma region Multiplayer.
@@ -46,7 +47,7 @@ UCppGameInstance* UCppGameInstance::I()
 
 UCppGameInstance::UCppGameInstance()
 {
-	i = this;
+    i = this;
 }
 
 void UCppGameInstance::Init()
@@ -99,12 +100,27 @@ bool UCppGameInstance::CreateSession(FName SessionName, int32 MaxNumPlayers, boo
         return false;
     }
 
-    FOnlineSessionSettings SessionSettings;
+#pragma region Old
+    /*FOnlineSessionSettings SessionSettings;
     SessionSettings.bIsLANMatch = bIsLAN;
     SessionSettings.bUsesPresence = true;
     SessionSettings.NumPublicConnections = MaxNumPlayers;
     SessionSettings.bShouldAdvertise = true;
+    OnlineSessionPtr->CreateSession(0, SessionName, SessionSettings);*/
+#pragma endregion
+
+#pragma region New
+    UE_LOG(LogTemp, Warning, TEXT("CreateServer"));
+    FOnlineSessionSettings SessionSettings;
+    SessionSettings.bAllowJoinInProgress = true;
+    SessionSettings.bIsDedicated = false;
+    SessionSettings.bIsLANMatch = bIsLAN;
+    SessionSettings.bShouldAdvertise = true;
+    SessionSettings.bUsesPresence = true;
+    SessionSettings.NumPublicConnections = MaxNumPlayers;
+
     OnlineSessionPtr->CreateSession(0, SessionName, SessionSettings);
+#pragma endregion
 
     return true;
 }
@@ -167,6 +183,7 @@ bool UCppGameInstance::JoinSessionNew(FName SessionName)
         return false;
     }
 
+#pragma region Old
     for (int32 j = 0; j < SessionSearch->SearchResults.Num(); j++)
     {
         FString FoundSessionName = SessionSearch->SearchResults[j].Session.GetSessionIdStr();
@@ -176,6 +193,18 @@ bool UCppGameInstance::JoinSessionNew(FName SessionName)
             return OnlineSessionPtr->JoinSession(0, SessionName, SessionSearch->SearchResults[j]);
         }
     }
+#pragma endregion
+
+#pragma region New
+    /*SessionSearch = MakeShareable(new FOnlineSessionSearch());
+    SessionSearch->bIsLanQuery = (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL");
+    SessionSearch->MaxSearchResults = 10000;
+    SessionSearch->QuerySettings.Set("SEARCH_PRESENCE", true, EOnlineComparisonOp::Equals);
+
+    OnlineSessionPtr->FindSessions(0, SessionSearch.ToSharedRef());*/
+#pragma endregion
+
+
 
     return false;
 }
@@ -307,7 +336,7 @@ void UCppGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCo
         SetInputGameplay();
 
         LoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
-        OnMapLoaded(GetWorld());
+        /*OnMapLoaded(GetWorld());*/
         /*AAutoHeroGameMode::I()->SpawnCharacter();*/
 
         FString joinAddress = "";
@@ -460,11 +489,8 @@ void UCppGameInstance::ServerTravel(const FString& levelName)
 }
 void UCppGameInstance::ClientTravel(const FString& joinAddress)
 {
-    /*APlayerController* playerController = GetWorld()->GetFirstPlayerController();
-    if (playerController)
-    {
-        playerController->ClientTravel(joinAddress, TRAVEL_Absolute);
-    }*/
+    if (joinAddress == "") return;
+
     if (APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
     {
         playerController->ClientTravel(joinAddress, TRAVEL_Absolute);
@@ -473,19 +499,81 @@ void UCppGameInstance::ClientTravel(const FString& joinAddress)
 
 void UCppGameInstance::OnMapLoaded(UWorld* LoadedWorld)
 {
-    if (isHost)
+    if (isHost || isClient)
     {
-        LoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
-
         LoadDataUI();
+        LoadLevelStreamingByName(UCppGlobalInfo::nameLevelGameplay);
         Pop(multiplayerMenu);
         Push(exitGamePlayMenu);
         SetInputGameplay();
-    }
-    else if (isClient)
-    {
-        Pop(multiplayerMenu);
-        Push(exitGamePlayMenu);
+
+#pragma region Old
+        //if (isClient)
+        //{
+        //    TArray<AActor*> FoundActors;
+        //    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAutoHeroCharacter::StaticClass(), FoundActors);
+        //    for (AActor* Actor : FoundActors)
+        //    {
+        //        AAutoHeroCharacter* Character = dynamic_cast<AAutoHeroCharacter*>(Actor);
+        //        if (Character)
+        //        {
+        //            // Sử dụng nhân vật ở đây.
+        //        }
+        //    }
+        //}
+#pragma endregion
+
+#pragma region New
+        if (isClient)
+        {
+            FTimerDelegate TimerDel;
+            FTimerHandle fTimerHandle;
+            TimerDel.BindLambda([this]()
+            {
+                UWorld* world = GetWorld(); // get the current UWorld instance.
+
+                TArray<AActor*> FoundActors;
+                UGameplayStatics::GetAllActorsOfClass(world, AAutoHeroCharacter::StaticClass(), FoundActors);
+
+                // Lấy hệ thống trực tuyến
+                IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+                if (OnlineSubsystem)
+                {
+                    // Lấy giao diện phiên trực tuyến
+                    IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+                    if (SessionInterface.IsValid())
+                    {
+                        // Lấy thông tin phiên
+                        FOnlineSessionSettings* SessionSettings = SessionInterface->GetSessionSettings(FName(*sessionName));
+                        if (SessionSettings)
+                        {
+                            // Sử dụng thông tin phiên ở đây
+                        }
+                    }
+                }
+
+                if (FoundActors.Num() > 1)
+                {
+                    AAutoHeroCharacter* Character = dynamic_cast<AAutoHeroCharacter*>(FoundActors[0]);
+                    AAutoHeroGameMode::I()->myCharacter = Character;
+
+                    APlayerController* playerController = world->GetFirstPlayerController();
+                    if (playerController)
+                    {
+                        playerController->SetViewTargetWithBlend(Character);
+                        playerController->Possess(Character);
+                        playerController->SetInputMode(FInputModeGameAndUI());
+
+                        AAutoHeroGameMode::I()->PlayerControllerClass = playerController->GetClass(); 
+                    }
+                }
+            });
+
+            // Thiết lập một hẹn giờ để gọi hàm trên sau 2 giây.
+            GetWorld()->GetTimerManager().SetTimer(fTimerHandle, TimerDel, 3.0f, false);
+        }
+#pragma endregion
+
     }
 }
 
