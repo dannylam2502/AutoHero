@@ -13,5 +13,11 @@ UCLASS()
 class AUTOHERO_API ANormalGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABaseUnit> ActorToSpawn;
+
+	UFUNCTION(BlueprintCallable)
+	void Spawn();
 };

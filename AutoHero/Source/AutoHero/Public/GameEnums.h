@@ -7,6 +7,6 @@
 UENUM(BlueprintType)
 enum class EActorTeam : uint8
 {
-	TEAM_PLAYER UMETA(DisplayName = "Player Team"),
-	TEAM_ENEMY UMETA(DisplayName = "Enemy Team")
+	Blue UMETA(DisplayName = "Blue Team"),
+	Red UMETA(DisplayName = "Red Team")
 };
