@@ -3,6 +3,8 @@
 
 #include "Core/Actors/BaseUnit.h"
 
+#include "Components/WidgetComponent.h"
+
 #define DETECTION_RADIUS 10000.0f
 
 // Sets default values
@@ -10,6 +12,14 @@ ABaseUnit::ABaseUnit()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+    if (RootComponent == nullptr)
+    {
+	    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+    }
+
+	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
