@@ -4,10 +4,8 @@
 #include "Core/AI/Tasks/UnitBTTask_FindEnemyLocation.h"
 
 #include "AIController.h"
-#include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/SphereComponent.h"
 #include "Core/Actors/BaseUnit.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -25,45 +23,19 @@ EBTNodeResult::Type UUnitBTTask_FindEnemyLocation::ExecuteTask(UBehaviorTreeComp
 	const APawn* AIPawn {AIController->GetPawn()};
 	// cast to BaseUnit
 	const ABaseUnit* BaseUnit = Cast<ABaseUnit>(AIPawn);
-	if (BaseUnit)
+	const ABaseUnit* Target = Cast<ABaseUnit>(AIController->GetBlackboardComponent()->GetValueAsObject(BBKeyTarget.SelectedKeyName));
+	if (BaseUnit && Target)
 	{
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseUnit::StaticClass(), FoundActors);
-
-		for (AActor* OtherActor : FoundActors)
+		FVector OriginLoc = BaseUnit->GetActorLocation();
+		FVector TargetLoc = Target->GetActorLocation();
+		UE_LOG(LogTemp, Log, TEXT("Origin = %s, Target = %s"), *OriginLoc.ToString(), *TargetLoc.ToString());
+		const UNavigationSystemV1* NavSystem = {UNavigationSystemV1::GetCurrent(GetWorld())};
+		FNavLocation Location{};
+		if (IsValid(NavSystem) && NavSystem->ProjectPointToNavigation(TargetLoc, Location, FVector(500.0f, 500.0f, 500.0f), nullptr, nullptr))
 		{
-			if (OtherActor != BaseUnit)
-			{
-				FVector Origin = BaseUnit->GetActorLocation();
-				FVector Other = OtherActor->GetActorLocation();
-				UE_LOG(LogTemp, Log, TEXT("Origin = %s, Other = %s"), *Origin.ToString(), *Other.ToString());
-				const UNavigationSystemV1* NavSystem = {UNavigationSystemV1::GetCurrent(GetWorld())};
-				FNavLocation Location{};
-				if (IsValid(NavSystem) && NavSystem->GetRandomReachablePointInRadius(Other, SearchRadius, Location))
-				{
-					AIController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Location.Location);
-				}
-				break;
-			}
+			AIController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Location.Location);
 		}
 	}
-	
-	/*FNavLocation Location{};
-
-	// Get AI Pawn
-	AAIController* AIController = OwnerComp.GetAIOwner();
-	const APawn* AIPawn {AIController->GetPawn()};
-
-	// Get Pawn origin
-	const FVector Origin {AIPawn->GetActorLocation()};
-
-	// obtain Navigation System
-	const UNavigationSystemV1* NavSystem = {UNavigationSystemV1::GetCurrent(GetWorld())};
-	if (IsValid(NavSystem) && NavSystem->GetRandomPointInNavigableRadius(Origin, SearchRadius, Location))
-	{
-		AIController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Location.Location);
-	}*/
-
 	// Signal the behavior tree component that the task is finished with a success
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	return EBTNodeResult::Succeeded;

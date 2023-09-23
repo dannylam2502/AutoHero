@@ -9,7 +9,7 @@
 
 void ANormalGameMode::Spawn()
 {
-	//return;
+	return;
 	if (ActorToSpawn)
 	{
 		UWorld* world = GetWorld();
