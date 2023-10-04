@@ -26,6 +26,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
 	
+	[[nodiscard]] float GetCurrentHealth() const
+	{
+		return CurrentHealth;
+	}
+
+	[[nodiscard]] float GetMaxHealth() const
+	{
+		return MaxHealth;
+	}
+
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,4 +44,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HealthWidgetComp;
 
+	float CurrentHealth;
+	float MaxHealth;
 };

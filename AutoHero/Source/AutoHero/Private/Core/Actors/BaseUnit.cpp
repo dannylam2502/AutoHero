@@ -4,6 +4,7 @@
 #include "Core/Actors/BaseUnit.h"
 
 #include "Components/WidgetComponent.h"
+#include "UI/HealthBar.h"
 
 #define DETECTION_RADIUS 10000.0f
 
@@ -18,6 +19,9 @@ ABaseUnit::ABaseUnit()
 	    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     }
 
+	MaxHealth = 100;
+	CurrentHealth = 70;
+
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	
@@ -31,7 +35,8 @@ ABaseUnit::ABaseUnit()
 void ABaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	UHealthBar* HealthBar = Cast<UHealthBar>(HealthWidgetComp->GetUserWidgetObject());
+	HealthBar->SetOwnerUnit(this);
 }
 
 // Called every frame
