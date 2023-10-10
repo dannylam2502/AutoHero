@@ -5,3 +5,12 @@
 #include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAutoHero, Log, All);
+
+UENUM(BlueprintType)
+enum class EUnitAbilityCommandID : uint8
+{
+	None,
+	Confirm,
+	Cancel,
+	Punch
+};

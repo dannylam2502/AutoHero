@@ -4,6 +4,8 @@
 #include "Core/Actors/BaseUnit.h"
 
 #include "Components/WidgetComponent.h"
+#include "Core/Gameplay/UnitAbilitySystemComponent.h"
+#include "Core/Gameplay/UnitGameplayAbility.h"
 #include "UI/HealthBar.h"
 
 #define DETECTION_RADIUS 10000.0f
@@ -24,11 +26,79 @@ ABaseUnit::ABaseUnit()
 
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	AbilitySystemComponent = CreateDefaultSubobject<UUnitAbilitySystemComponent>("AbilitySystemComp");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);
 	DetectionSphere->SetSphereRadius(DETECTION_RADIUS);*/
+}
+
+UAbilitySystemComponent* ABaseUnit::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ABaseUnit::InitializeAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void ABaseUnit::GiveAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UUnitGameplayAbility>& StartupAbility : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int>(StartupAbility.GetDefaultObject()->UnitAbilityCommandID), this));
+			
+		}
+	}
+}
+
+void ABaseUnit::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Server ASystem init
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+	GiveAbilities();
+}
+
+void ABaseUnit::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	// Client call
+	// need to init attributes and actor info, but only server gives abilities
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+
+	BindInput();
+}
+
+void ABaseUnit::BindInput()
+{
+	// set up input, may not need when using AI Controller
+	if (AbilitySystemComponent && InputComponent)
+	{
+		FTopLevelAssetPath InputEnumPath = FTopLevelAssetPath(TEXT("/Script/AutoHero"), TEXT("EUnitAbilityCommandID"));
+		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", InputEnumPath,
+			static_cast<int32>(EUnitAbilityCommandID::Confirm), static_cast<int32>(EUnitAbilityCommandID::Cancel));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -50,6 +120,7 @@ void ABaseUnit::Tick(float DeltaTime)
 void ABaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	// TODO Questionable code
+	BindInput();
 }
 

@@ -4,12 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectTypes.h"
 #include "BaseUnit.generated.h"
 
+class UUnitGameplayAbility;
 class USphereComponent;
 enum class EActorTeam : uint8;
 UCLASS()
-class AUTOHERO_API ABaseUnit : public APawn
+class AUTOHERO_API ABaseUnit : public APawn, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -36,6 +40,21 @@ public:
 		return MaxHealth;
 	}
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void InitializeAttributes();
+	virtual void GiveAbilities();
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
+	TArray<TSubclassOf<UUnitGameplayAbility>> DefaultAbilities;
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
+	void BindInput();
 	
 protected:
 	// Called when the game starts or when spawned
@@ -46,4 +65,10 @@ protected:
 
 	float CurrentHealth;
 	float MaxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
+	class UAbilitySystemComponent* AbilitySystemComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
+	class UAttributeSet* Attributes;
 };
