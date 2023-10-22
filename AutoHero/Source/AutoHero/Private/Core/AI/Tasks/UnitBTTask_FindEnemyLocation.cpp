@@ -31,7 +31,7 @@ EBTNodeResult::Type UUnitBTTask_FindEnemyLocation::ExecuteTask(UBehaviorTreeComp
 		UE_LOG(LogTemp, Log, TEXT("Origin = %s, Target = %s"), *OriginLoc.ToString(), *TargetLoc.ToString());
 		const UNavigationSystemV1* NavSystem = {UNavigationSystemV1::GetCurrent(GetWorld())};
 		FNavLocation Location{};
-		if (IsValid(NavSystem) && NavSystem->ProjectPointToNavigation(TargetLoc, Location, FVector(500.0f, 500.0f, 500.0f), nullptr, nullptr))
+		if (IsValid(NavSystem) && NavSystem->ProjectPointToNavigation(TargetLoc, Location, FVector::Zero(), nullptr, nullptr))
 		{
 			AIController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Location.Location);
 		}
