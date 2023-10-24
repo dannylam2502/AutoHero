@@ -5,6 +5,7 @@
 
 #include "Components/WidgetComponent.h"
 #include "Core/Gameplay/UnitAbilitySystemComponent.h"
+#include "Core/Gameplay/UnitAttributeSet.h"
 #include "Core/Gameplay/UnitGameplayAbility.h"
 #include "UI/HealthBar.h"
 
@@ -21,15 +22,14 @@ ABaseUnit::ABaseUnit()
 	    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     }
 
-	MaxHealth = 100;
-	CurrentHealth = 70;
-
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UUnitAbilitySystemComponent>("AbilitySystemComp");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
+	Attributes = CreateDefaultSubobject<UUnitAttributeSet>("Attributes");
 	
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
@@ -122,5 +122,15 @@ void ABaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	// TODO Questionable code
 	BindInput();
+}
+
+float ABaseUnit::GetCurrentHealth() const
+{
+	return Attributes->GetHealth();
+}
+
+float ABaseUnit::GetMaxHealth() const
+{
+	return Attributes->GetMaxHealth();
 }
 

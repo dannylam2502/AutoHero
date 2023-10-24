@@ -30,15 +30,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
 	
-	[[nodiscard]] float GetCurrentHealth() const
-	{
-		return CurrentHealth;
-	}
-
-	[[nodiscard]] float GetMaxHealth() const
-	{
-		return MaxHealth;
-	}
+	float GetCurrentHealth() const;
+	float GetMaxHealth() const;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -63,12 +56,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HealthWidgetComp;
 
-	float CurrentHealth;
-	float MaxHealth;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
-	class UAttributeSet* Attributes;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AttributeSet", meta = (AllowPrivateAccess = true))
+	const class UUnitAttributeSet* Attributes;
 };
