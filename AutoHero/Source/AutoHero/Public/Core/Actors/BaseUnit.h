@@ -3,17 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
-#include "GameplayEffectTypes.h"
+#include "GameFramework/Character.h"
 #include "BaseUnit.generated.h"
 
 class UUnitGameplayAbility;
 class USphereComponent;
 enum class EActorTeam : uint8;
 UCLASS()
-class AUTOHERO_API ABaseUnit : public APawn, public IAbilitySystemInterface
+class AUTOHERO_API ABaseUnit : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
