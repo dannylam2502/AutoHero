@@ -101,6 +101,11 @@ void ABaseUnit::BindInput()
 	}
 }
 
+bool ABaseUnit::IsDead() const
+{
+	return GetCurrentHealth() <= 0;
+}
+
 // Called when the game starts or when spawned
 void ABaseUnit::BeginPlay()
 {

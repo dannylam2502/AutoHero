@@ -47,6 +47,8 @@ public:
 	virtual void OnRep_PlayerState() override;
 
 	void BindInput();
+
+	bool IsDead() const;
 	
 protected:
 	// Called when the game starts or when spawned

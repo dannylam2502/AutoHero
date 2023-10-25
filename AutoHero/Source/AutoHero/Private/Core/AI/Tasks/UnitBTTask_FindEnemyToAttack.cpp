@@ -25,15 +25,26 @@ EBTNodeResult::Type UUnitBTTask_FindEnemyToAttack::ExecuteTask(UBehaviorTreeComp
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseUnit::StaticClass(), FoundActors);
 
+		float ClosestDistance = 999999.0f;
+		ABaseUnit* ClosestUnit = nullptr;
 		for (AActor* OtherActor : FoundActors)
 		{
-			if (OtherActor != BaseUnit)
+			ABaseUnit* OtherUnit = Cast<ABaseUnit>(OtherActor);
+			// not the same Unit, in different team and is Alive
+			if (OtherUnit != BaseUnit && OtherUnit->ETeam != BaseUnit->ETeam && OtherUnit->GetCurrentHealth() > 0)
 			{
-				ABaseUnit* Target = Cast<ABaseUnit>(OtherActor);
-				AIController->GetBlackboardComponent()->SetValueAsObject(BlackboardKey.SelectedKeyName, Target);
-				NodeResult = EBTNodeResult::Succeeded;
-				break;
+				float Distance = BaseUnit->GetDistanceTo(OtherUnit);
+				if (Distance < ClosestDistance)
+				{
+					ClosestDistance = Distance;
+					ClosestUnit = OtherUnit;
+				}
 			}
+		}
+		if (ClosestUnit)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsObject(BlackboardKey.SelectedKeyName, ClosestUnit);
+			NodeResult = EBTNodeResult::Succeeded;
 		}
 	}
 	

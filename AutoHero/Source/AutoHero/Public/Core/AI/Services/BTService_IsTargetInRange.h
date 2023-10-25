@@ -18,6 +18,7 @@ public:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Service")
 	float RangeToCheck;
+protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Blackboard")
 	FBlackboardKeySelector BlackboardKeyIsInRange;
 };
