@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Core/Actors/BaseUnit.h"
 
 FString UBTService_IsEnemyUnitDead::GetStaticDescription() const
@@ -22,5 +23,6 @@ void UBTService_IsEnemyUnitDead::TickNode(UBehaviorTreeComponent& OwnerComp, uin
 	if (OwnerUnit && TargetUnit && TargetUnit->IsDead())
 	{
 		BlackboardComponent->SetValueAsObject(BlackboardKeyEnemyUnit.SelectedKeyName, nullptr);
+		TargetUnit->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
