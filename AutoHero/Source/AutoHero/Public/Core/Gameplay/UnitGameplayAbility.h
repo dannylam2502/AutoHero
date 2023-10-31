@@ -18,4 +18,7 @@ class AUTOHERO_API UUnitGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	EUnitAbilityCommandID UnitAbilityCommandID = EUnitAbilityCommandID::None;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
+	EUnitAbilityID UnitAbilityID = EUnitAbilityID::NormalAttack;
 };

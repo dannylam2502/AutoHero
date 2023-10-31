@@ -17,6 +17,7 @@ void UUnitAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UUnitAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUnitAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUnitAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUnitAttributeSet, AttackSpeed, COND_None, REPNOTIFY_Always);
 }
 
 void UUnitAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
@@ -37,6 +38,11 @@ void UUnitAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana)
 void UUnitAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUnitAttributeSet, MaxMana, OldMaxMana);
+}
+
+void UUnitAttributeSet::OnRep_AttackSpeed(const FGameplayAttributeData& OldAttackSpeed)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUnitAttributeSet, AttackDamage, OldAttackSpeed);
 }
 
 void UUnitAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage)

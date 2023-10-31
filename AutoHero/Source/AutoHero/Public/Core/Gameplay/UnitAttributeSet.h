@@ -47,6 +47,13 @@ public:
 	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, MaxMana)
 	UFUNCTION()
 	virtual void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
+
+	// The number of attack per second will be 1.0/AttackSpeed
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing = OnRep_AttackSpeed)
+	FGameplayAttributeData AttackSpeed;
+	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, AttackSpeed)
+	UFUNCTION()
+	virtual void OnRep_AttackSpeed(const FGameplayAttributeData& OldAttackSpeed);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing = OnRep_AttackDamage)
 	FGameplayAttributeData AttackDamage;

@@ -14,3 +14,11 @@ enum class EUnitAbilityCommandID : uint8
 	Cancel,
 	Punch
 };
+
+UENUM(BlueprintType)
+enum class EUnitAbilityID : uint8
+{
+	None,
+	NormalAttack,
+	Cedric_OneStar_Skill
+};

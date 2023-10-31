@@ -30,6 +30,8 @@ ABaseUnit::ABaseUnit()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
 	Attributes = CreateDefaultSubobject<UUnitAttributeSet>("Attributes");
+
+	NormalAttackAbility = nullptr;
 	
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
@@ -62,8 +64,13 @@ void ABaseUnit::GiveAbilities()
 	{
 		for (TSubclassOf<UUnitGameplayAbility>& StartupAbility : DefaultAbilities)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int>(StartupAbility.GetDefaultObject()->UnitAbilityCommandID), this));
-			
+			UUnitGameplayAbility* DefaultObject = StartupAbility.GetDefaultObject();
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int>(DefaultObject->UnitAbilityCommandID), this));
+			// we will cache the normal attack ability for optimization purpose, since we will need to ref this quite a lot
+			if (DefaultObject->UnitAbilityID == EUnitAbilityID::NormalAttack)
+			{
+				NormalAttackAbility = DefaultObject;
+			}
 		}
 	}
 }
@@ -104,6 +111,11 @@ void ABaseUnit::BindInput()
 bool ABaseUnit::IsDead() const
 {
 	return GetCurrentHealth() <= 0;
+}
+
+UUnitGameplayAbility* ABaseUnit::GetNormalAttackAbility() const
+{
+	return NormalAttackAbility;
 }
 
 // Called when the game starts or when spawned

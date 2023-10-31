@@ -49,6 +49,10 @@ public:
 	void BindInput();
 
 	bool IsDead() const;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
+	UUnitGameplayAbility* NormalAttackAbility;
+	UUnitGameplayAbility* GetNormalAttackAbility() const;
 	
 protected:
 	// Called when the game starts or when spawned
