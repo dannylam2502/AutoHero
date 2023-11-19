@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Unit Level")
+	int UnitLevel;
+	
 	float GetCurrentHealth() const;
 	float GetMaxHealth() const;
 
