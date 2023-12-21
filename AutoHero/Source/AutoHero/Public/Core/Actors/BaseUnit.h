@@ -67,6 +67,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AttributeSet", meta = (AllowPrivateAccess = true))
+	UPROPERTY(Instanced,VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 };

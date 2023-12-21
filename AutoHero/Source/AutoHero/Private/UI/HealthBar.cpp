@@ -18,7 +18,12 @@ void UHealthBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		return;
 	}
-	HealthBar->SetPercent(OwnerUnit->GetCurrentHealth() / OwnerUnit->GetMaxHealth());
+	float CurrentHealth = OwnerUnit->GetCurrentHealth();
+	float MaxHealth = OwnerUnit->GetMaxHealth();
+	if (MaxHealth > 0)
+	{
+		HealthBar->SetPercent(CurrentHealth / MaxHealth);
+	}
 	FNumberFormattingOptions Opts;
 	Opts.SetMaximumFractionalDigits(0);
 	CurrentHealthLabel->SetText(FText::AsNumber(OwnerUnit->GetCurrentHealth(), &Opts));

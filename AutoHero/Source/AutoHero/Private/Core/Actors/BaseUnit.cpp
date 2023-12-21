@@ -29,7 +29,11 @@ ABaseUnit::ABaseUnit()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
-	Attributes = CreateDefaultSubobject<UUnitAttributeSet>("Attributes");
+	Attributes = CreateDefaultSubobject<UUnitAttributeSet>("AttributesNew");
+    if (Attributes == NULL || Attributes == nullptr)
+    {
+    	UE_LOG(LogTemp, Warning, TEXT("SOMETHING WENT WRONG"))
+    }
 
 	NormalAttackAbility = nullptr;
 	
@@ -143,11 +147,19 @@ void ABaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 float ABaseUnit::GetCurrentHealth() const
 {
+	if (Attributes == nullptr)
+	{
+		return 0;
+	}
 	return Attributes->GetHealth();
 }
 
 float ABaseUnit::GetMaxHealth() const
 {
+	if (Attributes == nullptr)
+	{
+		return 0;
+	}
 	return Attributes->GetMaxHealth();
 }
 

@@ -31,7 +31,7 @@ EBTNodeResult::Type UUnitBTTask_FindEnemyToAttack::ExecuteTask(UBehaviorTreeComp
 		{
 			ABaseUnit* OtherUnit = Cast<ABaseUnit>(OtherActor);
 			// not the same Unit, in different team and is Alive
-			if (OtherUnit != BaseUnit && OtherUnit->ETeam != BaseUnit->ETeam && OtherUnit->GetCurrentHealth() > 0)
+			if (IsValid(OtherUnit) && OtherUnit != BaseUnit && OtherUnit->ETeam != BaseUnit->ETeam && OtherUnit->GetCurrentHealth() > 0)
 			{
 				float Distance = BaseUnit->GetDistanceTo(OtherUnit);
 				if (Distance < ClosestDistance)
