@@ -40,17 +40,7 @@ public:
     UPROPERTY(EditAnywhere, Category = "Effects")
         class UParticleSystem* ExplosionEffect;
 
-    //The damage type and damage that will be done by this projectile
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
-        TSubclassOf<class UDamageType> DamageType;
-
-    //The damage dealt by this projectile.
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
-        float Damage;
-
 protected:
-
-    virtual void Destroyed() override;
 
     UFUNCTION(Category = "Projectile")
         void OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

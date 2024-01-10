@@ -12,7 +12,8 @@ enum class EUnitAbilityCommandID : uint8
 	None,
 	Confirm,
 	Cancel,
-	Punch
+	Punch,
+	Shoot
 };
 
 UENUM(BlueprintType)
