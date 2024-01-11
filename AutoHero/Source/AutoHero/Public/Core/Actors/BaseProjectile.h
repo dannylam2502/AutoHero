@@ -26,23 +26,22 @@ public:
 public:
     // Sphere component used to test collision.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class USphereComponent* SphereComponent;
+    class USphereComponent* SphereComponent;
 
     // Static Mesh used to provide a visual representation of the object.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UStaticMeshComponent* StaticMesh;
+    class UStaticMeshComponent* StaticMesh;
 
     // Movement component for handling projectile movement.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-        class UProjectileMovementComponent* ProjectileMovementComponent;
+    class UProjectileMovementComponent* ProjectileMovementComponent;
 
     // Particle used when the projectile impacts against another object and explodes.
     UPROPERTY(EditAnywhere, Category = "Effects")
-        class UParticleSystem* ExplosionEffect;
+    class UParticleSystem* ExplosionEffect;
 
 protected:
 
     UFUNCTION(Category = "Projectile")
-        void OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
+    void OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

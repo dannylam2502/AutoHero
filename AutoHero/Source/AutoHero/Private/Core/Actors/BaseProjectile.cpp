@@ -58,8 +58,9 @@ void ABaseProjectile::Tick(float DeltaTime)
 
 void ABaseProjectile::OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+    UE_LOG(LogTemp, Warning, TEXT("Hit Other Actor"))
     if (OtherActor)
     {
     }
-	Destroy();
+	//Destroy();
 }
