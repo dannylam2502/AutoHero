@@ -21,11 +21,20 @@ public:
 protected:
 	TWeakObjectPtr<ABaseUnit> OwnerUnit;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	
+
+	// Health
 	UPROPERTY(meta=(BindWidget))
 	class UProgressBar* HealthBar;
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* CurrentHealthLabel;
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* MaxHealthLabel;
+
+	// Mana
+	UPROPERTY(meta=(BindWidget))
+	class UProgressBar* ManaBar;
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* CurrentManaLabel;
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* MaxManaLabel;
 };

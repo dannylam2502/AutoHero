@@ -56,6 +56,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
 	UUnitGameplayAbility* NormalAttackAbility;
 	UUnitGameplayAbility* GetNormalAttackAbility() const;
+
+	const class UUnitAttributeSet* GetAttributes();
 	
 protected:
 	// Called when the game starts or when spawned
@@ -67,6 +69,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 	
-	UPROPERTY(Instanced,VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
+	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 };

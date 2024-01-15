@@ -122,6 +122,11 @@ UUnitGameplayAbility* ABaseUnit::GetNormalAttackAbility() const
 	return NormalAttackAbility;
 }
 
+const UUnitAttributeSet* ABaseUnit::GetAttributes()
+{
+	return Attributes;
+}
+
 // Called when the game starts or when spawned
 void ABaseUnit::BeginPlay()
 {
