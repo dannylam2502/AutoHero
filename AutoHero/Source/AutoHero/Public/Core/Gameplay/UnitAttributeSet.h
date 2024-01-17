@@ -27,6 +27,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, Health)
+	//GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UUnitAttributeSet, Health)
+	// float GetHealth() const;
+	// void SetHealth(float NewVal) const;
+	//GAMEPLAYATTRIBUTE_VALUE_INITTER(Health)
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 
@@ -39,6 +43,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing = OnRep_Mana)
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, Mana)
+	//GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UUnitAttributeSet, Mana)
+	// float GetMana() const;
+	// void SetMana(float NewVal) const;
+	//GAMEPLAYATTRIBUTE_VALUE_INITTER(Mana)
 	UFUNCTION()
 	virtual void OnRep_Mana(const FGameplayAttributeData& OldMana);
 
@@ -60,5 +68,6 @@ public:
 	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, AttackDamage)
 	UFUNCTION()
 	virtual void OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage);
-	
+
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 };

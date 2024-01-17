@@ -28,12 +28,6 @@ ABaseUnit::ABaseUnit()
 	AbilitySystemComponent = CreateDefaultSubobject<UUnitAbilitySystemComponent>("AbilitySystemComp");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-	
-	Attributes = CreateDefaultSubobject<UUnitAttributeSet>("AttributesNew");
-    if (Attributes == NULL || Attributes == nullptr)
-    {
-    	UE_LOG(LogTemp, Warning, TEXT("SOMETHING WENT WRONG"))
-    }
 
 	NormalAttackAbility = nullptr;
 	
@@ -50,16 +44,16 @@ UAbilitySystemComponent* ABaseUnit::GetAbilitySystemComponent() const
 
 void ABaseUnit::InitializeAttributes()
 {
-	if (AbilitySystemComponent && DefaultAttributeEffect)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
-		if (SpecHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
+	// if (AbilitySystemComponent && DefaultAttributeEffect)
+	// {
+	// 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	// 	EffectContext.AddSourceObject(this);
+	// 	FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
+	// 	if (SpecHandle.IsValid())
+	// 	{
+	// 		FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	// 	}
+	// }
 }
 
 void ABaseUnit::GiveAbilities()
@@ -131,6 +125,17 @@ const UUnitAttributeSet* ABaseUnit::GetAttributes()
 void ABaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
+	//Attributes = CreateDefaultSubobject<UUnitAttributeSet>("AttributesNew");
+	if (IsValid(AbilitySystemComponent))
+	{
+		Attributes = AbilitySystemComponent->GetSet<UUnitAttributeSet>();
+	}
+	
+	if (Attributes == NULL || Attributes == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SOMETHING WENT WRONG"))
+	}
+	
 	UHealthBar* HealthBar = Cast<UHealthBar>(HealthWidgetComp->GetUserWidgetObject());
 	HealthBar->SetOwnerUnit(this);
 }
