@@ -173,3 +173,20 @@ float ABaseUnit::GetMaxHealth() const
 	return Attributes->GetMaxHealth();
 }
 
+bool ABaseUnit::IsFullMana() const
+{
+	if (Attributes == nullptr)
+	{
+		return false;
+	}
+	if (Attributes->GetMaxMana() == 0)
+	{
+		return false;
+	}
+	if (Attributes->GetMana() >= Attributes->GetMaxMana())
+	{
+		return true;
+	}
+	return false;
+}
+

@@ -26,14 +26,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Which team?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
-	
+
+	// The number *Star
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Unit Level")
 	int UnitLevel;
 	
 	float GetCurrentHealth() const;
 	float GetMaxHealth() const;
+	bool IsFullMana() const;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

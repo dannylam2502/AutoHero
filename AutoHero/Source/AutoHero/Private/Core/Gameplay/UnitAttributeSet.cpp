@@ -107,8 +107,6 @@ void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		// This Gameplay Effect is changing Health. Apply it, but restrict the value first.
 		// In this case, Health's base value must be non-negative.
-		float dMana = GetMana();
-		float dMaxMana = GetMaxMana();
 		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 	}
 }
