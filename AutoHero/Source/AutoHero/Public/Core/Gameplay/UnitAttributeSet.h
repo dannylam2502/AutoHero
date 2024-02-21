@@ -69,5 +69,11 @@ public:
 	UFUNCTION()
 	virtual void OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes", ReplicatedUsing = OnRep_Defense)
+	FGameplayAttributeData Defense;
+	ATTRIBUTE_ACCESSORS(UUnitAttributeSet, Defense)
+	UFUNCTION()
+	virtual void OnRep_Defense(const FGameplayAttributeData& OldDefense);
+
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 };

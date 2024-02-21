@@ -93,6 +93,11 @@ void UUnitAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAtta
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUnitAttributeSet, AttackDamage, OldAttackDamage);
 }
 
+void UUnitAttributeSet::OnRep_Defense(const FGameplayAttributeData& OldDefense)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUnitAttributeSet, AttackDamage, OldDefense);
+}
+
 void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);

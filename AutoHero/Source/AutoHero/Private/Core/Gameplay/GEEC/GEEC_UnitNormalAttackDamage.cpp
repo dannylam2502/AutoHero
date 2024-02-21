@@ -14,8 +14,8 @@ void UGEEC_UnitNormalAttackDamage::Execute_Implementation(
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	
 	float SourceAttackDamage = Cast<UUnitAttributeSet>(SourceASC->GetSet<UUnitAttributeSet>())->GetAttackDamage();
-	float TargetArmor = 50.0f;
-	float DamageDone = SourceAttackDamage / ((TargetArmor + 100.0f) / 100.0f);
+	float TargetDefense = Cast<UUnitAttributeSet>(TargetASC->GetSet<UUnitAttributeSet>())->GetDefense();
+	float DamageDone = SourceAttackDamage / ((TargetDefense + 100.0f) / 100.0f);
 	if (DamageDone > 0.0f)
 	{
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UUnitAttributeSet::GetHealthAttribute(), EGameplayModOp::Additive, -DamageDone));
