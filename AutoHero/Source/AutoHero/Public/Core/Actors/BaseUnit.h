@@ -44,9 +44,6 @@ public:
 	virtual void GiveAbilities();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
-	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability")
 	TArray<TSubclassOf<UUnitGameplayAbility>> DefaultAbilities;
 
 	virtual void PossessedBy(AController* NewController) override;
