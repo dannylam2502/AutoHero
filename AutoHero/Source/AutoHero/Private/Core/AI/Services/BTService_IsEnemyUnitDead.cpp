@@ -22,7 +22,7 @@ void UBTService_IsEnemyUnitDead::TickNode(UBehaviorTreeComponent& OwnerComp, uin
 	const ABaseUnit* TargetUnit = Cast<ABaseUnit>(BlackboardComponent->GetValueAsObject(BlackboardKeyEnemyUnit.SelectedKeyName));
 	if (OwnerUnit && TargetUnit && TargetUnit->IsDead())
 	{
-		BlackboardComponent->SetValueAsObject(BlackboardKeyEnemyUnit.SelectedKeyName, nullptr);
 		TargetUnit->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		BlackboardComponent->SetValueAsObject(BlackboardKeyEnemyUnit.SelectedKeyName, nullptr);
 	}
 }
