@@ -3,8 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseUnit.h"
+#include "GameplayEffect.h"
 #include "GameFramework/Actor.h"
 #include "BaseProjectile.generated.h"
+
+class ABaseUnit;
 
 UCLASS()
 class AUTOHERO_API ABaseProjectile : public AActor
@@ -26,4 +30,22 @@ public:
     // Movement component for handling projectile movement.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     class UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay Effect")
+	TSubclassOf<UGameplayEffect> GEBanishedToApply;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	ABaseUnit* OwnerUnit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	ABaseUnit* TargetUnit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile Settings")
+	bool IsHomingTarget;
+public:
+	UFUNCTION(BlueprintCallable)
+	void BanishUnit(ABaseUnit* Unit);
+
+	void SetOwnerUnit(ABaseUnit* InOwnerUnit);
+	void SetTargetUnit(ABaseUnit* InTargetUnit);
 };

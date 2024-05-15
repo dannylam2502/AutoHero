@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "BaseUnit.generated.h"
 
+class ABaseProjectile;
 class UUnitGameplayAbility;
 class USphereComponent;
 enum class EActorTeam : uint8;
@@ -58,6 +59,10 @@ public:
 	UUnitGameplayAbility* GetNormalAttackAbility() const;
 
 	const class UUnitAttributeSet* GetAttributes();
+
+	UFUNCTION(BlueprintCallable)
+	ABaseProjectile* SpawnProjectile(UObject* WorldContextObject, TSubclassOf<ABaseProjectile> BPProjectile, FVector Location, FRotator Rotation, float Speed,
+		float Gravity, bool IsHomingTarget ,ABaseUnit* InOwnerUnit = nullptr, ABaseUnit* InTargetUnit = nullptr);
 	
 protected:
 	// Called when the game starts or when spawned

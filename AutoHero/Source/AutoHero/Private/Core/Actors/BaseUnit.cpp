@@ -4,9 +4,11 @@
 #include "Core/Actors/BaseUnit.h"
 
 #include "Components/WidgetComponent.h"
+#include "Core/Actors/BaseProjectile.h"
 #include "Core/Gameplay/UnitAbilitySystemComponent.h"
 #include "Core/Gameplay/UnitAttributeSet.h"
 #include "Core/Gameplay/UnitGameplayAbility.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "UI/HealthBar.h"
 
 #define DETECTION_RADIUS 10000.0f
@@ -119,6 +121,39 @@ UUnitGameplayAbility* ABaseUnit::GetNormalAttackAbility() const
 const UUnitAttributeSet* ABaseUnit::GetAttributes()
 {
 	return Attributes;
+}
+
+ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubclassOf<ABaseProjectile> BPProjectile, FVector Location, FRotator Rotation,  float Speed,
+		float Gravity, bool IsHomingTarget, ABaseUnit* InOwnerUnit, ABaseUnit* InTargetUnit)
+{
+	if (!BPProjectile) // Check if the Actor class is valid
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor class is not valid."));
+		return nullptr;
+	}
+	// Ensure the WorldContextObject is valid and retrieve the World from it
+	if (!WorldContextObject) return nullptr;
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return nullptr;
+
+	// Define spawn parameters
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	// Spawn the actor
+	ABaseProjectile* SpawnedActor = World->SpawnActor<ABaseProjectile>(BPProjectile, Location, Rotation, SpawnParams);
+	if (SpawnedActor)
+	{
+		// Set the custom property
+		SpawnedActor->SetOwnerUnit(InOwnerUnit);
+		SpawnedActor->SetTargetUnit(InTargetUnit);
+		SpawnedActor->ProjectileMovementComponent->InitialSpeed = Speed;
+		SpawnedActor->ProjectileMovementComponent->MaxSpeed = Speed;
+		SpawnedActor->ProjectileMovementComponent->ProjectileGravityScale = Speed;
+		SpawnedActor->IsHomingTarget = IsHomingTarget;
+	}
+
+	return SpawnedActor;
 }
 
 // Called when the game starts or when spawned
