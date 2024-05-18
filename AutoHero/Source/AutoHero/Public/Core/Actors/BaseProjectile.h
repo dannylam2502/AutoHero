@@ -40,8 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
 	ABaseUnit* TargetUnit;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile Settings")
-	bool IsHomingTarget;
 public:
 	UFUNCTION(BlueprintCallable)
 	void BanishUnit(ABaseUnit* Unit);

@@ -149,8 +149,12 @@ ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubcla
 		SpawnedActor->SetTargetUnit(InTargetUnit);
 		SpawnedActor->ProjectileMovementComponent->InitialSpeed = Speed;
 		SpawnedActor->ProjectileMovementComponent->MaxSpeed = Speed;
-		SpawnedActor->ProjectileMovementComponent->ProjectileGravityScale = Speed;
-		SpawnedActor->IsHomingTarget = IsHomingTarget;
+		SpawnedActor->ProjectileMovementComponent->ProjectileGravityScale = Gravity;
+		SpawnedActor->ProjectileMovementComponent->bIsHomingProjectile = IsHomingTarget;
+		if (IsHomingTarget)
+		{
+			SpawnedActor->ProjectileMovementComponent->HomingTargetComponent = InTargetUnit->GetRootComponent();
+		}
 	}
 
 	return SpawnedActor;
