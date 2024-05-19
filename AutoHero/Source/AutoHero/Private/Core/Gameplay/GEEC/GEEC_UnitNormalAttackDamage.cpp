@@ -12,7 +12,13 @@ void UGEEC_UnitNormalAttackDamage::Execute_Implementation(
 {
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-	
+
+	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+
+	FAggregatorEvaluateParameters EvaluationParameters;
+	EvaluationParameters.SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	EvaluationParameters.TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+
 	float SourceAttackDamage = Cast<UUnitAttributeSet>(SourceASC->GetSet<UUnitAttributeSet>())->GetAttackDamage();
 	float TargetDefense = Cast<UUnitAttributeSet>(TargetASC->GetSet<UUnitAttributeSet>())->GetDefense();
 	float DamageDone = SourceAttackDamage / ((TargetDefense + 100.0f) / 100.0f);
@@ -20,5 +26,5 @@ void UGEEC_UnitNormalAttackDamage::Execute_Implementation(
 	{
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UUnitAttributeSet::GetHealthAttribute(), EGameplayModOp::Additive, -DamageDone));
 	}
-	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
+	//Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 }

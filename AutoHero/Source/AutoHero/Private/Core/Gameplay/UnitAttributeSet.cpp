@@ -107,10 +107,22 @@ void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		// This Gameplay Effect is changing Health. Apply it, but restrict the value first.
 		// In this case, Health's base value must be non-negative.
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+
+		// Broadcast Event
+		const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext(); 
+		AActor* Instigator = EffectContext.GetOriginalInstigator();
+		AActor* Causer = EffectContext.GetEffectCauser();
+		
+		const float FinalDamage = -Data.EvaluatedData.Magnitude;
+
+		if (OnDamageReceived.IsBound())
+		{
+			OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
+		}
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
-		// This Gameplay Effect is changing Health. Apply it, but restrict the value first.
+		// This Gameplay Effect is changing Mana. Apply it, but restrict the value first.
 		// In this case, Health's base value must be non-negative.
 		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 	}

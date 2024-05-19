@@ -76,4 +76,7 @@ protected:
 	
 	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
+
+	UFUNCTION()
+	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);
 };

@@ -177,6 +177,16 @@ void ABaseUnit::BeginPlay()
 	
 	UHealthBar* HealthBar = Cast<UHealthBar>(HealthWidgetComp->GetUserWidgetObject());
 	HealthBar->SetOwnerUnit(this);
+
+	if (Attributes)
+	{
+		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
+	}
+}
+
+void ABaseUnit::OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ON DAMAGE RECEIVED %f"), InDamage);
 }
 
 // Called every frame
