@@ -184,11 +184,6 @@ void ABaseUnit::BeginPlay()
 	}
 }
 
-void ABaseUnit::OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage)
-{
-	UE_LOG(LogTemp, Warning, TEXT("ON DAMAGE RECEIVED %f"), InDamage);
-}
-
 // Called every frame
 void ABaseUnit::Tick(float DeltaTime)
 {
