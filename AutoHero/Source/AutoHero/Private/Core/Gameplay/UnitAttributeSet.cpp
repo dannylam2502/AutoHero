@@ -115,7 +115,7 @@ void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		
 		const float FinalDamage = -Data.EvaluatedData.Magnitude;
 
-		if (OnDamageReceived.IsBound())
+		if (FinalDamage > 0 && OnDamageReceived.IsBound())
 		{
 			OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
 		}
