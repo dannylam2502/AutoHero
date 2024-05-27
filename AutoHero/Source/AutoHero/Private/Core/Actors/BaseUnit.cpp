@@ -170,13 +170,35 @@ void ABaseUnit::BeginPlay()
 		Attributes = AbilitySystemComponent->GetSet<UUnitAttributeSet>();
 	}
 	
-	if (Attributes == NULL || Attributes == nullptr)
+	if (Attributes == nullptr || Attributes == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SOMETHING WENT WRONG"))
+		UE_LOG(LogTemp, Error, TEXT("SOMETHING WENT WRONG ABOUT ATTRIBUTES"))
 	}
-	
-	UHealthBar* HealthBar = Cast<UHealthBar>(HealthWidgetComp->GetUserWidgetObject());
-	HealthBar->SetOwnerUnit(this);
+
+	if (HealthWidgetComp == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("HealthWidgetComp is null"));
+	}
+	else
+	{
+		UUserWidget* UserWidget = HealthWidgetComp->GetUserWidgetObject();
+		if (UserWidget == nullptr)
+		{
+			UE_LOG(LogTemp, Error, TEXT("HealthWidgetComp->GetUserWidgetObject() returned null"));
+		}
+		else
+		{
+			UHealthBar* HealthBar = Cast<UHealthBar>(UserWidget);
+			if (HealthBar == nullptr)
+			{
+				UE_LOG(LogTemp, Error, TEXT("HealthWidgetComp->GetUserWidgetObject() returned null"));
+			}
+			else
+			{
+				HealthBar->SetOwnerUnit(this);
+			}
+		}
+	}
 
 	if (Attributes)
 	{

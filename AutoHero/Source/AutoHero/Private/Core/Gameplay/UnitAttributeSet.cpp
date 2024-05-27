@@ -112,12 +112,15 @@ void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext(); 
 		AActor* Instigator = EffectContext.GetOriginalInstigator();
 		AActor* Causer = EffectContext.GetEffectCauser();
-		
-		const float FinalDamage = -Data.EvaluatedData.Magnitude;
 
-		if (FinalDamage > 0 && OnDamageReceived.IsBound())
+		if (Data.EvaluatedData.IsValid)
 		{
-			OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
+			const float FinalDamage = -Data.EvaluatedData.Magnitude;
+
+			if (FinalDamage > 0 && OnDamageReceived.IsBound())
+			{
+				OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
+			}
 		}
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
