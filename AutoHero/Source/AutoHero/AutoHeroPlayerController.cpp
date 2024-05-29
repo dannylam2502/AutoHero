@@ -6,9 +6,12 @@
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AutoHeroCharacter.h"
+#include "AutoHeroGameMode.h"
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameMode/NormalGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 AAutoHeroPlayerController::AAutoHeroPlayerController()
 {
@@ -114,4 +117,40 @@ void AAutoHeroPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void AAutoHeroPlayerController::SetPlayerReady()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		// Handle directly if this is the server
+		ServerSetPlayerReady_Implementation();
+	}
+	else
+	{
+		// Otherwise, send a request to the server
+		ServerSetPlayerReady();
+	}
+}
+
+void AAutoHeroPlayerController::ServerSetPlayerReady_Implementation()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		// Ensure this function is only called on the server
+		if (HasAuthority())
+		{
+			ANormalGameMode* GameMode = Cast<ANormalGameMode>(UGameplayStatics::GetGameMode(this));
+			if (GameMode)
+			{
+				GameMode->PlayerReady(this);
+			}
+		}
+	}
+}
+
+bool AAutoHeroPlayerController::ServerSetPlayerReady_Validate()
+{
+	
+	return true;
 }

@@ -27,3 +27,44 @@ void ANormalGameMode::Spawn()
 	// 	}
 	// }
 }
+
+
+void ANormalGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Start the 30-second timer
+	GetWorldTimerManager().SetTimer(StartGameTimerHandle, this, &ANormalGameMode::StartGame, 30.0f, false);
+}
+
+void ANormalGameMode::PlayerReady(APlayerController* PlayerController)
+{
+	// Add the player to the ready list
+	ReadyPlayers.Add(PlayerController);
+
+	// Check if all players are ready
+	CheckIfAllPlayersReady();
+}
+
+void ANormalGameMode::CheckIfAllPlayersReady()
+{
+	if (ReadyPlayers.Num() >= RequiredNumPlayers)
+	{
+		// If all players are ready, start the game
+		GetWorldTimerManager().ClearTimer(StartGameTimerHandle);
+		StartGame();
+	}
+}
+
+void ANormalGameMode::StartGame()
+{
+	// Logic to transition all players to the game state
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PlayerController = It->Get();
+		if (PlayerController)
+		{
+			PlayerController->ClientTravel(TEXT("Level_DevMap"), ETravelType::TRAVEL_Absolute);
+		}
+	}
+}

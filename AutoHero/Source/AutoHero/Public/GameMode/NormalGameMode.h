@@ -20,4 +20,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Spawn();
+
+	virtual void BeginPlay() override;
+	
+	TArray<APlayerController*> ReadyPlayers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Networking")
+	int32 RequiredNumPlayers;
+	FTimerHandle StartGameTimerHandle;
+    
+	void PlayerReady(APlayerController* PlayerController);
+	void CheckIfAllPlayersReady();
+	void StartGame();
 };

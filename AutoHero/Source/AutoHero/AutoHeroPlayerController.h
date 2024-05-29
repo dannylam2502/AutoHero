@@ -55,6 +55,15 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
+	// Networking
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerReady();
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSetPlayerReady();
+	void ServerSetPlayerReady_Implementation();
+	bool ServerSetPlayerReady_Validate();
+
 private:
 	FVector CachedDestination;
 
