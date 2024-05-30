@@ -24,6 +24,7 @@ void UGEEC_UnitNormalAttackDamage::Execute_Implementation(
 	float DamageDone = SourceAttackDamage / ((TargetDefense + 100.0f) / 100.0f);
 	if (DamageDone > 0.0f)
 	{
+		DamageDone += FMath::Rand() % 10;
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(UUnitAttributeSet::GetHealthAttribute(), EGameplayModOp::Additive, -DamageDone));
 	}
 	//Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);

@@ -14,7 +14,10 @@ class AUTOHERO_API ANormalGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+
 public:
+	ANormalGameMode();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseUnit> ActorToSpawn;
 
@@ -26,6 +29,8 @@ public:
 	TArray<APlayerController*> ReadyPlayers;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Networking")
 	int32 RequiredNumPlayers;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Networking")
+	bool bGameStarted;
 	FTimerHandle StartGameTimerHandle;
     
 	void PlayerReady(APlayerController* PlayerController);

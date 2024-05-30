@@ -28,12 +28,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Which team?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
 
 	// The number *Star
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Unit Level")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Level")
 	int UnitLevel;
+	// Attributes
+	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
+	const class UUnitAttributeSet* Attributes;
 	
 	float GetCurrentHealth() const;
 	float GetMaxHealth() const;
@@ -65,6 +68,7 @@ public:
 		float Gravity, bool IsHomingTarget ,ABaseUnit* InOwnerUnit = nullptr, ABaseUnit* InTargetUnit = nullptr);
 	
 protected:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -73,9 +77,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
-	
-	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
-	const class UUnitAttributeSet* Attributes;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
 	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);

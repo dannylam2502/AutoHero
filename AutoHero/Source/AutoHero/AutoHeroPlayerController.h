@@ -64,6 +64,9 @@ protected:
 	void ServerSetPlayerReady_Implementation();
 	bool ServerSetPlayerReady_Validate();
 
+	UFUNCTION(BlueprintCallable)
+	void JoinGame();
+
 private:
 	FVector CachedDestination;
 

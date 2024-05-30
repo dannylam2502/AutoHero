@@ -9,6 +9,7 @@
 #include "Core/Gameplay/UnitAttributeSet.h"
 #include "Core/Gameplay/UnitGameplayAbility.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/HealthBar.h"
 
 #define DETECTION_RADIUS 10000.0f
@@ -18,6 +19,8 @@ ABaseUnit::ABaseUnit()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	bAlwaysRelevant = true;
 
     if (RootComponent == nullptr)
     {
@@ -158,6 +161,14 @@ ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubcla
 	}
 
 	return SpawnedActor;
+}
+
+void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseUnit, ETeam);
+	DOREPLIFETIME(ABaseUnit, UnitLevel);
 }
 
 // Called when the game starts or when spawned

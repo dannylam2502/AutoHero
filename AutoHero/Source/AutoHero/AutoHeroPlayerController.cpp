@@ -154,3 +154,12 @@ bool AAutoHeroPlayerController::ServerSetPlayerReady_Validate()
 	
 	return true;
 }
+
+void AAutoHeroPlayerController::JoinGame()
+{
+	if (!HasAuthority())
+	{
+		FString ServerAddress = TEXT("127.0.0.1:7777");
+		GetWorld()->GetFirstPlayerController()->ClientTravel(ServerAddress, TRAVEL_Absolute);
+	}
+}
