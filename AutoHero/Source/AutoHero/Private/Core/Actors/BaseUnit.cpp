@@ -35,6 +35,9 @@ ABaseUnit::ABaseUnit()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	NormalAttackAbility = nullptr;
+
+	NetUpdateFrequency = 66.0f;
+	MinNetUpdateFrequency = 33.0f;
 	
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
@@ -216,12 +219,41 @@ void ABaseUnit::BeginPlay()
 		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
 	}
 }
+//
+// void ABaseUnit::OnRep_ReplicatedMovement()
+// {
+// 	SetActorRotation(ReplicatedMovement);
+// }
+//
+// void ABaseUnit::MulticastSetReplicatedMovement_Implementation(FRotator NewRotation)
+// {
+// 	if (!HasAuthority())
+// 	{
+// 		SetActorRotation(NewRotation);
+// 	}
+// }
+//
+// void ABaseUnit::ServerSetReplicatedMovement_Implementation(FRotator NewRotation)
+// {
+// 	ReplicatedMovement = NewRotation;
+// 	MulticastSetReplicatedMovement(NewRotation);
+// }
+//
+// bool ABaseUnit::ServerSetReplicatedMovement_Validate(FRotator NewRotation)
+// {
+// 	return true;
+// }
 
 // Called every frame
 void ABaseUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Example: Synchronize character rotation
+	// if (HasAuthority())
+	// {
+	// 	ServerSetReplicatedMovement(GetActorRotation());
+	// }
 }
 
 // Called to bind functionality to input
