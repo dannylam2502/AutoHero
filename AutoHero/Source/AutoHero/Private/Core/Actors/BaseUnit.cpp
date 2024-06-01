@@ -172,6 +172,8 @@ void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 
 	DOREPLIFETIME(ABaseUnit, ETeam);
 	DOREPLIFETIME(ABaseUnit, UnitLevel);
+	DOREPLIFETIME(ABaseUnit, Attributes);
+	DOREPLIFETIME(ABaseUnit, AbilitySystemComponent);
 }
 
 // Called when the game starts or when spawned

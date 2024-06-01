@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Level")
 	int UnitLevel;
 	// Attributes
-	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
+	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 	
 	float GetCurrentHealth() const;
@@ -75,7 +75,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HealthWidgetComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
