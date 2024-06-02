@@ -21,6 +21,39 @@ void UUnitAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UUnitAttributeSet, AttackSpeed, COND_None, REPNOTIFY_Always);
 }
 
+void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	// Check to see if this call affects our Health by using the Property Getter.
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		// This Gameplay Effect is changing Health. Apply it, but restrict the value first.
+		// In this case, Health's base value must be non-negative.
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+
+		// Broadcast Event
+		const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext(); 
+		AActor* Instigator = EffectContext.GetOriginalInstigator();
+		AActor* Causer = EffectContext.GetEffectCauser();
+
+		if (Data.EvaluatedData.IsValid)
+		{
+			const float FinalDamage = -Data.EvaluatedData.Magnitude;
+
+			if (FinalDamage > 0 && OnDamageReceived.IsBound())
+			{
+				OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
+			}
+		}
+	}
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		// This Gameplay Effect is changing Mana. Apply it, but restrict the value first.
+		// In this case, Health's base value must be non-negative.
+		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+	}
+}
+
 // float UUnitAttributeSet::GetHealth() const
 // {
 // 	return FMath::Max(Health.GetCurrentValue(), 0.0f);
@@ -96,37 +129,4 @@ void UUnitAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAtta
 void UUnitAttributeSet::OnRep_Defense(const FGameplayAttributeData& OldDefense)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUnitAttributeSet, AttackDamage, OldDefense);
-}
-
-void UUnitAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-	// Check to see if this call affects our Health by using the Property Getter.
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		// This Gameplay Effect is changing Health. Apply it, but restrict the value first.
-		// In this case, Health's base value must be non-negative.
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-
-		// Broadcast Event
-		const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext(); 
-		AActor* Instigator = EffectContext.GetOriginalInstigator();
-		AActor* Causer = EffectContext.GetEffectCauser();
-
-		if (Data.EvaluatedData.IsValid)
-		{
-			const float FinalDamage = -Data.EvaluatedData.Magnitude;
-
-			if (FinalDamage > 0 && OnDamageReceived.IsBound())
-			{
-				OnDamageReceived.Broadcast(Instigator, Causer, Data.EffectSpec.CapturedSourceTags.GetSpecTags(), FinalDamage);
-			}
-		}
-	}
-	if (Data.EvaluatedData.Attribute == GetManaAttribute())
-	{
-		// This Gameplay Effect is changing Mana. Apply it, but restrict the value first.
-		// In this case, Health's base value must be non-negative.
-		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
-	}
 }

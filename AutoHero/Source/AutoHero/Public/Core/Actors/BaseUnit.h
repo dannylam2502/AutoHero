@@ -80,18 +80,4 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
 	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);
-
-	// Network sync
-	// Rotation
-	// UPROPERTY(ReplicatedUsing = OnRep_ReplicatedMovement)
-	// FRotator ReplicatedMovement;
-	//
-	// UFUNCTION()
-	// void OnRep_ReplicatedMovement();
-	//
-	// UFUNCTION(Server, Reliable, WithValidation)
-	// void ServerSetReplicatedMovement(FRotator NewRotation);
-	//
-	// UFUNCTION(NetMulticast, Reliable)
-	// void MulticastSetReplicatedMovement(FRotator NewRotation);
 };
