@@ -13,6 +13,16 @@ class AAutoHeroGameMode : public AGameModeBase
 
 public:
 	AAutoHeroGameMode();
+
+	virtual void BeginPlay() override;
+	
+	TArray<APlayerController*> ReadyPlayers;
+    int32 TotalPlayers;
+    FTimerHandle StartGameTimerHandle;
+    
+    void PlayerReady(APlayerController* PlayerController);
+    void CheckIfAllPlayersReady();
+    void StartGame();
 };
 
 
