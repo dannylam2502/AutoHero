@@ -78,22 +78,24 @@ void ANormalGameMode::StartGame()
 	// Clear the timer to ensure it doesn't try to start the game again
 	GetWorldTimerManager().ClearTimer(StartGameTimerHandle);
 
-	FString LevelName = TEXT("/Game/Maps/Level_DevMap");  // Replace with your map path
-	UE_LOG(LogTemp, Warning, TEXT("Starting game, traveling to map: %s"), *LevelName);
-
-	bool bTravelSuccess = GetWorld()->ServerTravel(LevelName + TEXT("?listen"));
-	if (bTravelSuccess)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ServerTravel called successfully."));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ServerTravel failed."));
-	}
+	
+	// FString LevelName = TEXT("/Game/Maps/Level_DevMap");  // Replace with your map path
+	// UE_LOG(LogTemp, Warning, TEXT("Starting game, traveling to map: %s"), *LevelName);
+	//
+	// bool bTravelSuccess = GetWorld()->ServerTravel(LevelName + TEXT("?listen"));
+	// if (bTravelSuccess)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("ServerTravel called successfully."));
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("ServerTravel failed."));
+	// }
 
 	ANormalModeGameState* NormalGameState = GetGameState<ANormalModeGameState>();
 	if (NormalGameState && HasAuthority())
 	{
+		NormalGameState->LoadLevel("Level_DevMap");
 		NormalGameState->StartPreparation();
 	}
 }

@@ -38,6 +38,22 @@ void ANormalModeGameState::EndPreparation()
     }
 }
 
+void ANormalModeGameState::LoadLevel(const FString& LevelName)
+{
+    if (HasAuthority())
+    {
+        UGameplayStatics::LoadStreamLevel(this, FName(*LevelName), true, true, FLatentActionInfo());
+    }
+}
+
+void ANormalModeGameState::UnloadLevel(const FString& LevelName)
+{
+    if (HasAuthority())
+    {
+        UGameplayStatics::UnloadStreamLevel(this, FName(*LevelName), FLatentActionInfo(), true);
+    }
+}
+
 bool ANormalModeGameState::IsPreparationPhase()
 {
     return bIsPreparationPhase;
