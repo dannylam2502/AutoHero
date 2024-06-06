@@ -5,6 +5,7 @@
 
 #include "GameEnums.h"
 #include "Core/Actors/BaseUnit.h"
+#include "GameState/NormalModeGameState.h"
 #include "Kismet/GameplayStatics.h"
 
 ANormalGameMode::ANormalGameMode()
@@ -90,20 +91,9 @@ void ANormalGameMode::StartGame()
 		UE_LOG(LogTemp, Error, TEXT("ServerTravel failed."));
 	}
 
-	// if (HasAuthority())
-	// {
-	// 	GetWorld()->ServerTravel("Game/Maps/Level_DevMap?listen");
-	// }
-
-	// Logic to transition all players to the game state
-	// for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	// {
-	// 	APlayerController* PlayerController = It->Get();
-	// 	if (PlayerController)
-	// 	{
-	// 		PlayerController->ClientTravel(TEXT("/Game/Maps/GameMap?listen"), ETravelType::TRAVEL_Absolute);
-	// 	}
-	// }
-
-
+	ANormalModeGameState* NormalGameState = GetGameState<ANormalModeGameState>();
+	if (NormalGameState && HasAuthority())
+	{
+		NormalGameState->StartPreparation();
+	}
 }

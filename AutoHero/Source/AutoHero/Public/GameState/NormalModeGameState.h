@@ -13,5 +13,35 @@ UCLASS()
 class AUTOHERO_API ANormalModeGameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+public:
+	ANormalModeGameState();
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(ReplicatedUsing = OnRep_RoundState)
+	int32 CurrentRound;
+
+	UPROPERTY(ReplicatedUsing = OnRep_IsPreparationPhase)
+	bool bIsPreparationPhase;
+
+	FTimerHandle RoundTimerHandle;
+	FTimerHandle PreparationTimerHandle;
+
+	UFUNCTION()
+	void OnRep_RoundState();
+
+	UFUNCTION()
+	void OnRep_IsPreparationPhase();
+
+	void UpdateAllAIBlackboardKeys(bool bCanExecute);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+public:
+	void StartRound();
+	void EndRound();
+	void StartPreparation();
+	void EndPreparation();
+
+	bool IsPreparationPhase();
+	int32 GetCurrentRound();
 };
