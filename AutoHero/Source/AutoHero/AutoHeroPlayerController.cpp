@@ -10,6 +10,8 @@
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Core/Camera/AHCameraActor.h"
+#include "Core/Camera/AHPlayerCameraManager.h"
 #include "GameMode/NormalGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,12 +21,43 @@ AAutoHeroPlayerController::AAutoHeroPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+
+	// Set the custom camera manager class
+	PlayerCameraManagerClass = AAHPlayerCameraManager::StaticClass();
 }
 
 void AAutoHeroPlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	//
+	// if (HasAuthority())
+	// {
+	// 	// Spawn the camera actor if it's not already placed in the level
+	// 	if (CameraActorClass)
+	// 	{
+	// 		CameraActor = GetWorld()->SpawnActor<AActor>(CameraActorClass);
+	// 		if (CameraActor)
+	// 		{
+	// 			SetViewTarget(CameraActor);
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		// Find the camera actor if it's already placed in the level
+	// 		CameraActor = UGameplayStatics::GetActorOfClass(GetWorld(), AAHCameraActor::StaticClass());
+	// 		if (CameraActor)
+	// 		{
+	// 			SetViewTarget(CameraActor);
+	// 		}
+	// 	}
+	// }
+
+	APawn* DefaultPawn = this->GetPawn();
+	if (DefaultPawn)
+	{
+		//DefaultPawn->SetActorRelativeRotation(FRotator(0.0, 0.0, 90.0));
+	}
 
 	//Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))

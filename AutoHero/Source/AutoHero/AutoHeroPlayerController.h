@@ -48,6 +48,11 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TSubclassOf<AActor> CameraActorClass;
+
+	AActor* CameraActor;
+
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
