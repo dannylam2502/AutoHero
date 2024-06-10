@@ -5,6 +5,7 @@
 
 #include "GameEnums.h"
 #include "Core/Actors/BaseUnit.h"
+#include "GameInstances/NormalGameInstance.h"
 #include "GameState/NormalModeGameState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -96,6 +97,19 @@ void ANormalGameMode::StartGame()
 	if (NormalGameState && HasAuthority())
 	{
 		NormalGameState->LoadLevel("Level_DevMap");
+		
+		// Set a timer or wait for the level to load
+		GetWorldTimerManager().SetTimerForNextTick(this, &ANormalGameMode::OnLevelLoaded);
 		NormalGameState->StartPreparation();
+	}
+}
+
+void ANormalGameMode::OnLevelLoaded()
+{
+	// Get the game instance and trigger the delegate
+	UNormalGameInstance* GameInstance = Cast<UNormalGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->TriggerLevelLoaded();
 	}
 }
