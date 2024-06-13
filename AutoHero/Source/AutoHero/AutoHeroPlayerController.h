@@ -19,46 +19,14 @@ class AAutoHeroPlayerController : public APlayerController
 public:
 	AAutoHeroPlayerController();
 
-	/** Time Threshold to know if it was a short press */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float ShortPressThreshold;
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerGenerateHeroList();
 
-	/** FX Class that we will spawn when clicking */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UNiagaraSystem* FXCursor;
-
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
-	
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* SetDestinationClickAction;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* SetDestinationTouchAction;
+	void GenerateHeroList();
 
 protected:
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
-	virtual void SetupInputComponent() override;
-	
 	// To add mapping context
 	virtual void BeginPlay();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<AActor> CameraActorClass;
-
-	AActor* CameraActor;
-
-	/** Input handlers for SetDestination action. */
-	void OnInputStarted();
-	void OnSetDestinationTriggered();
-	void OnSetDestinationReleased();
-	void OnTouchTriggered();
-	void OnTouchReleased();
 
 	// Networking
 	UFUNCTION(BlueprintCallable)
@@ -69,14 +37,10 @@ protected:
 	void ServerSetPlayerReady_Implementation();
 	bool ServerSetPlayerReady_Validate();
 
+	
+
 	UFUNCTION(BlueprintCallable)
 	void JoinGame();
-
-private:
-	FVector CachedDestination;
-
-	bool bIsTouch; // Is it a touch device
-	float FollowTime; // For how long it has been pressed
 };
 
 
