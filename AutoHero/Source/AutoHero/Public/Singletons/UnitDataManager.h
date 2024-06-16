@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Defines/FUnitData.h"
 #include "UnitDataManager.generated.h"
 
 /**
@@ -19,6 +19,11 @@ public:
 
 	void Initialize();
 	//FUnit 
-	
-	
+	FUnitData* GetUnitDataByID(int32 UnitID);
+private:
+	UPROPERTY()
+	UDataTable* UnitDataTable;
+
+	TMap<int32, FUnitData> UnitDataMap;
+	void PopulateUnitDataMap();
 };

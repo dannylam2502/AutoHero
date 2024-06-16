@@ -60,7 +60,7 @@ void AAutoHeroGameMode::StartGame()
 	// Logic to transition all players to the game state
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		APlayerController* PlayerController = It->Get();
+		AAutoHeroPlayerController* PlayerController = Cast<AAutoHeroPlayerController>(It->Get());
 		if (PlayerController)
 		{
 			PlayerController->ClientTravel(TEXT("Level_DevMap"), ETravelType::TRAVEL_Absolute);

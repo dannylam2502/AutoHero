@@ -37,13 +37,14 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
+
 	void StartRound();
 	void EndRound();
 	void StartPreparation();
 	void EndPreparation();
 	void LoadLevel(const FString& LevelName);
 	void UnloadLevel(const FString& LevelName);
-
 	bool IsPreparationPhase();
 	int32 GetCurrentRound();
+
 };

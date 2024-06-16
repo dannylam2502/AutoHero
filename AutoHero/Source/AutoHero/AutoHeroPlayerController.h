@@ -19,11 +19,6 @@ class AAutoHeroPlayerController : public APlayerController
 public:
 	AAutoHeroPlayerController();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerGenerateHeroList();
-
-	void GenerateHeroList();
-
 protected:
 	// To add mapping context
 	virtual void BeginPlay();
@@ -37,10 +32,17 @@ protected:
 	void ServerSetPlayerReady_Implementation();
 	bool ServerSetPlayerReady_Validate();
 
-	
-
 	UFUNCTION(BlueprintCallable)
 	void JoinGame();
+
+public:
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerGenerateUnitList();
+protected:
+	void ServerGenerateUnitList_Implementation();
+	bool ServerGenerateUnitList_Validate();
+
+	void GenerateUnitList();
 };
 
 
