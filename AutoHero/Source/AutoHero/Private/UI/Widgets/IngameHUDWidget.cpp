@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerState/AutoHeroPlayerState.h"
 #include "Singletons/UnitDataManager.h"
+#include "UI/Widgets/UnitSelectionSlot.h"
 
 
 void UIngameHUDWidget::LoadListHeroes()
@@ -23,10 +24,11 @@ void UIngameHUDWidget::LoadListHeroes()
 			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitID);
 			if (UnitData)
 			{
-				UUserWidget* UnitSlotWidget = CreateWidget<UUserWidget>(this, UnitSlot);
-				if (UnitSlotWidget)
+				UUnitSelectionSlot* UnitSelectionSlot = CreateWidget<UUnitSelectionSlot>(this, UnitSlot);
+				if (UnitSelectionSlot)
 				{
-					UnitList->AddChildToVerticalBox(UnitSlotWidget);
+					UnitList->AddChildToVerticalBox(UnitSelectionSlot);
+					UnitSelectionSlot->LoadData(UnitData);
 				}
 			}
 		}
