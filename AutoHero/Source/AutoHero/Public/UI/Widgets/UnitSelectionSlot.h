@@ -27,4 +27,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetIcon(UTexture2D* NewIcon);
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
+	TSubclassOf<class ABaseUnit> UnitClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
+	TSubclassOf<UUserWidget> DragVisualClass;
 };
