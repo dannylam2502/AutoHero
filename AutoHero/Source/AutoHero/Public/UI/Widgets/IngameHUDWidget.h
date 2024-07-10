@@ -6,6 +6,7 @@
 #include "UI/Widgets/BaseWidget.h"
 #include "IngameHUDWidget.generated.h"
 
+class UUnitSelectionSlot;
 class UBaseWidgetBlueprint;
 class UVerticalBox;
 /**
@@ -17,6 +18,8 @@ class AUTOHERO_API UIngameHUDWidget : public UBaseWidget
 	GENERATED_BODY()
 	
 public:
+	UIngameHUDWidget();
+	
 	UFUNCTION(BlueprintCallable)
 	void LoadListHeroes();
 	
@@ -25,4 +28,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Slot")
 	TSubclassOf<UBaseWidget> UnitSlot;
+
+	UPROPERTY(BlueprintReadOnly)
+	UUnitSelectionSlot* CurrentSelectedSlot;
+	
 };

@@ -12,6 +12,11 @@
 #include "UI/Widgets/UnitSelectionSlot.h"
 
 
+UIngameHUDWidget::UIngameHUDWidget()
+{
+	CurrentSelectedSlot = nullptr;
+}
+
 void UIngameHUDWidget::LoadListHeroes()
 {
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
@@ -29,6 +34,7 @@ void UIngameHUDWidget::LoadListHeroes()
 				{
 					UnitList->AddChildToVerticalBox(UnitSelectionSlot);
 					UnitSelectionSlot->LoadData(UnitData);
+					UnitSelectionSlot->SetIngameHUD(this);
 				}
 			}
 		}
