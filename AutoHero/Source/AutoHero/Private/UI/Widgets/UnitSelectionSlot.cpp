@@ -4,6 +4,7 @@
 #include "UI/Widgets/UnitSelectionSlot.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
@@ -74,6 +75,7 @@ void UUnitSelectionSlot::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent
 	{
 		return;
 	}
+
 	FVector2D MousePosition = InDragDropEvent.GetScreenSpacePosition();
 	OnSlotDragLeaveDel.Broadcast(this, MousePosition);
 	// Change the size or visibility of the DefaultDragVisual
@@ -83,7 +85,14 @@ void UUnitSelectionSlot::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent
 		DragVisual->SetVisibility(ESlateVisibility::Hidden);
 	}
 
-	SetVisibility(ESlateVisibility::Hidden);
+	FGeometry Geometry = GetCachedGeometry();
+	FVector2D Position = Geometry.GetAbsolutePosition() + Geometry.GetAbsoluteSize();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("UUnitSelectionSlot::NativeOnDragLeave %f, %f"), MousePosition.X, Position.X));
+	if (MousePosition.X > Position.X * 0.9f) // 10% offset
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+
 	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
 }
 

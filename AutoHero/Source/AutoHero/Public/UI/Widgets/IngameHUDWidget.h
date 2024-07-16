@@ -50,4 +50,6 @@ public:
 
 	UFUNCTION()
 	void OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition);
+
+	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

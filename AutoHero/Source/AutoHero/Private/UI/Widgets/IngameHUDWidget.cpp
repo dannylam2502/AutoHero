@@ -4,6 +4,8 @@
 #include "UI/Widgets/IngameHUDWidget.h"
 
 #include "AutoHero/AutoHeroPlayerController.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/VerticalBox.h"
 #include "Core/Actors/PlaceholderUnit.h"
 #include "Defines/FUnitData.h"
@@ -72,16 +74,22 @@ void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVecto
 void UIngameHUDWidget::OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDragOutsideEvent"));
+	
+}
+
+void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
 	// Don't do anything if not current selected widget
-	if (CurrentSelectedSlot == InUnitSlot)
+	if (CurrentSelectedSlot)
 	{
 		if (PlaceholderUnitClass && GetWorld())
 		{
 			PlaceholderUnit = GetWorld()->SpawnActor<APlaceholderUnit>(PlaceholderUnitClass);
 			if (PlaceholderUnit)
 			{
-				
+			
 			}
 		}
 	}
+	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
 }
