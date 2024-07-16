@@ -10,13 +10,19 @@ AUnitCell::AUnitCell()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CellMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CellMesh"));
+	RootComponent = CellMesh;
 }
 
 // Called when the game starts or when spawned
 void AUnitCell::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	// Set the default material
+    if (DefaultMaterial)
+    {
+        CellMesh->SetMaterial(0, DefaultMaterial);
+    }
 }
 
 void AUnitCell::InitializeCell(FVector Location, int32 Row, int32 Column)
@@ -28,7 +34,19 @@ void AUnitCell::InitializeCell(FVector Location, int32 Row, int32 Column)
 
 void AUnitCell::HighlightCell(bool bHighlight)
 {
-	
+	if (bHighlight && HighlightMaterial)
+	{
+		CellMesh->SetMaterial(0, HighlightMaterial);
+	}
+	else if (DefaultMaterial)
+	{
+		CellMesh->SetMaterial(0, DefaultMaterial);
+	}
+}
+
+FVector AUnitCell::GetCellCenterLocation()
+{
+	return GetActorLocation();
 }
 
 // Called every frame

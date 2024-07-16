@@ -41,10 +41,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	FVector GetGridCellLocation(int32 Row, int32 Column);
 
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	FVector GetNearestGridLocation(const FVector& WorldPosition);
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void HighlightNearestCell(const FVector& WorldPosition);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	TArray<AUnitCell*> GridCells;
+	AUnitCell* LastHighlightedCell;
 };

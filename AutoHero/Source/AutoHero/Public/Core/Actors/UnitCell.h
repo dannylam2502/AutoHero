@@ -21,9 +21,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GridCell")
 	void HighlightCell(bool bHighlight);
 
+	FVector GetCellCenterLocation();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* CellMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cell")
+	UMaterialInterface* DefaultMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cell")
+	UMaterialInterface* HighlightMaterial;
 
 	int32 CellRow;
 	int32 CellColumn;
@@ -33,7 +41,5 @@ protected:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	
 	
 };

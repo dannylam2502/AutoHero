@@ -11,7 +11,7 @@ AUnitGrid::AUnitGrid()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	LastHighlightedCell = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -52,5 +52,46 @@ void AUnitGrid::InitializeGrid()
 FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
 {
 	return StartLocation + FVector(Row * CellSize.X, Column * CellSize.Y, 0.0f);
+}
+
+FVector AUnitGrid::GetNearestGridLocation(const FVector& WorldPosition)
+{
+	FVector LocalPosition = WorldPosition - StartLocation;
+	int32 CellX = FMath::RoundToInt(LocalPosition.X / CellSize.X);
+	int32 CellY = FMath::RoundToInt(LocalPosition.Y / CellSize.Y);
+	int32 CellZ = FMath::RoundToInt(LocalPosition.Z / CellSize.Z);
+
+	return StartLocation + FVector(CellX * CellSize.X, CellY * CellSize.Y, CellZ * CellSize.Z);
+}
+
+void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
+{
+	AUnitCell* NearestCell = nullptr;
+	float MinDistance = FLT_MAX;
+
+	for (AActor* Actor : this->GridCells)
+	{
+		AUnitCell* Cell = Cast<AUnitCell>(Actor);
+		if (Cell)
+		{
+			float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
+			if (Distance < MinDistance)
+			{
+				MinDistance = Distance;
+				NearestCell = Cell;
+			}
+		}
+	}
+
+	if (NearestCell)
+	{
+		if (LastHighlightedCell && LastHighlightedCell != NearestCell)
+		{
+			LastHighlightedCell->HighlightCell(false);
+		}
+
+		NearestCell->HighlightCell(true);
+		LastHighlightedCell = NearestCell;
+	}
 }
 

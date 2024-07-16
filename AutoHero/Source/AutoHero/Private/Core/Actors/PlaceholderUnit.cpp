@@ -4,6 +4,7 @@
 #include "Core/Actors/PlaceholderUnit.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Core/Actors/UnitGrid.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -38,6 +39,12 @@ void APlaceholderUnit::Tick(float DeltaTime)
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
 	{
 		SetActorLocation(HitResult.Location);
+		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+		// Highlight the nearest cell in the grid manager
+		if (UnitGrid)
+		{
+			UnitGrid->HighlightNearestCell(GetActorLocation());
+		}
 	}
 }
 
