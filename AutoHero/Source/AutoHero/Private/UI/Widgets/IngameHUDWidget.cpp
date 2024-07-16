@@ -5,6 +5,7 @@
 
 #include "AutoHero/AutoHeroPlayerController.h"
 #include "Components/VerticalBox.h"
+#include "Core/Actors/PlaceholderUnit.h"
 #include "Defines/FUnitData.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerState/AutoHeroPlayerState.h"
@@ -29,13 +30,57 @@ void UIngameHUDWidget::LoadListHeroes()
 			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitID);
 			if (UnitData)
 			{
-				UUnitSelectionSlot* UnitSelectionSlot = CreateWidget<UUnitSelectionSlot>(this, UnitSlot);
+				UUnitSelectionSlot* UnitSelectionSlot = CreateWidget<UUnitSelectionSlot>(this, UnitSlotTemplate);
 				if (UnitSelectionSlot)
 				{
 					UnitList->AddChildToVerticalBox(UnitSelectionSlot);
 					UnitSelectionSlot->LoadData(UnitData);
-					UnitSelectionSlot->SetIngameHUD(this);
+					UnitSelectionSlot->SetDraggingEnable(true);
+					UnitSelectionSlot->OnSlotDragDetectedDel.AddDynamic(this, &UIngameHUDWidget::OnSlotDragDetectedEvent);
+					UnitSelectionSlot->OnSlotDroppedDel.AddDynamic(this, &UIngameHUDWidget::OnSlotDroppedEvent);
+					UnitSelectionSlot->OnSlotDragLeaveDel.AddDynamic(this, &UIngameHUDWidget::UIngameHUDWidget::OnSlotDragLeaveEvent);
+					// Cache the Slot for performance
+					UnitSlots.Add(UnitSelectionSlot);
 				}
+			}
+		}
+	}
+}
+
+void UIngameHUDWidget::OnSlotDragDetectedEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InDragPosition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDraggedEvent"));
+	CurrentSelectedSlot = InUnitSlot;
+	for (auto UnitSlot : UnitSlots)
+	{
+		if (UnitSlot != InUnitSlot)
+		{
+			UnitSlot->SetDraggingEnable(false);
+		}
+	}
+}
+
+void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InDropPosition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDroppedEvent"));
+	for (auto UnitSlot : UnitSlots)
+	{
+		UnitSlot->SetDraggingEnable(true);
+	}
+}
+
+void UIngameHUDWidget::OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDragOutsideEvent"));
+	// Don't do anything if not current selected widget
+	if (CurrentSelectedSlot == InUnitSlot)
+	{
+		if (PlaceholderUnitClass && GetWorld())
+		{
+			PlaceholderUnit = GetWorld()->SpawnActor<APlaceholderUnit>(PlaceholderUnitClass);
+			if (PlaceholderUnit)
+			{
+				
 			}
 		}
 	}

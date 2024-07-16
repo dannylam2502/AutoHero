@@ -3,6 +3,7 @@
 
 #include "GameMode/NormalGameMode.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "GameEnums.h"
 #include "Core/Actors/BaseUnit.h"
 #include "GameInstances/NormalGameInstance.h"
@@ -39,7 +40,7 @@ void ANormalGameMode::Spawn()
 void ANormalGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// Start the 30-second timer
 	GetWorldTimerManager().SetTimer(StartGameTimerHandle, this, &ANormalGameMode::StartGame, 30000.0f, false);
 }

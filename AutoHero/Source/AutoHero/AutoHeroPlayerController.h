@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
@@ -18,6 +19,15 @@ class AAutoHeroPlayerController : public APlayerController
 
 public:
 	AAutoHeroPlayerController();
+
+	// Input
+	virtual void SetupInputComponent() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* IA_LeftMouse;
+
+	void OnLeftMouseReleased();
+	
 
 protected:
 	// To add mapping context

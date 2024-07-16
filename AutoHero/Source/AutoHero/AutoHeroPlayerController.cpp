@@ -1,13 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "AutoHeroPlayerController.h"
-#include "GameFramework/Pawn.h"
+
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Engine/World.h"
 #include "Core/Camera/AHPlayerCameraManager.h"
 #include "GameMode/NormalGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singletons/UnitDataManager.h"
-#include "GameFramework/PlayerState.h"
 #include "PlayerState/AutoHeroPlayerState.h"
 
 AAutoHeroPlayerController::AAutoHeroPlayerController()
@@ -17,6 +18,25 @@ AAutoHeroPlayerController::AAutoHeroPlayerController()
 
 	// Set the custom camera manager class
 	PlayerCameraManagerClass = AAHPlayerCameraManager::StaticClass();
+}
+
+void AAutoHeroPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		// Ensure input actions are bound correctly
+		if (IA_LeftMouse)
+		{
+			EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Completed, this, &AAutoHeroPlayerController::OnLeftMouseReleased);
+		}
+	}
+}
+
+void AAutoHeroPlayerController::OnLeftMouseReleased()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, TEXT("OnLeftMouseReleased"));
 }
 
 void AAutoHeroPlayerController::BeginPlay()

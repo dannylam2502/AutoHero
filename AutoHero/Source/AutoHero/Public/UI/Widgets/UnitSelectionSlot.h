@@ -9,6 +9,11 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSlotDropped, UUnitSelectionSlot*, UnitSlot,  FVector2D, DropPosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSlotDragDetected, UUnitSelectionSlot*, UnitSlot,  FVector2D, DropPosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSlotDragLeave, UUnitSelectionSlot*, UnitSlot,  FVector2D, DropPosition);
+
 UCLASS()
 class AUTOHERO_API UUnitSelectionSlot : public UBaseWidget
 {
@@ -20,6 +25,13 @@ public:
 	UPROPERTY(meta = (BindWidget))
     class UImage* UnitIcon;
 
+	FOnSlotDropped OnSlotDroppedDel;
+	FOnSlotDragDetected OnSlotDragDetectedDel;
+	FOnSlotDragLeave OnSlotDragLeaveDel;
+
+	bool bDraggingEnable;
+	// Functions
+	
 	void LoadData(struct FUnitData* Data);
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -28,25 +40,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetIcon(UTexture2D* NewIcon);
 
-	UFUNCTION()
-	void SetIngameHUD(UIngameHUDWidget* InIngameHUD);
+	void SetDraggingEnable(bool bEnable);
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-	virtual bool NativeOnDragOver(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	
+	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
-	TSubclassOf<class APlaceholderUnit> PlaceholderUnitClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
 	TSubclassOf<UUserWidget> DragVisualClass;
 	UPROPERTY()
 	UDragDropOperation* CurrentDragOperation;
-	UPROPERTY()
-	class APlaceholderUnit* PlaceholderUnit;
 	// The ref to the IngameHUD controller
 	UPROPERTY()
 	class UIngameHUDWidget* IngameHUD;

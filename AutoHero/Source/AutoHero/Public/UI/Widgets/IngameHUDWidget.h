@@ -12,6 +12,7 @@ class UVerticalBox;
 /**
  * 
  */
+
 UCLASS()
 class AUTOHERO_API UIngameHUDWidget : public UBaseWidget
 {
@@ -20,16 +21,33 @@ class AUTOHERO_API UIngameHUDWidget : public UBaseWidget
 public:
 	UIngameHUDWidget();
 	
-	UFUNCTION(BlueprintCallable)
-	void LoadListHeroes();
-	
 	UPROPERTY(meta=(BindWidget))
 	UVerticalBox* UnitList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Slot")
-	TSubclassOf<UBaseWidget> UnitSlot;
+	TSubclassOf<UBaseWidget> UnitSlotTemplate;
 
 	UPROPERTY(BlueprintReadOnly)
 	UUnitSelectionSlot* CurrentSelectedSlot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
+	TSubclassOf<class APlaceholderUnit> PlaceholderUnitClass;
+
+	UPROPERTY()
+	class APlaceholderUnit* PlaceholderUnit;
+
+	UPROPERTY(BlueprintReadOnly, Category = "UnitSlots")
+	TArray<UUnitSelectionSlot*> UnitSlots;
 	
+	UFUNCTION(BlueprintCallable)
+	void LoadListHeroes();
+	
+	UFUNCTION()
+	void OnSlotDragDetectedEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InDragPosition);
+
+	UFUNCTION()
+	void OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InDropPosition);
+
+	UFUNCTION()
+	void OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition);
 };

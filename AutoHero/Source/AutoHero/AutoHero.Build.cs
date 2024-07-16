@@ -11,6 +11,6 @@ public class AutoHero : ModuleRules
 		CppStandard = CppStandardVersion.Cpp20;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput", "GameplayAbilities", "GameplayTags", "GameplayTasks" });
-        PrivateDependencyModuleNames.AddRange(new string[] {"NavigationSystem"});
+        PrivateDependencyModuleNames.AddRange(new string[] {"NavigationSystem" });
 	}
 }
