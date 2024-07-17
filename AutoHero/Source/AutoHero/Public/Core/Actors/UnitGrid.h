@@ -42,7 +42,7 @@ public:
 	FVector GetGridCellLocation(int32 Row, int32 Column);
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	FVector GetNearestGridLocation(const FVector& WorldPosition);
+	FVector GetNearestCellLocation(const FVector& WorldPosition);
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void HighlightNearestCell(const FVector& WorldPosition);

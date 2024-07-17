@@ -20,7 +20,7 @@ UIngameHUDWidget::UIngameHUDWidget()
 	CurrentSelectedSlot = nullptr;
 }
 
-void UIngameHUDWidget::LoadListHeroes()
+void UIngameHUDWidget::LoadListUnit()
 {
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
@@ -69,6 +69,13 @@ void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVecto
 	{
 		UnitSlot->SetDraggingEnable(true);
 	}
+
+	if (PlaceholderUnit)
+	{
+		PlaceholderUnit->FinalizePlacement();
+		PlaceholderUnit = nullptr; // reset place holder unit ptr
+		CurrentSelectedSlot = nullptr; // reset too
+	}
 }
 
 void UIngameHUDWidget::OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition)
@@ -79,15 +86,21 @@ void UIngameHUDWidget::OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVec
 
 void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	// Don't do anything if not current selected widget
-	if (CurrentSelectedSlot)
+	// Only Spawn if there is not placeholder yet
+	if (PlaceholderUnit == nullptr)
 	{
-		if (PlaceholderUnitClass && GetWorld())
+		// Don't do anything if not current selected widget
+		if (CurrentSelectedSlot)
 		{
-			PlaceholderUnit = GetWorld()->SpawnActor<APlaceholderUnit>(PlaceholderUnitClass);
-			if (PlaceholderUnit)
+			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(CurrentSelectedSlot->UnitID);
+			TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
+			if (UnitTemplate && GetWorld())
 			{
-			
+				PlaceholderUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate);
+				if (PlaceholderUnit)
+				{
+					PlaceholderUnit->SetUnitState(EUnitState::Dragging);
+				}
 			}
 		}
 	}

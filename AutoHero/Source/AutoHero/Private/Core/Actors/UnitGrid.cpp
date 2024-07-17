@@ -54,7 +54,7 @@ FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
 	return StartLocation + FVector(Row * CellSize.X, Column * CellSize.Y, 0.0f);
 }
 
-FVector AUnitGrid::GetNearestGridLocation(const FVector& WorldPosition)
+FVector AUnitGrid::GetNearestCellLocation(const FVector& WorldPosition)
 {
 	FVector LocalPosition = WorldPosition - StartLocation;
 	int32 CellX = FMath::RoundToInt(LocalPosition.X / CellSize.X);

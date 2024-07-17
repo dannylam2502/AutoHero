@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Actors/BaseUnit.h"
 #include "FUnitData.generated.h"
 
 /**
@@ -28,5 +29,7 @@ struct FUnitData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Data")
 	TSubclassOf<UAnimInstance> AnimInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Data")
+	TSubclassOf<ABaseUnit> UnitActorInstance;
 	// Add other properties as needed
 };

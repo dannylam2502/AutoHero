@@ -30,17 +30,14 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UUnitSelectionSlot* CurrentSelectedSlot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag")
-	TSubclassOf<class APlaceholderUnit> PlaceholderUnitClass;
-
 	UPROPERTY()
-	class APlaceholderUnit* PlaceholderUnit;
+	class ABaseUnit* PlaceholderUnit;
 
 	UPROPERTY(BlueprintReadOnly, Category = "UnitSlots")
 	TArray<UUnitSelectionSlot*> UnitSlots;
 	
 	UFUNCTION(BlueprintCallable)
-	void LoadListHeroes();
+	void LoadListUnit();
 	
 	UFUNCTION()
 	void OnSlotDragDetectedEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InDragPosition);

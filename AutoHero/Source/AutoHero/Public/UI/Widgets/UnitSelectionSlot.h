@@ -25,6 +25,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
     class UImage* UnitIcon;
 
+	UPROPERTY(VisibleAnywhere, Category = "Unit ID")
+	int32 UnitID;
+
 	FOnSlotDropped OnSlotDroppedDel;
 	FOnSlotDragDetected OnSlotDragDetectedDel;
 	FOnSlotDragLeave OnSlotDragLeaveDel;

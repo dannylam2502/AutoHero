@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Defines/UnitState.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
 #include "GameFramework/Character.h"
@@ -23,10 +24,12 @@ public:
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void TickWaitingForPlacement(float DeltaTime);
+	virtual void TickWhileDragging(float DeltaTime);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	// Which team?
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
@@ -37,11 +40,22 @@ public:
 	// Attributes
 	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
+
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	void SetUnitState(EUnitState NewState);
+
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	EUnitState GetUnitState() const;
 	
 	float GetCurrentHealth() const;
 	float GetMaxHealth() const;
 	bool IsFullMana() const;
+	UFUNCTION(BlueprintCallable)
+	FVector GetOffsetWhenDragging() const;
+	UFUNCTION(BlueprintCallable)
+	FVector GetOffsetWhenPlace();
 
+	virtual void FinalizePlacement();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void InitializeAttributes();
@@ -78,6 +92,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Ability", meta = (AllowPrivateAccess = true))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	EUnitState CurrentState;
+
+	void HandleStateChange(EUnitState NewState);
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
 	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);
 };

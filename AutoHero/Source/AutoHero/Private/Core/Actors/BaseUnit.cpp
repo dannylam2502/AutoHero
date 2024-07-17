@@ -3,17 +3,21 @@
 
 #include "Core/Actors/BaseUnit.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/WidgetComponent.h"
 #include "Core/Actors/BaseProjectile.h"
+#include "Core/Actors/UnitGrid.h"
 #include "Core/Gameplay/UnitAbilitySystemComponent.h"
 #include "Core/Gameplay/UnitAttributeSet.h"
 #include "Core/Gameplay/UnitGameplayAbility.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "UI/HealthBar.h"
 
 #define DETECTION_RADIUS 10000.0f
 
+class AUnitGrid;
 // Sets default values
 ABaseUnit::ABaseUnit()
 {
@@ -38,7 +42,10 @@ ABaseUnit::ABaseUnit()
 
 	NetUpdateFrequency = 66.0f;
 	MinNetUpdateFrequency = 33.0f;
-	
+
+	// Set up Default State as Waiting For Placement
+	CurrentState = EUnitState::Default;
+
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);
@@ -221,6 +228,48 @@ void ABaseUnit::BeginPlay()
 		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
 	}
 }
+
+void ABaseUnit::HandleStateChange(EUnitState NewState)
+{
+	// Implement logic to handle state changes
+	switch (NewState)
+	{
+	case EUnitState::WaitingForPlacement:
+		// Handle logic when entering waiting state
+			break;
+	case EUnitState::WaitingForBattle:
+		// Handle logic when entering waiting state
+			break;
+	case EUnitState::InBattle:
+		// Handle logic when entering in battle state
+			break;
+	case EUnitState::Dead:
+		// Handle logic when entering dead state
+			break;
+	default:
+		break;
+	}
+
+	// Optionally handle exit logic for the previous state
+	switch (CurrentState)
+	{
+	case EUnitState::WaitingForPlacement:
+		// Handle logic when exiting waiting state
+			break;
+	case EUnitState::WaitingForBattle:
+		// Handle logic when exiting waiting state
+			break;
+	case EUnitState::InBattle:
+		// Handle logic when exiting in battle state
+			break;
+	case EUnitState::Dead:
+		// Handle logic when exiting dead state
+			break;
+	default:
+		break;
+	}
+}
+
 //
 // void ABaseUnit::OnRep_ReplicatedMovement()
 // {
@@ -251,11 +300,55 @@ void ABaseUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Example: Synchronize character rotation
-	// if (HasAuthority())
-	// {
-	// 	ServerSetReplicatedMovement(GetActorRotation());
-	// }
+	switch (CurrentState)
+	{
+	case EUnitState::Dragging:
+		// Handle dragging state behavior
+		TickWhileDragging(DeltaTime);
+		break;
+	case EUnitState::WaitingForPlacement:
+		// Handle waiting state behavior
+		TickWaitingForPlacement(DeltaTime);
+		break;
+	case EUnitState::WaitingForBattle:
+		break;
+	case EUnitState::InBattle:
+		// Handle in battle state behavior
+		break;
+	case EUnitState::Dead:
+		// Handle dead state behavior
+		break;
+	default:
+		break;
+	}
+}
+
+void ABaseUnit::TickWaitingForPlacement(float DeltaTime)
+{
+	
+}
+
+void ABaseUnit::TickWhileDragging(float DeltaTime)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Mouse X = %f"), MousePosition.X));
+	FVector WorldLocation, WorldDirection;
+	PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+	FVector End = WorldLocation + (WorldDirection * 10000.0f);
+	FHitResult HitResult;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
+	{
+		SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
+		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+		// Highlight the nearest cell in the grid manager
+		if (UnitGrid)
+		{
+			UnitGrid->HighlightNearestCell(GetActorLocation());
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -264,6 +357,42 @@ void ABaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	// TODO Questionable code
 	BindInput();
+}
+
+FVector ABaseUnit::GetOffsetWhenDragging() const
+{
+	return FVector(0.0f, 0.0f, 80.0f);
+}
+
+FVector ABaseUnit::GetOffsetWhenPlace()
+{
+	return FVector(0.0f, 0.0f, 56.5f);
+}
+
+void ABaseUnit::FinalizePlacement()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finalize Placement"));
+	AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+	if (UnitGrid)
+	{
+		FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
+		SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
+		SetUnitState(EUnitState::WaitingForPlacement);		
+	}
+}
+
+void ABaseUnit::SetUnitState(EUnitState NewState)
+{
+	if (CurrentState != NewState)
+	{
+		HandleStateChange(NewState);
+		CurrentState = NewState;
+	}
+}
+
+EUnitState ABaseUnit::GetUnitState() const
+{
+	return CurrentState;
 }
 
 float ABaseUnit::GetCurrentHealth() const
