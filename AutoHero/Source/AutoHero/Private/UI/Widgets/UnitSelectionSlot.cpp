@@ -4,11 +4,11 @@
 #include "UI/Widgets/UnitSelectionSlot.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Defines/FUnitData.h"
+#include "UI/Custom/UnitDragDropOperation.h"
 
 
 void UUnitSelectionSlot::LoadData(FUnitData* Data)
@@ -63,9 +63,12 @@ void UUnitSelectionSlot::NativeOnDragDetected(const FGeometry& InGeometry, const
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
 	OnSlotDragDetectedDel.Broadcast(this, MousePosition);
 	
-	CurrentDragOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
+	//CurrentDragOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
+	CurrentDragOperation = NewObject<UUnitDragDropOperation>();
 	CurrentDragOperation->DefaultDragVisual = CreateWidget<UUserWidget>(GetWorld(), DragVisualClass);
 	CurrentDragOperation->Pivot = EDragPivot::MouseDown;
+	//CurrentDragOperation->OnDraggedDel.AddDynamic(this, &UUnitSelectionSlot::OnDragUnit);
+	//CurrentDragOperation->OnDrop.AddDynamic(this, &UUnitSelectionSlot::OnDropUnit);
 
 	OutOperation = CurrentDragOperation;
 }
@@ -109,12 +112,18 @@ void UUnitSelectionSlot::NativeOnDragCancelled(const FDragDropEvent& InDragDropE
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }
 
+// void UUnitSelectionSlot::OnDragUnit(const FVector2D& MousePosition)
+// {
+// 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
+// 		FString::Printf(TEXT("UUnitSelectionSlot::OnDragUnit (%f, %f)"), MousePosition.X, MousePosition.Y));
+// }
+
 void UUnitSelectionSlot::SetDraggingEnable(bool bEnable)
 {
 	bDraggingEnable = bEnable;
 }
 
-void UUnitSelectionSlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-}
+// void UUnitSelectionSlot::OnDropUnit(UDragDropOperation* InOperation)
+// {
+// 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("UUnitSelectionSlot::OnDropUnit"));
+// }

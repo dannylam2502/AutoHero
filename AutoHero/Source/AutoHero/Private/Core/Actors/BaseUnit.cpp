@@ -21,15 +21,15 @@ class AUnitGrid;
 // Sets default values
 ABaseUnit::ABaseUnit()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	bAlwaysRelevant = true;
 
-    if (RootComponent == nullptr)
-    {
-	    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-    }
+	if (RootComponent == nullptr)
+	{
+		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	}
 
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -78,7 +78,8 @@ void ABaseUnit::GiveAbilities()
 		for (TSubclassOf<UUnitGameplayAbility>& StartupAbility : DefaultAbilities)
 		{
 			UUnitGameplayAbility* DefaultObject = StartupAbility.GetDefaultObject();
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, static_cast<int>(DefaultObject->UnitAbilityCommandID), this));
+			AbilitySystemComponent->GiveAbility(
+				FGameplayAbilitySpec(StartupAbility, 1, static_cast<int>(DefaultObject->UnitAbilityCommandID), this));
 			// we will cache the normal attack ability for optimization purpose, since we will need to ref this quite a lot
 			if (DefaultObject->UnitAbilityID == EUnitAbilityID::NormalAttack)
 			{
@@ -116,7 +117,8 @@ void ABaseUnit::BindInput()
 	{
 		FTopLevelAssetPath InputEnumPath = FTopLevelAssetPath(TEXT("/Script/AutoHero"), TEXT("EUnitAbilityCommandID"));
 		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", InputEnumPath,
-			static_cast<int32>(EUnitAbilityCommandID::Confirm), static_cast<int32>(EUnitAbilityCommandID::Cancel));
+		                                       static_cast<int32>(EUnitAbilityCommandID::Confirm),
+		                                       static_cast<int32>(EUnitAbilityCommandID::Cancel));
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
 	}
 }
@@ -136,8 +138,10 @@ const UUnitAttributeSet* ABaseUnit::GetAttributes()
 	return Attributes;
 }
 
-ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubclassOf<ABaseProjectile> BPProjectile, FVector Location, FRotator Rotation,  float Speed,
-		float Gravity, bool IsHomingTarget, ABaseUnit* InOwnerUnit, ABaseUnit* InTargetUnit)
+ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubclassOf<ABaseProjectile> BPProjectile,
+                                            FVector Location, FRotator Rotation, float Speed,
+                                            float Gravity, bool IsHomingTarget, ABaseUnit* InOwnerUnit,
+                                            ABaseUnit* InTargetUnit)
 {
 	if (!BPProjectile) // Check if the Actor class is valid
 	{
@@ -192,7 +196,7 @@ void ABaseUnit::BeginPlay()
 	{
 		Attributes = AbilitySystemComponent->GetSet<UUnitAttributeSet>();
 	}
-	
+
 	if (Attributes == nullptr || Attributes == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("SOMETHING WENT WRONG ABOUT ATTRIBUTES"))
@@ -236,16 +240,16 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 	{
 	case EUnitState::WaitingForPlacement:
 		// Handle logic when entering waiting state
-			break;
+		break;
 	case EUnitState::WaitingForBattle:
 		// Handle logic when entering waiting state
-			break;
+		break;
 	case EUnitState::InBattle:
 		// Handle logic when entering in battle state
-			break;
+		break;
 	case EUnitState::Dead:
 		// Handle logic when entering dead state
-			break;
+		break;
 	default:
 		break;
 	}
@@ -255,16 +259,16 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 	{
 	case EUnitState::WaitingForPlacement:
 		// Handle logic when exiting waiting state
-			break;
+		break;
 	case EUnitState::WaitingForBattle:
 		// Handle logic when exiting waiting state
-			break;
+		break;
 	case EUnitState::InBattle:
 		// Handle logic when exiting in battle state
-			break;
+		break;
 	case EUnitState::Dead:
 		// Handle logic when exiting dead state
-			break;
+		break;
 	default:
 		break;
 	}
@@ -325,23 +329,37 @@ void ABaseUnit::Tick(float DeltaTime)
 
 void ABaseUnit::TickWaitingForPlacement(float DeltaTime)
 {
-	
 }
 
 void ABaseUnit::TickWhileDragging(float DeltaTime)
 {
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
-
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Mouse X = %f"), MousePosition.X));
-	FVector WorldLocation, WorldDirection;
-	PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
-	FVector End = WorldLocation + (WorldDirection * 10000.0f);
-	FHitResult HitResult;
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
+	if (PlayerController)
 	{
-		SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
+		FHitResult HitResult;
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Visibility));
+		if (PlayerController->GetHitResultUnderCursorForObjects(ObjectTypes, true, HitResult))
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("GetHitResultUnderCursorForObjects"));
+			// Apply the offset to the hit location
+			FVector AdjustedLocation = HitResult.Location + GetOffsetWhenDragging();
+			SetActorLocation(AdjustedLocation);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LineTraceSingleByChannel"));
+			FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+			FVector WorldLocation, WorldDirection;
+			PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+			FVector End = WorldLocation + (WorldDirection * 10000.0f);
+			if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
+			{
+				SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
+			}
+		}
+
+		// Highlight the nearest cell in the grid manager
 		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 		// Highlight the nearest cell in the grid manager
 		if (UnitGrid)
@@ -361,7 +379,7 @@ void ABaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 FVector ABaseUnit::GetOffsetWhenDragging() const
 {
-	return FVector(0.0f, 0.0f, 80.0f);
+	return FVector(0.0f, 0.0f, 100.0f);
 }
 
 FVector ABaseUnit::GetOffsetWhenPlace()
@@ -377,7 +395,7 @@ void ABaseUnit::FinalizePlacement()
 	{
 		FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
 		SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
-		SetUnitState(EUnitState::WaitingForPlacement);		
+		SetUnitState(EUnitState::WaitingForPlacement);
 	}
 }
 
@@ -429,4 +447,3 @@ bool ABaseUnit::IsFullMana() const
 	}
 	return false;
 }
-

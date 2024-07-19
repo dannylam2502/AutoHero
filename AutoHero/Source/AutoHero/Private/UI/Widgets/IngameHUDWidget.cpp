@@ -3,11 +3,7 @@
 
 #include "UI/Widgets/IngameHUDWidget.h"
 
-#include "AutoHero/AutoHeroPlayerController.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/VerticalBox.h"
-#include "Core/Actors/PlaceholderUnit.h"
 #include "Defines/FUnitData.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerState/AutoHeroPlayerState.h"
@@ -80,7 +76,7 @@ void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVecto
 
 void UIngameHUDWidget::OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDragOutsideEvent"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("UIngameHUDWidget::OnSlotDragOutsideEvent"));
 	
 }
 

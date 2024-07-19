@@ -55,6 +55,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetOffsetWhenPlace();
 
+	UFUNCTION(BlueprintCallable)
 	virtual void FinalizePlacement();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
