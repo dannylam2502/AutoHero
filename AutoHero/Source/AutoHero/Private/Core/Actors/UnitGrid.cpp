@@ -54,13 +54,22 @@ FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
 	return StartLocation + FVector(Row * CellSize.X, Column * CellSize.Y, 0.0f);
 }
 
+AUnitCell* AUnitGrid::GetNearestCell()
+{
+	return LastHighlightedCell;
+}
+
 FVector AUnitGrid::GetNearestCellLocation(const FVector& WorldPosition)
 {
+	if (LastHighlightedCell)
+	{
+		return LastHighlightedCell->GetCellCenterLocation();
+	}
 	FVector LocalPosition = WorldPosition - StartLocation;
 	int32 CellX = FMath::RoundToInt(LocalPosition.X / CellSize.X);
 	int32 CellY = FMath::RoundToInt(LocalPosition.Y / CellSize.Y);
 	int32 CellZ = FMath::RoundToInt(LocalPosition.Z / CellSize.Z);
-
+	
 	return StartLocation + FVector(CellX * CellSize.X, CellY * CellSize.Y, CellZ * CellSize.Z);
 }
 
@@ -72,7 +81,7 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	for (AActor* Actor : this->GridCells)
 	{
 		AUnitCell* Cell = Cast<AUnitCell>(Actor);
-		if (Cell)
+		if (Cell && !IsCellOccupied(Cell))
 		{
 			float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
 			if (Distance < MinDistance)
@@ -95,3 +104,17 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	}
 }
 
+bool AUnitGrid::IsCellOccupied(AUnitCell* UnitCell) const
+{
+	return OccupiedCells.Contains(UnitCell);
+}
+
+void AUnitGrid::OccupyCell(AUnitCell* UnitCell)
+{
+	OccupiedCells.Add(UnitCell);
+}
+
+void AUnitGrid::VacateCell(AUnitCell* UnitCell)
+{
+	OccupiedCells.Remove(UnitCell);
+}

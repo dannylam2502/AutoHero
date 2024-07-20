@@ -6,6 +6,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/WidgetComponent.h"
 #include "Core/Actors/BaseProjectile.h"
+#include "Core/Actors/UnitCell.h"
 #include "Core/Actors/UnitGrid.h"
 #include "Core/Gameplay/UnitAbilitySystemComponent.h"
 #include "Core/Gameplay/UnitAttributeSet.h"
@@ -393,9 +394,16 @@ void ABaseUnit::FinalizePlacement()
 	AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 	if (UnitGrid)
 	{
-		FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
-		SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
-		SetUnitState(EUnitState::WaitingForPlacement);
+		//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
+		AUnitCell* NearestCell = UnitGrid->GetNearestCell();
+		if (NearestCell)
+		{
+			FVector SnappedPosition = NearestCell->GetCellCenterLocation();
+			SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
+			SetUnitState(EUnitState::WaitingForPlacement);
+			// Set Nearest Cell occupied
+			UnitGrid->OccupyCell(NearestCell);
+		}
 	}
 }
 
