@@ -7,7 +7,8 @@ UENUM(BlueprintType)
 enum class EUnitState : uint8
 {
 	Default UMETA(DisplayName = "Default"),
-	Dragging UMETA(DisplayName = "Dragging"),
+	DraggingFromWidget UMETA(DisplayName = "DraggingFromWidget"),
+	DraggingInField UMETA(DisplayName = "DraggingInField"),
 	WaitingForPlacement UMETA(DisplayName = "Waiting For Placement"),
 	WaitingForBattle UMETA(DisplayName = "Waiting For Battle"),
 	InBattle UMETA(DisplayName = "In Battle"),

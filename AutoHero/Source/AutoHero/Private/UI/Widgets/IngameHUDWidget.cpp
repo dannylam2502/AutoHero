@@ -95,7 +95,7 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 				PlaceholderUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate);
 				if (PlaceholderUnit)
 				{
-					PlaceholderUnit->SetUnitState(EUnitState::Dragging);
+					PlaceholderUnit->SetUnitState(EUnitState::DraggingFromWidget);
 				}
 			}
 		}

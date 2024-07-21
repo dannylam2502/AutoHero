@@ -25,7 +25,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void TickWaitingForPlacement(float DeltaTime);
-	virtual void TickWhileDragging(float DeltaTime);
+	virtual void TickWhileDraggingFromWidget(float DeltaTime);
+	virtual void TickWhileDraggingInField(float DeltaTime);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

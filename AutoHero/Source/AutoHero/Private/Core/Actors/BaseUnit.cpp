@@ -318,9 +318,13 @@ void ABaseUnit::Tick(float DeltaTime)
 
 	switch (CurrentState)
 	{
-	case EUnitState::Dragging:
+	case EUnitState::DraggingFromWidget:
 		// Handle dragging state behavior
-		TickWhileDragging(DeltaTime);
+		TickWhileDraggingFromWidget(DeltaTime);
+		break;
+	case EUnitState::DraggingInField:
+		// Handle dragging state behavior
+		TickWhileDraggingInField(DeltaTime);
 		break;
 	case EUnitState::WaitingForPlacement:
 		// Handle waiting state behavior
@@ -343,7 +347,33 @@ void ABaseUnit::TickWaitingForPlacement(float DeltaTime)
 {
 }
 
-void ABaseUnit::TickWhileDragging(float DeltaTime)
+void ABaseUnit::TickWhileDraggingFromWidget(float DeltaTime)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		FHitResult HitResult;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LineTraceSingleByChannel"));
+		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+		FVector WorldLocation, WorldDirection;
+		PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+		FVector End = WorldLocation + (WorldDirection * 10000.0f);
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
+		{
+			SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
+		}
+
+		// Highlight the nearest cell in the grid manager
+		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+		// Highlight the nearest cell in the grid manager
+		if (UnitGrid)
+		{
+			UnitGrid->HighlightNearestCell(GetActorLocation());
+		}
+	}
+}
+
+void ABaseUnit::TickWhileDraggingInField(float DeltaTime)
 {
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PlayerController)
@@ -357,18 +387,6 @@ void ABaseUnit::TickWhileDragging(float DeltaTime)
 			// Apply the offset to the hit location
 			FVector AdjustedLocation = HitResult.Location + GetOffsetWhenDragging();
 			SetActorLocation(AdjustedLocation);
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LineTraceSingleByChannel"));
-			FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
-			FVector WorldLocation, WorldDirection;
-			PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
-			FVector End = WorldLocation + (WorldDirection * 10000.0f);
-			if (GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility))
-			{
-				SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
-			}
 		}
 
 		// Highlight the nearest cell in the grid manager
