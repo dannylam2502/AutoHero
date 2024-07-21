@@ -3,6 +3,7 @@
 
 #include "Core/Actors/UnitGrid.h"
 
+#include "Core/Actors/BaseUnit.h"
 #include "Core/Actors/UnitCell.h"
 
 
@@ -109,9 +110,9 @@ bool AUnitGrid::IsCellOccupied(AUnitCell* UnitCell) const
 	return OccupiedCells.Contains(UnitCell);
 }
 
-void AUnitGrid::OccupyCell(AUnitCell* UnitCell)
+void AUnitGrid::OccupyCell(AUnitCell* UnitCell, ABaseUnit* Unit)
 {
-	OccupiedCells.Add(UnitCell);
+	OccupiedCells.Add(UnitCell, Unit);
 }
 
 void AUnitGrid::VacateCell(AUnitCell* UnitCell)

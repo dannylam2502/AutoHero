@@ -81,8 +81,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ABaseProjectile* SpawnProjectile(UObject* WorldContextObject, TSubclassOf<ABaseProjectile> BPProjectile, FVector Location, FRotator Rotation, float Speed,
 		float Gravity, bool IsHomingTarget ,ABaseUnit* InOwnerUnit = nullptr, ABaseUnit* InTargetUnit = nullptr);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentCell(class AUnitCell* InUnitCell);
+	UFUNCTION(BlueprintCallable)
+	class AUnitCell* GetCurrentCell();
 protected:
+	class AUnitCell* CurrentCell;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

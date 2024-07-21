@@ -46,6 +46,7 @@ ABaseUnit::ABaseUnit()
 
 	// Set up Default State as Waiting For Placement
 	CurrentState = EUnitState::Default;
+	CurrentCell = nullptr;
 
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
@@ -176,6 +177,16 @@ ABaseProjectile* ABaseUnit::SpawnProjectile(UObject* WorldContextObject, TSubcla
 	}
 
 	return SpawnedActor;
+}
+
+void ABaseUnit::SetCurrentCell(AUnitCell* InUnitCell)
+{
+	CurrentCell = InUnitCell;
+}
+
+AUnitCell* ABaseUnit::GetCurrentCell()
+{
+	return CurrentCell;
 }
 
 void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -394,6 +405,12 @@ void ABaseUnit::FinalizePlacement()
 	AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 	if (UnitGrid)
 	{
+		// Find Old Cell and Vacate it
+		AUnitCell* OldCell = this->GetCurrentCell();
+		if (OldCell)
+		{
+			UnitGrid->VacateCell(OldCell);
+		}
 		//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
 		AUnitCell* NearestCell = UnitGrid->GetNearestCell();
 		if (NearestCell)
@@ -402,7 +419,8 @@ void ABaseUnit::FinalizePlacement()
 			SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
 			SetUnitState(EUnitState::WaitingForPlacement);
 			// Set Nearest Cell occupied
-			UnitGrid->OccupyCell(NearestCell);
+			UnitGrid->OccupyCell(NearestCell, this);
+			this->SetCurrentCell(NearestCell);
 		}
 	}
 }

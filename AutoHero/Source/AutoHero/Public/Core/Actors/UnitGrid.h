@@ -51,7 +51,7 @@ public:
 	void HighlightNearestCell(const FVector& WorldPosition);
 
 	bool IsCellOccupied(AUnitCell* UnitCell) const;
-	void OccupyCell(AUnitCell* UnitCell);
+	void OccupyCell(AUnitCell* UnitCell, class ABaseUnit* Unit);
 	void VacateCell(AUnitCell* UnitCell);
 protected:
 	// Called when the game starts or when spawned
@@ -60,5 +60,5 @@ protected:
 private:
 	TArray<AUnitCell*> GridCells;
 	AUnitCell* LastHighlightedCell;
-	TSet<AUnitCell*> OccupiedCells;
+	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;
 };
