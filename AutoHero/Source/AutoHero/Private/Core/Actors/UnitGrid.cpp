@@ -82,7 +82,7 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	for (AActor* Actor : this->GridCells)
 	{
 		AUnitCell* Cell = Cast<AUnitCell>(Actor);
-		if (Cell && !IsCellOccupied(Cell))
+		if (Cell)
 		{
 			float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
 			if (Distance < MinDistance)
@@ -98,9 +98,9 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 		if (LastHighlightedCell && LastHighlightedCell != NearestCell)
 		{
 			LastHighlightedCell->HighlightCell(false);
+			NearestCell->HighlightCell(true);
 		}
 
-		NearestCell->HighlightCell(true);
 		LastHighlightedCell = NearestCell;
 	}
 }

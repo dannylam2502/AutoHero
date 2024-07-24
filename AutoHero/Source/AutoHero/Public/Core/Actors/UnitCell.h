@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GridCell")
 	void HighlightCell(bool bHighlight);
 
+	UFUNCTION(BlueprintCallable, Category = "GridCell")
+	void SelectCell(bool bSelected);
+
 	FVector GetCellCenterLocation();
 
 protected:
@@ -33,8 +36,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cell")
 	UMaterialInterface* HighlightMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cell")
+	UMaterialInterface* SelectMaterial;
+
 	int32 CellRow;
 	int32 CellColumn;
+
+	UPROPERTY()
+	bool bIsSelected;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

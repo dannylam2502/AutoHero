@@ -44,6 +44,9 @@ public:
 	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 
+	UPROPERTY(VisibleAnywhere)
+	class AUnitGrid* UnitGrid;
+
 	// Delegates
 	FOnUnitRemovedFromField OnUnitRemovedFromField;
 	
@@ -94,6 +97,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class AUnitCell* GetCurrentCell();
 protected:
+	UPROPERTY()
 	class AUnitCell* CurrentCell;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

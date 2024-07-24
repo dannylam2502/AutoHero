@@ -243,6 +243,9 @@ void ABaseUnit::BeginPlay()
 	{
 		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
 	}
+
+	UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+	OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
 }
 
 void ABaseUnit::HandleStateChange(EUnitState NewState)
@@ -250,6 +253,13 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 	// Implement logic to handle state changes
 	switch (NewState)
 	{
+	case EUnitState::DraggingInField:
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("StateChange Dragging in Field"));
+		if (CurrentCell)
+		{
+			CurrentCell->SelectCell(true);
+		}
+		break;
 	case EUnitState::WaitingForPlacement:
 		// Handle logic when entering waiting state
 		break;
@@ -369,8 +379,6 @@ void ABaseUnit::TickWhileDraggingFromWidget(float DeltaTime)
 		}
 
 		// Highlight the nearest cell in the grid manager
-		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
-		// Highlight the nearest cell in the grid manager
 		if (UnitGrid)
 		{
 			UnitGrid->HighlightNearestCell(GetActorLocation());
@@ -394,8 +402,6 @@ void ABaseUnit::TickWhileDraggingInField(float DeltaTime)
 			SetActorLocation(AdjustedLocation);
 		}
 
-		// Highlight the nearest cell in the grid manager
-		AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 		// Highlight the nearest cell in the grid manager
 		if (UnitGrid)
 		{
@@ -425,7 +431,6 @@ FVector ABaseUnit::GetOffsetWhenPlace()
 void ABaseUnit::FinalizePlacement()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finalize Placement"));
-	AUnitGrid* UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 	if (UnitGrid)
 	{
 		// Find Old Cell and Vacate it
@@ -433,6 +438,7 @@ void ABaseUnit::FinalizePlacement()
 		if (OldCell)
 		{
 			UnitGrid->VacateCell(OldCell);
+			OldCell->SelectCell(false);
 		}
 		//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
 		AUnitCell* NearestCell = UnitGrid->GetNearestCell();
@@ -444,7 +450,6 @@ void ABaseUnit::FinalizePlacement()
 			// Set Nearest Cell occupied
 			UnitGrid->OccupyCell(NearestCell, this);
 			this->SetCurrentCell(NearestCell);
-			OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
 		}
 	}
 }

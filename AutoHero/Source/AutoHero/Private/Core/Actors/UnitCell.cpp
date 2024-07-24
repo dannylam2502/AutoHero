@@ -34,6 +34,10 @@ void AUnitCell::InitializeCell(FVector Location, int32 Row, int32 Column)
 
 void AUnitCell::HighlightCell(bool bHighlight)
 {
+	if (bIsSelected)
+	{
+		return;
+	}
 	if (bHighlight && HighlightMaterial)
 	{
 		CellMesh->SetMaterial(0, HighlightMaterial);
@@ -42,6 +46,19 @@ void AUnitCell::HighlightCell(bool bHighlight)
 	{
 		CellMesh->SetMaterial(0, DefaultMaterial);
 	}
+}
+
+void AUnitCell::SelectCell(bool bSelected)
+{
+	if (bSelected && SelectMaterial)
+	{
+		CellMesh->SetMaterial(0, SelectMaterial);
+	}
+	else if (DefaultMaterial)
+	{
+		CellMesh->SetMaterial(0, DefaultMaterial);
+	}
+	bIsSelected = bSelected;
 }
 
 FVector AUnitCell::GetCellCenterLocation()
