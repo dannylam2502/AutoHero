@@ -53,6 +53,9 @@ public:
 	bool IsCellOccupied(AUnitCell* UnitCell) const;
 	void OccupyCell(AUnitCell* UnitCell, class ABaseUnit* Unit);
 	void VacateCell(AUnitCell* UnitCell);
+
+	UFUNCTION()
+	void OnUnitRemovedFromField(ABaseUnit* Unit);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

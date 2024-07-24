@@ -112,6 +112,13 @@ void UUnitSelectionSlot::NativeOnDragCancelled(const FDragDropEvent& InDragDropE
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }
 
+void UUnitSelectionSlot::OnUnitRemovedFromField(ABaseUnit* Unit)
+{
+	SetVisibility(ESlateVisibility::Visible);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
+ 		FString::Printf(TEXT("UUnitSelectionSlot::OnUnitRemovedFromField")));
+}
+
 // void UUnitSelectionSlot::OnDragUnit(const FVector2D& MousePosition)
 // {
 // 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,

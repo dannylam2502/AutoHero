@@ -96,6 +96,7 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 				if (PlaceholderUnit)
 				{
 					PlaceholderUnit->SetUnitState(EUnitState::DraggingFromWidget);
+					PlaceholderUnit->OnUnitRemovedFromField.AddDynamic(CurrentSelectedSlot, &UUnitSelectionSlot::OnUnitRemovedFromField);
 				}
 			}
 		}

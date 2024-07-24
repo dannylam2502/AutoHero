@@ -119,3 +119,12 @@ void AUnitGrid::VacateCell(AUnitCell* UnitCell)
 {
 	OccupiedCells.Remove(UnitCell);
 }
+
+void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)
+{
+	AUnitCell* CurCell = Unit->GetCurrentCell();
+	if (CurCell)
+	{
+		VacateCell(CurCell);
+	}
+}

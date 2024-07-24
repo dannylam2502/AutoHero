@@ -51,6 +51,9 @@ public:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+	UFUNCTION()
+	void OnUnitRemovedFromField(class ABaseUnit* Unit);
 	//
 	// UFUNCTION()
 	// void OnDragUnit(const FVector2D& MousePosition);

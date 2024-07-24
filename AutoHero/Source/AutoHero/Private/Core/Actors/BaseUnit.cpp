@@ -286,6 +286,11 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 	}
 }
 
+void ABaseUnit::RemoveFromField()
+{
+	OnUnitRemovedFromField.Broadcast(this);
+}
+
 //
 // void ABaseUnit::OnRep_ReplicatedMovement()
 // {
@@ -439,6 +444,7 @@ void ABaseUnit::FinalizePlacement()
 			// Set Nearest Cell occupied
 			UnitGrid->OccupyCell(NearestCell, this);
 			this->SetCurrentCell(NearestCell);
+			OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
 		}
 	}
 }

@@ -13,6 +13,8 @@ class ABaseProjectile;
 class UUnitGameplayAbility;
 class USphereComponent;
 enum class EActorTeam : uint8;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitRemovedFromField, ABaseUnit*, Unit);
 UCLASS()
 class AUTOHERO_API ABaseUnit : public ACharacter, public IAbilitySystemInterface
 {
@@ -42,6 +44,10 @@ public:
 	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 
+	// Delegates
+	FOnUnitRemovedFromField OnUnitRemovedFromField;
+	
+	// FUNCTIONS
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void SetUnitState(EUnitState NewState);
 
@@ -107,4 +113,7 @@ protected:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
 	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);
+
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	void RemoveFromField();
 };
