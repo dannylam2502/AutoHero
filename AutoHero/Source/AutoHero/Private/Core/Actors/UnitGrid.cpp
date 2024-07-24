@@ -120,11 +120,22 @@ void AUnitGrid::VacateCell(AUnitCell* UnitCell)
 	OccupiedCells.Remove(UnitCell);
 }
 
+ABaseUnit* AUnitGrid::GetUnitInCell(AUnitCell* Cell)
+{
+	return *OccupiedCells.Find(Cell);
+}
+
 void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)
 {
 	AUnitCell* CurCell = Unit->GetCurrentCell();
 	if (CurCell)
 	{
+		CurCell->SelectCell(false);
+		CurCell->HighlightCell(false);
 		VacateCell(CurCell);
+		if (LastHighlightedCell)
+		{
+			LastHighlightedCell->HighlightCell(false);
+		}
 	}
 }

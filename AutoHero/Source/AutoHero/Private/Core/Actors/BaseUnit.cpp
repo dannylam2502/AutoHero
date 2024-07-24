@@ -299,6 +299,7 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 void ABaseUnit::RemoveFromField()
 {
 	OnUnitRemovedFromField.Broadcast(this);
+	Destroy();
 }
 
 //
@@ -447,9 +448,34 @@ void ABaseUnit::FinalizePlacement()
 			FVector SnappedPosition = NearestCell->GetCellCenterLocation();
 			SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
 			SetUnitState(EUnitState::WaitingForPlacement);
+			// If NearestCell is occupied, we need to switch it with the old cell
+			if (UnitGrid->IsCellOccupied(NearestCell))
+			{
+				// Switch from a cell to another cell
+				if (OldCell)
+				{
+					ABaseUnit* NearestCellCurUnit = UnitGrid->GetUnitInCell(NearestCell);
+					if (NearestCellCurUnit)
+					{
+						NearestCellCurUnit->SetActorLocation(OldCell->GetCellCenterLocation() + GetOffsetWhenPlace());
+						UnitGrid->OccupyCell(OldCell, NearestCellCurUnit);
+						NearestCellCurUnit->SetCurrentCell(OldCell);
+					}
+				}
+				else
+				{
+					// Switch from widget to a unit cell
+					ABaseUnit* NearestCellCurUnit = UnitGrid->GetUnitInCell(NearestCell);
+					if (NearestCellCurUnit)
+					{
+						NearestCellCurUnit->RemoveFromField();
+					}
+				}
+			}
 			// Set Nearest Cell occupied
 			UnitGrid->OccupyCell(NearestCell, this);
 			this->SetCurrentCell(NearestCell);
+			NearestCell->HighlightCell(false);
 		}
 	}
 }

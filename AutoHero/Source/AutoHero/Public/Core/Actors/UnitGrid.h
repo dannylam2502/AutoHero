@@ -53,6 +53,7 @@ public:
 	bool IsCellOccupied(AUnitCell* UnitCell) const;
 	void OccupyCell(AUnitCell* UnitCell, class ABaseUnit* Unit);
 	void VacateCell(AUnitCell* UnitCell);
+	class ABaseUnit* GetUnitInCell(AUnitCell* Cell);
 
 	UFUNCTION()
 	void OnUnitRemovedFromField(ABaseUnit* Unit);

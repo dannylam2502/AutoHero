@@ -50,15 +50,20 @@ void AUnitCell::HighlightCell(bool bHighlight)
 
 void AUnitCell::SelectCell(bool bSelected)
 {
-	if (bSelected && SelectMaterial)
+	if (bIsSelected != bSelected)
 	{
-		CellMesh->SetMaterial(0, SelectMaterial);
+		if (bSelected && SelectMaterial)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("SelectCELL True"));
+			CellMesh->SetMaterial(0, SelectMaterial);
+		}
+		else if (DefaultMaterial)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("SelectCELL FALSE"));
+			CellMesh->SetMaterial(0, DefaultMaterial);
+		}
+		bIsSelected = bSelected;
 	}
-	else if (DefaultMaterial)
-	{
-		CellMesh->SetMaterial(0, DefaultMaterial);
-	}
-	bIsSelected = bSelected;
 }
 
 FVector AUnitCell::GetCellCenterLocation()
