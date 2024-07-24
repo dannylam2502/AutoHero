@@ -353,7 +353,7 @@ void ABaseUnit::TickWhileDraggingFromWidget(float DeltaTime)
 	if (PlayerController)
 	{
 		FHitResult HitResult;
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LineTraceSingleByChannel"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("LineTraceSingleByChannel"));
 		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
 		FVector WorldLocation, WorldDirection;
 		PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
