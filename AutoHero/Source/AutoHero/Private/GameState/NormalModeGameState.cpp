@@ -42,7 +42,7 @@ void ANormalModeGameState::LoadLevel(const FString& LevelName)
 {
     if (HasAuthority())
     {
-        UGameplayStatics::LoadStreamLevel(this, FName(*LevelName), true, true, FLatentActionInfo());
+        UGameplayStatics::LoadStreamLevel(this, FName(*LevelName), true, false, FLatentActionInfo());
     }
 }
 
