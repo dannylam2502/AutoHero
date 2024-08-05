@@ -57,12 +57,15 @@ public:
 
 	UFUNCTION()
 	void OnUnitRemovedFromField(ABaseUnit* Unit);
+
+	// Need to construct data as: UnitID, In CellID?
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	TArray<AUnitCell*> GridCells;
+	UPROPERTY(VisibleAnywhere)
 	AUnitCell* LastHighlightedCell;
 	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;
 };

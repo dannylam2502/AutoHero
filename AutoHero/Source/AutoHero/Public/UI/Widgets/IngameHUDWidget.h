@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/Button.h"
 #include "UI/Widgets/BaseWidget.h"
 #include "IngameHUDWidget.generated.h"
 
@@ -20,9 +21,12 @@ class AUTOHERO_API UIngameHUDWidget : public UBaseWidget
 	
 public:
 	UIngameHUDWidget();
-	
+
 	UPROPERTY(meta=(BindWidget))
 	UVerticalBox* UnitList;
+
+	UPROPERTY(meta=(BindWidget))
+	UButton* BtnSubmit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Slot")
 	TSubclassOf<UBaseWidget> UnitSlotTemplate;
@@ -49,4 +53,8 @@ public:
 	void OnSlotDragLeaveEvent(UUnitSelectionSlot* InUnitSlot, FVector2D InPosition);
 
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void OnClickBtnSubmit();
 };

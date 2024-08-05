@@ -18,7 +18,7 @@ UIngameHUDWidget::UIngameHUDWidget()
 
 void UIngameHUDWidget::LoadListUnit()
 {
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
 	if (PlayerState)
 	{
@@ -102,4 +102,21 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 		}
 	}
 	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
+}
+
+void UIngameHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	BtnSubmit->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnSubmit);
+}
+
+void UIngameHUDWidget::OnClickBtnSubmit()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("OnClickBtnSubmit"));
+	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
+	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
+	if (PlayerState)
+	{
+		PlayerState->SendRequestSubmit();
+	}
 }
