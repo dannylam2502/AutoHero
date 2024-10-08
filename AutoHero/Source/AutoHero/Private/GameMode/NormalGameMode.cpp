@@ -97,11 +97,13 @@ void ANormalGameMode::StartGame()
 	ANormalModeGameState* NormalGameState = GetGameState<ANormalModeGameState>();
 	if (NormalGameState && HasAuthority())
 	{
-		NormalGameState->LoadLevel("Level_DevMap");
+		NormalGameState->StartLoadLevelSequence();
+		// NormalGameState->LoadLevel("Level_DevMap", true);
+		// NormalGameState->LoadLevel("Level_IngameMapDetail", true);
 		
 		// Set a timer or wait for the level to load
-		GetWorldTimerManager().SetTimerForNextTick(this, &ANormalGameMode::OnLevelLoaded);
-		NormalGameState->StartPreparation();
+		// GetWorldTimerManager().SetTimerForNextTick(this, &ANormalGameMode::OnLevelLoaded);
+		// NormalGameState->StartPreparation();
 	}
 }
 

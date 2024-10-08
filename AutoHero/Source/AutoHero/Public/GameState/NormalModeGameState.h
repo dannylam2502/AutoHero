@@ -37,12 +37,16 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
-
+	void StartLoadLevelSequence();
+	UFUNCTION()
+	void OnLevelDevMapLoaded();
+	UFUNCTION()
+	void OnIngameMapDetailLoaded();
 	void StartRound();
 	void EndRound();
 	void StartPreparation();
 	void EndPreparation();
-	void LoadLevel(const FString& LevelName);
+	void LoadLevel(const FString& LevelName, bool ShouldBlockOnLoad);
 	void UnloadLevel(const FString& LevelName);
 	bool IsPreparationPhase();
 	int32 GetCurrentRound();

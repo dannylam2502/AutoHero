@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameInstances/NormalGameInstance.h"
 
 ANormalModeGameState::ANormalModeGameState()
 {
@@ -38,11 +39,11 @@ void ANormalModeGameState::EndPreparation()
     }
 }
 
-void ANormalModeGameState::LoadLevel(const FString& LevelName)
+void ANormalModeGameState::LoadLevel(const FString& LevelName, bool ShouldBlockOnLoad)
 {
     if (HasAuthority())
     {
-        UGameplayStatics::LoadStreamLevel(this, FName(*LevelName), true, false, FLatentActionInfo());
+        UGameplayStatics::LoadStreamLevel(this, FName(*LevelName), true, ShouldBlockOnLoad, FLatentActionInfo());
     }
 }
 
@@ -130,4 +131,44 @@ void ANormalModeGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ANormalModeGameState, CurrentRound);
     DOREPLIFETIME(ANormalModeGameState, bIsPreparationPhase);
+}
+
+void ANormalModeGameState::StartLoadLevelSequence()
+{
+    if (HasAuthority())
+    {
+        // Load the first streaming level with a latent action
+        FLatentActionInfo LatentActionInfo;
+        LatentActionInfo.CallbackTarget = this;
+        LatentActionInfo.ExecutionFunction = FName("OnLevelDevMapLoaded");
+        LatentActionInfo.Linkage = 0;
+        LatentActionInfo.UUID = __LINE__; // Unique ID for the latent action
+        UGameplayStatics::LoadStreamLevel(this, FName("Level_DevMap"), true, true, LatentActionInfo);
+    }
+}
+
+void ANormalModeGameState::OnLevelDevMapLoaded()
+{
+    GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Yellow, FString("OnLevelDevMapLoaded"));
+    
+    // Load the second streaming level when the first one has finished loading
+    FLatentActionInfo LatentActionInfo;
+    LatentActionInfo.CallbackTarget = this;
+    LatentActionInfo.ExecutionFunction = FName("OnIngameMapDetailLoaded");
+    LatentActionInfo.Linkage = 0;
+    LatentActionInfo.UUID = __LINE__; // Unique ID for the second latent action
+
+    UGameplayStatics::LoadStreamLevel(this, FName("Level_IngameMapDetail"), true, true, LatentActionInfo);
+}
+
+void ANormalModeGameState::OnIngameMapDetailLoaded()
+{
+    GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Yellow, FString("OnIngameMapDetailLoaded"));
+    // Get the game instance and trigger the delegate
+    UNormalGameInstance* GameInstance = Cast<UNormalGameInstance>(GetGameInstance());
+    if (GameInstance)
+    {
+        GameInstance->TriggerLevelLoaded();
+    }
+    StartPreparation();
 }
