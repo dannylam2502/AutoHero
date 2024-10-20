@@ -5,6 +5,7 @@
 
 #include "Core/Actors/BaseUnit.h"
 #include "Core/Actors/UnitCell.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -48,11 +49,14 @@ void AUnitGrid::InitializeGrid()
 			}
 		}
 	}
+	
+	// TODO: configurable
+	HideRandomCells(2);
 }
 
 FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
 {
-	return StartLocation + FVector(Row * CellSize.X, Column * CellSize.Y, 0.0f);
+	return StartLocation + FVector(Column * (CellOffset.X + CellSize.X), Row * (CellOffset.Y + CellSize.Y), 0.0f);
 }
 
 AUnitCell* AUnitGrid::GetNearestCell()
@@ -123,6 +127,17 @@ void AUnitGrid::VacateCell(AUnitCell* UnitCell)
 ABaseUnit* AUnitGrid::GetUnitInCell(AUnitCell* Cell)
 {
 	return *OccupiedCells.Find(Cell);
+}
+
+void AUnitGrid::HideRandomCells(int num)
+{
+	// Random two ints from total cell (Row * Column)
+	int TotalCells = Rows * Columns;
+	for (int i = 0; i < num; i++)
+	{
+		int randomIndex = UKismetMathLibrary::RandomIntegerInRange(0, TotalCells - 1);
+		GridCells[randomIndex]->SetActorHiddenInGame(true);
+	}
 }
 
 void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)

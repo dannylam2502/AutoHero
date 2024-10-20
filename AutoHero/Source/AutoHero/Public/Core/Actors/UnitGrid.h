@@ -19,6 +19,8 @@ public:
 	// Size of each cell
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FVector CellSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	FVector CellOffset;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 Rows;
@@ -54,6 +56,8 @@ public:
 	void OccupyCell(AUnitCell* UnitCell, class ABaseUnit* Unit);
 	void VacateCell(AUnitCell* UnitCell);
 	class ABaseUnit* GetUnitInCell(AUnitCell* Cell);
+	// Hide random cells to sastify design formation team
+	void HideRandomCells(int num);
 
 	UFUNCTION()
 	void OnUnitRemovedFromField(ABaseUnit* Unit);
