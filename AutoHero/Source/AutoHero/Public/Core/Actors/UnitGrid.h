@@ -68,7 +68,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	TArray<AUnitCell*> GridCells;
+	TArray<TArray<AUnitCell*>> TopGridCells;
+	TArray<TArray<AUnitCell*>> BottomGridCells;
 	UPROPERTY(VisibleAnywhere)
 	AUnitCell* LastHighlightedCell;
 	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;

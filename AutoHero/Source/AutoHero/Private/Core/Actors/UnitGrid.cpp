@@ -35,17 +35,31 @@ void AUnitGrid::Tick(float DeltaTime)
 void AUnitGrid::InitializeGrid()
 {
 	if (!GridCellClass) return;
-
+	BottomGridCells.SetNum(Rows);
+	TopGridCells.SetNum(Rows);
+	for (int32 Row = 0; Row < Rows; ++Row)
+	{
+		BottomGridCells[Row].SetNum(Columns);
+		TopGridCells[Row].SetNum(Columns);
+	}
+	
 	for (int32 Row = 0; Row < Rows; ++Row)
 	{
 		for (int32 Column = 0; Column < Columns; ++Column)
 		{
 			FVector Location = GetGridCellLocation(Row, Column);
-			AUnitCell* NewCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
-			if (NewCell)
+			AUnitCell* NewBottomCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
+			if (NewBottomCell)
 			{
-				NewCell->InitializeCell(Location, Row, Column);
-				GridCells.Add(NewCell);
+				NewBottomCell->InitializeCell(Location, Row, Column);
+				BottomGridCells[Row][Column] = NewBottomCell;
+			}
+			Location.Y = -Location.Y;
+			AUnitCell* NewTopCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
+			if (NewTopCell)
+			{
+				NewTopCell->InitializeCell(Location, Row, Column);
+				TopGridCells[Row][Column] = NewTopCell;
 			}
 		}
 	}
@@ -83,20 +97,23 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	AUnitCell* NearestCell = nullptr;
 	float MinDistance = FLT_MAX;
 
-	for (AActor* Actor : this->GridCells)
+	for (int32 Row = 0; Row < BottomGridCells.Num(); ++Row)
 	{
-		AUnitCell* Cell = Cast<AUnitCell>(Actor);
-		if (Cell && !Cell->IsHidden())
+		for (int32 Column = 0; Column < BottomGridCells[Row].Num(); ++Column)
 		{
-			float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
-			if (Distance < MinDistance)
+			AUnitCell* Cell = BottomGridCells[Row][Column];
+			if (Cell && !Cell->IsHidden())
 			{
-				MinDistance = Distance;
-				NearestCell = Cell;
+				float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
+				if (Distance < MinDistance)
+				{
+					MinDistance = Distance;
+					NearestCell = Cell;
+				}
 			}
 		}
 	}
-
+	
 	if (NearestCell)
 	{
 		if (LastHighlightedCell && LastHighlightedCell != NearestCell)
@@ -129,14 +146,42 @@ ABaseUnit* AUnitGrid::GetUnitInCell(AUnitCell* Cell)
 	return *OccupiedCells.Find(Cell);
 }
 
-void AUnitGrid::HideRandomCells(int num)
+void AUnitGrid::HideRandomCells(int32 num)
 {
-	// Random two ints from total cell (Row * Column)
-	int TotalCells = Rows * Columns;
-	for (int i = 0; i < num; i++)
+	// Calculate total cells (assuming a 2D grid)
+	int32 TotalCells = Rows * Columns;
+
+	// Set to track generated random numbers
+	TSet<int32> GeneratedRandomNum;
+
+	for (int32 i = 0; i < num; ++i)
 	{
-		int randomIndex = UKismetMathLibrary::RandomIntegerInRange(0, TotalCells - 1);
-		GridCells[randomIndex]->SetActorHiddenInGame(true);
+		int32 randomIndex;
+		do 
+		{
+			// Generate a unique random index
+			randomIndex = UKismetMathLibrary::RandomIntegerInRange(0, TotalCells - 1);
+		}
+		while (GeneratedRandomNum.Contains(randomIndex));  // Ensure it hasn't been used before
+
+		// Add the unique index to the set
+		GeneratedRandomNum.Add(randomIndex);
+
+		// Convert the 1D random index to a 2D grid position (row, column)
+		int32 Row = randomIndex / Columns;
+		int32 Column = randomIndex % Columns;
+
+		// Hide the corresponding cell in the BottomGridCells
+		if (BottomGridCells.IsValidIndex(Row) && BottomGridCells[Row].IsValidIndex(Column))
+		{
+			BottomGridCells[Row][Column]->SetActorHiddenInGame(true);
+		}
+
+		// Optionally hide the corresponding cell in TopGridCells (mirrored position)
+		if (TopGridCells.IsValidIndex(Row) && TopGridCells[Row].IsValidIndex(Column))
+		{
+			TopGridCells[Row][Columns - 1 - Column]->SetActorHiddenInGame(true);
+		}
 	}
 }
 
