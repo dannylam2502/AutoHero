@@ -116,7 +116,7 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	{
 		int32 Index = FMath::RandRange(0, AllHeroIDs.Num() - 1);
 		RandomUnitIDs.Add(AllHeroIDs[Index]);
-		AllHeroIDs.RemoveAt(Index);
+		//AllHeroIDs.RemoveAt(Index);
 	}
 
 	AAutoHeroPlayerState* PS = GetPlayerState<AAutoHeroPlayerState>();

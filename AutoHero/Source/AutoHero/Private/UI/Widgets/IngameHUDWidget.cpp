@@ -18,6 +18,7 @@ UIngameHUDWidget::UIngameHUDWidget()
 
 void UIngameHUDWidget::LoadListUnit()
 {
+	// Check context
 	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
 	if (PlayerState)

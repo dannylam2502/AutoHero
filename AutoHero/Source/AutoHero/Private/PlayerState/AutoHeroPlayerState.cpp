@@ -11,6 +11,7 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIDs);
+	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIDs);
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)

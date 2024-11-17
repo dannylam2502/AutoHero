@@ -22,6 +22,7 @@ public:
 	TArray<int32> SelectedUnitIDs;
 
 	// The Current List of Units that this player can choose from, appear from the UI
+	UPROPERTY(Replicated)
 	TArray<int32> CurrentUnitIDs;
 
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
