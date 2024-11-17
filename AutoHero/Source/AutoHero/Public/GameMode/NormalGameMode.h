@@ -36,5 +36,4 @@ public:
 	void PlayerReady(APlayerController* PlayerController);
 	void CheckIfAllPlayersReady();
 	void StartGame();
-	void OnLevelLoaded();
 };

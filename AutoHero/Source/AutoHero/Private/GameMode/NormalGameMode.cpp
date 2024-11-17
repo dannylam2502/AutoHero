@@ -106,13 +106,3 @@ void ANormalGameMode::StartGame()
 		// NormalGameState->StartPreparation();
 	}
 }
-
-void ANormalGameMode::OnLevelLoaded()
-{
-	// Get the game instance and trigger the delegate
-	UNormalGameInstance* GameInstance = Cast<UNormalGameInstance>(GetGameInstance());
-	if (GameInstance)
-	{
-		GameInstance->TriggerLevelLoaded();
-	}
-}

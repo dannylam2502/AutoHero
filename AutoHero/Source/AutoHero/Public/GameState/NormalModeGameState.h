@@ -50,5 +50,10 @@ public:
 	void UnloadLevel(const FString& LevelName);
 	bool IsPreparationPhase();
 	int32 GetCurrentRound();
-
+	// Function to trigger level loaded logic
+	UFUNCTION(BlueprintCallable)
+	void ServerOnLevelLoaded();
+	// Multicast delegate to notify clients
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnLevelLoaded();
 };

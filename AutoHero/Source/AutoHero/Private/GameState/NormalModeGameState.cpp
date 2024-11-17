@@ -65,6 +65,27 @@ int32 ANormalModeGameState::GetCurrentRound()
     return CurrentRound;
 }
 
+void ANormalModeGameState::ServerOnLevelLoaded()
+{
+    // Server-side logic for level loaded
+    UE_LOG(LogTemp, Log, TEXT("Level Loaded on Server!"));
+
+    // Example: Notify all clients
+    MulticastOnLevelLoaded();
+}
+
+void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
+{
+    // Logic for both server and clients when level is loaded
+    UE_LOG(LogTemp, Log, TEXT("Level Loaded for all clients!"));
+    // Get the game instance and trigger the delegate
+    UNormalGameInstance* GameInstance = Cast<UNormalGameInstance>(GetGameInstance());
+    if (GameInstance)
+    {
+        GameInstance->TriggerLevelLoaded();
+    }
+}
+
 void ANormalModeGameState::StartRound()
 {
     if (HasAuthority())
@@ -164,11 +185,6 @@ void ANormalModeGameState::OnLevelDevMapLoaded()
 void ANormalModeGameState::OnIngameMapDetailLoaded()
 {
     GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Yellow, FString("OnIngameMapDetailLoaded"));
-    // Get the game instance and trigger the delegate
-    UNormalGameInstance* GameInstance = Cast<UNormalGameInstance>(GetGameInstance());
-    if (GameInstance)
-    {
-        GameInstance->TriggerLevelLoaded();
-    }
+    ServerOnLevelLoaded();
     StartPreparation();
 }
