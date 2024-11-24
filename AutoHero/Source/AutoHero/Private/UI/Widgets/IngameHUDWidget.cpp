@@ -23,7 +23,7 @@ void UIngameHUDWidget::LoadListUnit()
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
 	if (PlayerState)
 	{
-		TArray<int32> UnitIDs = PlayerState->CurrentUnitIDs;
+		TArray<int32> UnitIDs = PlayerState->CurrentUnitIds;
 		for (auto UnitID : UnitIDs)
 		{
 			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitID);

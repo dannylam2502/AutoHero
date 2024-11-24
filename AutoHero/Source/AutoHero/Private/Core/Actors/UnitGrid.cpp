@@ -20,7 +20,11 @@ AUnitGrid::AUnitGrid()
 void AUnitGrid::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeGrid();
+	// Server Initialize only
+	if (HasAuthority())
+	{
+		InitializeGrid();
+	}
 }
 
 // Called every frame

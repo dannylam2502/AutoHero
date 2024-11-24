@@ -10,18 +10,18 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIDs);
-	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIDs);
+	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
+	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
 {
-	SelectedUnitIDs = UnitIDs;
+	SelectedUnitIds = UnitIDs;
 }
 
 void AAutoHeroPlayerState::SetCurrentUnitIDs(const TArray<int32>& UnitIDs)
 {
-	CurrentUnitIDs = UnitIDs;
+	CurrentUnitIds = UnitIDs;
 }
 
 void AAutoHeroPlayerState::SendRequestSubmit()
@@ -30,11 +30,17 @@ void AAutoHeroPlayerState::SendRequestSubmit()
 
 	if (HasAuthority())
 	{
-		ServerSetSelectedUnits(SelectedUnitIDs);
+		// Server code
+		ServerSetSelectedUnits(SelectedUnitIds);
+	}
+	else
+	{
+		// Client code, allow requesting to server function
+		ServerSetSelectedUnits(SelectedUnitIds);
 	}
 }
 
-void AAutoHeroPlayerState::OnRep_SelectedUnitIDs()
+void AAutoHeroPlayerState::OnRep_SelectedUnitIds()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OnRep_SelectedUnitIDs"));
 }
@@ -42,7 +48,7 @@ void AAutoHeroPlayerState::OnRep_SelectedUnitIDs()
 void AAutoHeroPlayerState::ServerSetSelectedUnits_Implementation(const TArray<int32>& UnitIDs)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ServerSetSelectedUnits_Implementation"));
-	SelectedUnitIDs = UnitIDs;
+	SelectedUnitIds = UnitIDs;
 }
 
 bool AAutoHeroPlayerState::ServerSetSelectedUnits_Validate(const TArray<int32>& UnitIDs)

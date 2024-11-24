@@ -18,12 +18,12 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	// The list of selected units on this player's board, will be replicated
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Units")
-	TArray<int32> SelectedUnitIDs;
+	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")
+	TArray<int32> SelectedUnitIds;
 
 	// The Current List of Units that this player can choose from, appear from the UI
 	UPROPERTY(Replicated)
-	TArray<int32> CurrentUnitIDs;
+	TArray<int32> CurrentUnitIds;
 
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
 	void SetCurrentUnitIDs(const TArray<int32>& UnitIDs);
@@ -35,5 +35,5 @@ public:
 	void ServerSetSelectedUnits(const TArray<int32>& UnitIDs);
 
 	UFUNCTION()
-	void OnRep_SelectedUnitIDs();
+	void OnRep_SelectedUnitIds();
 };
