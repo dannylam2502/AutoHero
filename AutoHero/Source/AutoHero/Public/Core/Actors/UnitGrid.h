@@ -68,9 +68,13 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	TArray<TArray<AUnitCell*>> TopGridCells;
-	TArray<TArray<AUnitCell*>> BottomGridCells;
+	UPROPERTY(Replicated)
+	TArray<AUnitCell*> TopGridCells;
+	UPROPERTY(Replicated)
+	TArray<AUnitCell*> BottomGridCells;
 	UPROPERTY(VisibleAnywhere)
 	AUnitCell* LastHighlightedCell;
 	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

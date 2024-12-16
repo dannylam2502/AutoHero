@@ -6,14 +6,18 @@
 #include "Core/Actors/BaseUnit.h"
 #include "Core/Actors/UnitCell.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
 AUnitGrid::AUnitGrid()
 {
+	Rows = 5;
+	Columns = 4;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	LastHighlightedCell = nullptr;
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -27,25 +31,25 @@ void AUnitGrid::BeginPlay()
 	}
 }
 
+void AUnitGrid::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnitGrid, TopGridCells);
+	DOREPLIFETIME(AUnitGrid, BottomGridCells);
+}
+
 // Called every frame
 void AUnitGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	Rows = 5;
-	Columns = 4;
 }
 
 void AUnitGrid::InitializeGrid()
 {
 	if (!GridCellClass) return;
-	BottomGridCells.SetNum(Rows);
-	TopGridCells.SetNum(Rows);
-	for (int32 Row = 0; Row < Rows; ++Row)
-	{
-		BottomGridCells[Row].SetNum(Columns);
-		TopGridCells[Row].SetNum(Columns);
-	}
+	BottomGridCells.SetNum(Rows * Columns);
+	TopGridCells.SetNum(Rows * Columns);
 	
 	for (int32 Row = 0; Row < Rows; ++Row)
 	{
@@ -56,14 +60,14 @@ void AUnitGrid::InitializeGrid()
 			if (NewBottomCell)
 			{
 				NewBottomCell->InitializeCell(Location, Row, Column);
-				BottomGridCells[Row][Column] = NewBottomCell;
+				BottomGridCells[Row * Column + Column] = NewBottomCell;
 			}
 			Location.Y = -Location.Y;
 			AUnitCell* NewTopCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewTopCell)
 			{
 				NewTopCell->InitializeCell(Location, Row, Column);
-				TopGridCells[Row][Column] = NewTopCell;
+				TopGridCells[Row * Column + Column] = NewTopCell;
 			}
 		}
 	}
@@ -101,11 +105,11 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	AUnitCell* NearestCell = nullptr;
 	float MinDistance = FLT_MAX;
 
-	for (int32 Row = 0; Row < BottomGridCells.Num(); ++Row)
+	for (int32 Row = 0; Row < Rows; ++Row)
 	{
-		for (int32 Column = 0; Column < BottomGridCells[Row].Num(); ++Column)
+		for (int32 Column = 0; Column < Columns; ++Column)
 		{
-			AUnitCell* Cell = BottomGridCells[Row][Column];
+			AUnitCell* Cell = BottomGridCells[Row * Column + Column];
 			if (Cell && !Cell->IsHidden())
 			{
 				float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
@@ -176,15 +180,15 @@ void AUnitGrid::HideRandomCells(int32 num)
 		int32 Column = randomIndex % Columns;
 
 		// Hide the corresponding cell in the BottomGridCells
-		if (BottomGridCells.IsValidIndex(Row) && BottomGridCells[Row].IsValidIndex(Column))
+		if (BottomGridCells.IsValidIndex(Row * Column + Column))
 		{
-			BottomGridCells[Row][Column]->SetActorHiddenInGame(true);
+			BottomGridCells[Row * Column + Column]->SetActorHiddenInGame(true);
 		}
 
 		// Optionally hide the corresponding cell in TopGridCells (mirrored position)
-		if (TopGridCells.IsValidIndex(Row) && TopGridCells[Row].IsValidIndex(Column))
+		if (TopGridCells.IsValidIndex(Row * Column + Column))
 		{
-			TopGridCells[Row][Columns - 1 - Column]->SetActorHiddenInGame(true);
+			TopGridCells[Row * Column + Column]->SetActorHiddenInGame(true);
 		}
 	}
 }

@@ -9,6 +9,7 @@
 #include "GameInstances/NormalGameInstance.h"
 #include "GameState/NormalModeGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "PlayerState/AutoHeroPlayerState.h"
 
 ANormalGameMode::ANormalGameMode()
 {
@@ -79,6 +80,22 @@ void ANormalGameMode::StartGame()
 	bGameStarted = true;
 	// Clear the timer to ensure it doesn't try to start the game again
 	GetWorldTimerManager().ClearTimer(StartGameTimerHandle);
+
+	// Assign player indices
+	int32 PlayerIndex = 0;
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (!PlayerController) continue;
+
+		AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
+		if (PlayerState)
+		{
+			PlayerState->SetPlayerIndex(PlayerIndex);
+			UE_LOG(LogTemp, Log, TEXT("Assigned PlayerIndex %d to %s"), PlayerIndex, *PlayerController->GetName());
+			PlayerIndex++;
+		}
+	}
 
 	
 	// FString LevelName = TEXT("/Game/Maps/Level_DevMap");  // Replace with your map path

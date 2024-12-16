@@ -365,7 +365,11 @@ void ABaseUnit::TickWaitingForPlacement(float DeltaTime)
 
 void ABaseUnit::TickWhileDraggingFromWidget(float DeltaTime)
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(this->GetWorld());
+	if (PlayerController == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, FString("BaseUnitCpp: PlayerController Is Null"));
+	}
 	if (PlayerController)
 	{
 		FHitResult HitResult;

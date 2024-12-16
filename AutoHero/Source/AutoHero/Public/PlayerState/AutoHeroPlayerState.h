@@ -16,6 +16,9 @@ class AUTOHERO_API AAutoHeroPlayerState : public APlayerState
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerIndex, BlueprintReadOnly, Category = "Units")
+	int PlayerIndex;
+	
 public:
 	// The list of selected units on this player's board, will be replicated
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")
@@ -36,4 +39,10 @@ public:
 
 	UFUNCTION()
 	void OnRep_SelectedUnitIds();
+
+	UFUNCTION()
+	void OnRep_PlayerIndex();
+
+	void SetPlayerIndex(int InPlayerIndex);
+	int GetPlayerIndex();
 };

@@ -2,11 +2,13 @@
 
 #include "AutoHeroPlayerController.h"
 
+#include "AutoHeroGameMode.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/World.h"
 #include "Core/Camera/AHPlayerCameraManager.h"
 #include "GameMode/NormalGameMode.h"
+#include "GameState/NormalModeGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singletons/UnitDataManager.h"
 #include "PlayerState/AutoHeroPlayerState.h"
@@ -30,6 +32,8 @@ void AAutoHeroPlayerController::SetupInputComponent()
 		if (IA_LeftMouse)
 		{
 			EnhancedInputComponent->BindAction(IA_LeftMouse, ETriggerEvent::Completed, this, &AAutoHeroPlayerController::OnLeftMouseReleased);
+			EnhancedInputComponent->BindAction(IA_TestCameraView, ETriggerEvent::Completed, this, &AAutoHeroPlayerController::OnCameraSymmetricTest);
+
 		}
 	}
 }
@@ -37,6 +41,20 @@ void AAutoHeroPlayerController::SetupInputComponent()
 void AAutoHeroPlayerController::OnLeftMouseReleased()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, TEXT("OnLeftMouseReleased"));
+}
+
+void AAutoHeroPlayerController::OnCameraSymmetricTest()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Black, TEXT("OnCameraSymmetricTest"));
+	ANormalGameMode* GameMode = GetWorld()->GetAuthGameMode<ANormalGameMode>();
+	if (GameMode)
+	{
+		ANormalModeGameState* GameState = GameMode->GetGameState<ANormalModeGameState>();
+		// Toggle between Player 1 and Player 2 for testing
+		static bool bIsPlayer1 = true;
+		//GameState->SetSymmetricView(this);
+		bIsPlayer1 = !bIsPlayer1;
+	}
 }
 
 void AAutoHeroPlayerController::BeginPlay()

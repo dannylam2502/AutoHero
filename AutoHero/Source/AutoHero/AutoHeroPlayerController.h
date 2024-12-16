@@ -25,9 +25,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* IA_LeftMouse;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* IA_TestCameraView;
+	
 
 	void OnLeftMouseReleased();
-	
+	void OnCameraSymmetricTest();
 
 protected:
 	// To add mapping context

@@ -5,8 +5,11 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameInstances/NormalGameInstance.h"
+#include "PlayerState/AutoHeroPlayerState.h"
 
 ANormalModeGameState::ANormalModeGameState()
 {
@@ -74,6 +77,32 @@ void ANormalModeGameState::ServerOnLevelLoaded()
     MulticastOnLevelLoaded();
 }
 
+void ANormalModeGameState::SetSymmetricView(APlayerController* PlayerController)
+{
+    if (!PlayerController) return;
+
+    // Get the controlled pawn (player's character)
+    APawn* ControlledPawn = PlayerController->GetPawn();
+    if (!ControlledPawn) return;
+
+    // Get the spring arm component attached to the pawn
+    USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
+    if (!SpringArm) return;
+
+    // Get the current spring arm rotation
+    FRotator SpringArmRotation = SpringArm->GetComponentRotation();
+
+    // Flip the Z (yaw) component for a mirrored view
+    SpringArmRotation.Yaw += 180.0f;
+    SpringArmRotation.Yaw = FMath::Fmod(SpringArmRotation.Yaw, 360.0f); // Keep yaw within [0, 360)
+
+    // Apply the flipped rotation
+    SpringArm->SetWorldRotation(SpringArmRotation);
+
+    // Inform other systems of the player's role
+    // NotifySymmetricViewSetup(PlayerController, bIsPlayer1);
+}
+
 void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
 {
     // Logic for both server and clients when level is loaded
@@ -83,6 +112,19 @@ void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
     if (GameInstance)
     {
         GameInstance->TriggerLevelLoaded();
+    }
+
+    // Iterate through all player controllers and set symmetric view for Player 2
+    for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+    {
+        APlayerController* PlayerController = Iterator->Get(); // Get the player controller
+        if (!PlayerController) continue;
+        AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
+        // Check if this is Player 2 based on some custom logic (e.g., index or role)
+        if (PlayerState->GetPlayerIndex() == 0) // Assuming NetPlayerIndex == 1 for Player 2
+        {
+            SetSymmetricView(PlayerController); // Call your symmetric view function
+        }
     }
 }
 

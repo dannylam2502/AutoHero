@@ -3,6 +3,8 @@
 
 #include "PlayerState/AutoHeroPlayerState.h"
 
+#include "AutoHero/AutoHeroPlayerController.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -12,6 +14,7 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
+	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -43,6 +46,44 @@ void AAutoHeroPlayerState::SendRequestSubmit()
 void AAutoHeroPlayerState::OnRep_SelectedUnitIds()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("OnRep_SelectedUnitIDs"));
+}
+
+void AAutoHeroPlayerState::OnRep_PlayerIndex()
+{
+	if (HasAuthority())
+	{
+		
+		if (this->PlayerIndex == 1)
+		{
+			APlayerController* PlayerController = this->GetPlayerController();
+			APawn* ControlledPawn = PlayerController->GetPawn();
+			if (!ControlledPawn) return;
+
+			// Get the spring arm component attached to the pawn
+			USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
+			if (!SpringArm) return;
+
+			// Get the current spring arm rotation
+			FRotator SpringArmRotation = SpringArm->GetComponentRotation();
+
+			// Flip the Z (yaw) component for a mirrored view
+			SpringArmRotation.Yaw += 180.0f;
+			SpringArmRotation.Yaw = FMath::Fmod(SpringArmRotation.Yaw, 360.0f); // Keep yaw within [0, 360)
+
+			// Apply the flipped rotation
+			SpringArm->SetWorldRotation(SpringArmRotation);
+		}
+	}
+}
+
+void AAutoHeroPlayerState::SetPlayerIndex(int InPlayerIndex)
+{
+	this->PlayerIndex = InPlayerIndex;
+}
+
+int AAutoHeroPlayerState::GetPlayerIndex()
+{
+	return PlayerIndex;
 }
 
 void AAutoHeroPlayerState::ServerSetSelectedUnits_Implementation(const TArray<int32>& UnitIDs)

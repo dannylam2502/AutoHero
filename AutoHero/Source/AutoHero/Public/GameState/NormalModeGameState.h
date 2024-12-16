@@ -56,4 +56,6 @@ public:
 	// Multicast delegate to notify clients
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastOnLevelLoaded();
+
+	void SetSymmetricView(APlayerController* PlayerController);
 };
