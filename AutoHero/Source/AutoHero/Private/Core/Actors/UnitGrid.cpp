@@ -60,20 +60,20 @@ void AUnitGrid::InitializeGrid()
 			if (NewBottomCell)
 			{
 				NewBottomCell->InitializeCell(Location, Row, Column);
-				BottomGridCells[Row * Column + Column] = NewBottomCell;
+				BottomGridCells[Row * Columns + Column] = NewBottomCell;
 			}
 			Location.Y = -Location.Y;
 			AUnitCell* NewTopCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewTopCell)
 			{
 				NewTopCell->InitializeCell(Location, Row, Column);
-				TopGridCells[Row * Column + Column] = NewTopCell;
+				TopGridCells[Row * Columns + Column] = NewTopCell;
 			}
 		}
 	}
 	
 	// TODO: configurable
-	HideRandomCells(2);
+	//HideRandomCells(2);
 }
 
 FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
@@ -109,7 +109,7 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	{
 		for (int32 Column = 0; Column < Columns; ++Column)
 		{
-			AUnitCell* Cell = BottomGridCells[Row * Column + Column];
+			AUnitCell* Cell = BottomGridCells[Row * Columns + Column];
 			if (Cell && !Cell->IsHidden())
 			{
 				float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
