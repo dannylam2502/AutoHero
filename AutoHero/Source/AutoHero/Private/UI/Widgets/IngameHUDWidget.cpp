@@ -69,7 +69,7 @@ void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVecto
 
 	if (PlaceholderUnit)
 	{
-		PlaceholderUnit->FinalizePlacement();
+		PlaceholderUnit->ClientPlaceOnCell();
 		PlaceholderUnit = nullptr; // reset place holder unit ptr
 		CurrentSelectedSlot = nullptr; // reset too
 	}

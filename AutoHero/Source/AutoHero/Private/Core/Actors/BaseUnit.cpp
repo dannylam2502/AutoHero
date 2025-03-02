@@ -24,7 +24,7 @@ ABaseUnit::ABaseUnit()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
+	//bReplicates = true;
 	bAlwaysRelevant = true;
 
 	if (RootComponent == nullptr)
@@ -433,9 +433,9 @@ FVector ABaseUnit::GetOffsetWhenPlace()
 	return FVector(0.0f, 0.0f, 56.5f);
 }
 
-void ABaseUnit::FinalizePlacement()
+void ABaseUnit::ClientPlaceOnCell()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Finalize Placement"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("ClientPlaceOnCell"));
 	if (UnitGrid)
 	{
 		// Find Old Cell and Vacate it
@@ -446,8 +446,7 @@ void ABaseUnit::FinalizePlacement()
 			OldCell->SelectCell(false);
 		}
 		//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
-		AUnitCell* NearestCell = UnitGrid->GetNearestCell();
-		if (NearestCell)
+		if (AUnitCell* NearestCell = UnitGrid->GetNearestCell())
 		{
 			FVector SnappedPosition = NearestCell->GetCellCenterLocation();
 			SetActorLocation(SnappedPosition + GetOffsetWhenPlace());

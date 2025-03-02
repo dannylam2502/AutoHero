@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 
 
+
 void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -15,6 +16,11 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
+}
+
+AAutoHeroPlayerState::AAutoHeroPlayerState()
+{
+	bReplicates = true;
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -33,12 +39,14 @@ void AAutoHeroPlayerState::SendRequestSubmit()
 
 	if (HasAuthority())
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SendRequestSubmit HasAuthority"));
 		// Server code
 		ServerSetSelectedUnits(SelectedUnitIds);
 	}
 	else
 	{
 		// Client code, allow requesting to server function
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SendRequestSubmit Not HasAuthority"));
 		ServerSetSelectedUnits(SelectedUnitIds);
 	}
 }
@@ -88,7 +96,8 @@ int AAutoHeroPlayerState::GetPlayerIndex()
 
 void AAutoHeroPlayerState::ServerSetSelectedUnits_Implementation(const TArray<int32>& UnitIDs)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ServerSetSelectedUnits_Implementation"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ServerSetSelectedUnits_Implementation"));
+	UE_LOG(LogTemp, Warning, TEXT("ServerSetSelectedUnits has been called on the server Num = %d"), UnitIDs.Num());
 	SelectedUnitIds = UnitIDs;
 }
 

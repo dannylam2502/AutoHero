@@ -66,7 +66,7 @@ public:
 	FVector GetOffsetWhenPlace();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void FinalizePlacement();
+	virtual void ClientPlaceOnCell();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void InitializeAttributes();

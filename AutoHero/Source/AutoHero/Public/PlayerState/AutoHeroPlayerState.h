@@ -20,6 +20,7 @@ protected:
 	int PlayerIndex;
 	
 public:
+	AAutoHeroPlayerState();
 	// The list of selected units on this player's board, will be replicated
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")
 	TArray<int32> SelectedUnitIds;
