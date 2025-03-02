@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/Actors/BaseUnit.h"
+#include "Actors/BaseUnit.h"
 #include "FUnitData.generated.h"
 
 /**

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Core/Actors/BaseUnit.h"
+#include "Actors/BaseUnit.h"
 #include "HealthBar.generated.h"
 
 /**

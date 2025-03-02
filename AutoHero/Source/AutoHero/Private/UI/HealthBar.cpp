@@ -4,7 +4,7 @@
 #include "UI/HealthBar.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Core/Gameplay/UnitAttributeSet.h"
+#include "Gameplay/UnitAttributeSet.h"
 
 void UHealthBar::SetOwnerUnit(ABaseUnit* InUnit)
 {
