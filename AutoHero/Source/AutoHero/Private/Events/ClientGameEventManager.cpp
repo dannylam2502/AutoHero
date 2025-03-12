@@ -3,13 +3,25 @@
 
 #include "Events/ClientGameEventManager.h"
 
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AClientGameEventManager::AClientGameEventManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+}
 
+AClientGameEventManager* AClientGameEventManager::GetInstance(UWorld* World)
+{
+	static AClientGameEventManager* Instance = nullptr;
+	if (!Instance)
+	{
+		Instance = Cast<AClientGameEventManager>(UGameplayStatics::GetActorOfClass(World, AClientGameEventManager::StaticClass()));
+	}
+	return Instance;
 }
 
 // Called when the game starts or when spawned

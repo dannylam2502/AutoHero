@@ -44,9 +44,6 @@ public:
 	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;
 
-	UPROPERTY(VisibleAnywhere)
-	class AUnitGrid* UnitGrid;
-
 	// Delegates
 	FOnUnitRemovedFromField OnUnitRemovedFromField;
 	
@@ -65,8 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetOffsetWhenPlace();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void ClientPlaceOnCell();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void InitializeAttributes();
@@ -96,6 +91,8 @@ public:
 	void SetCurrentCell(class AUnitCell* InUnitCell);
 	UFUNCTION(BlueprintCallable)
 	class AUnitCell* GetCurrentCell();
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	void RemoveFromField();
 protected:
 	UPROPERTY()
 	class AUnitCell* CurrentCell;
@@ -117,7 +114,4 @@ protected:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameplayEffect Event")
 	void OnDamageReceived(AActor* InInstigator, AActor* InCauser, const FGameplayTagContainer& InTags, float InDamage);
-
-	UFUNCTION(BlueprintCallable, Category = "Unit")
-	void RemoveFromField();
 };

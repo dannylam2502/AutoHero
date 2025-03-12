@@ -7,7 +7,7 @@
 #include "Components/WidgetComponent.h"
 #include "Actors/BaseProjectile.h"
 #include "Actors/UnitCell.h"
-#include "Actors/UnitGrid.h"
+#include "Events/ClientGameEventManager.h"
 #include "Gameplay/UnitAbilitySystemComponent.h"
 #include "Gameplay/UnitAttributeSet.h"
 #include "Gameplay/UnitGameplayAbility.h"
@@ -18,7 +18,6 @@
 
 #define DETECTION_RADIUS 10000.0f
 
-class AUnitGrid;
 // Sets default values
 ABaseUnit::ABaseUnit()
 {
@@ -244,8 +243,8 @@ void ABaseUnit::BeginPlay()
 		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
 	}
 
-	UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
-	OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
+	// UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
+	// OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
 }
 
 void ABaseUnit::HandleStateChange(EUnitState NewState)
@@ -383,11 +382,13 @@ void ABaseUnit::TickWhileDraggingFromWidget(float DeltaTime)
 			SetActorLocation(HitResult.Location + GetOffsetWhenDragging());
 		}
 
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.Broadcast(this);
+
 		// Highlight the nearest cell in the grid manager
-		if (UnitGrid)
-		{
-			UnitGrid->HighlightNearestCell(GetActorLocation());
-		}
+		// if (UnitGrid)
+		// {
+		// 	UnitGrid->HighlightNearestCell(GetActorLocation());
+		// }
 	}
 }
 
@@ -406,12 +407,12 @@ void ABaseUnit::TickWhileDraggingInField(float DeltaTime)
 			FVector AdjustedLocation = HitResult.Location + GetOffsetWhenDragging();
 			SetActorLocation(AdjustedLocation);
 		}
-
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.Broadcast(this);
 		// Highlight the nearest cell in the grid manager
-		if (UnitGrid)
-		{
-			UnitGrid->HighlightNearestCell(GetActorLocation());
-		}
+		// if (UnitGrid)
+		// {
+		// 	UnitGrid->HighlightNearestCell(GetActorLocation());
+		// }
 	}
 }
 
@@ -431,56 +432,6 @@ FVector ABaseUnit::GetOffsetWhenDragging() const
 FVector ABaseUnit::GetOffsetWhenPlace()
 {
 	return FVector(0.0f, 0.0f, 56.5f);
-}
-
-void ABaseUnit::ClientPlaceOnCell()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("ClientPlaceOnCell"));
-	if (UnitGrid)
-	{
-		// Find Old Cell and Vacate it
-		AUnitCell* OldCell = this->GetCurrentCell();
-		if (OldCell)
-		{
-			UnitGrid->VacateCell(OldCell);
-			OldCell->SelectCell(false);
-		}
-		//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
-		if (AUnitCell* NearestCell = UnitGrid->GetNearestCell())
-		{
-			FVector SnappedPosition = NearestCell->GetCellCenterLocation();
-			SetActorLocation(SnappedPosition + GetOffsetWhenPlace());
-			SetUnitState(EUnitState::WaitingForPlacement);
-			// If NearestCell is occupied, we need to switch it with the old cell
-			if (UnitGrid->IsCellOccupied(NearestCell))
-			{
-				// Switch from a cell to another cell
-				if (OldCell)
-				{
-					ABaseUnit* NearestCellCurUnit = UnitGrid->GetUnitInCell(NearestCell);
-					if (NearestCellCurUnit)
-					{
-						NearestCellCurUnit->SetActorLocation(OldCell->GetCellCenterLocation() + GetOffsetWhenPlace());
-						UnitGrid->OccupyCell(OldCell, NearestCellCurUnit);
-						NearestCellCurUnit->SetCurrentCell(OldCell);
-					}
-				}
-				else
-				{
-					// Switch from widget to a unit cell
-					ABaseUnit* NearestCellCurUnit = UnitGrid->GetUnitInCell(NearestCell);
-					if (NearestCellCurUnit)
-					{
-						NearestCellCurUnit->RemoveFromField();
-					}
-				}
-			}
-			// Set Nearest Cell occupied
-			UnitGrid->OccupyCell(NearestCell, this);
-			this->SetCurrentCell(NearestCell);
-			NearestCell->HighlightCell(false);
-		}
-	}
 }
 
 void ABaseUnit::SetUnitState(EUnitState NewState)

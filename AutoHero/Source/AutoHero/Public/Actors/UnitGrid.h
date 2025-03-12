@@ -62,6 +62,8 @@ public:
 	UFUNCTION()
 	void OnUnitRemovedFromField(ABaseUnit* Unit);
 
+	void PlaceUnitOnCellLocally(ABaseUnit* BaseUnit);
+
 	// Need to construct data as: UnitID, In CellID?
 protected:
 	// Called when the game starts or when spawned
@@ -75,6 +77,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	AUnitCell* LastHighlightedCell;
 	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;
+
+	UFUNCTION()
+	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation);
+	UFUNCTION()
+	void OnClientUnitDragging(ABaseUnit* BaseUnit);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

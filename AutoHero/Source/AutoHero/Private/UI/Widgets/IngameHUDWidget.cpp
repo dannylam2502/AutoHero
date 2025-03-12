@@ -9,7 +9,7 @@
 #include "PlayerState/AutoHeroPlayerState.h"
 #include "Singletons/UnitDataManager.h"
 #include "UI/Widgets/UnitSelectionSlot.h"
-
+#include "Events/ClientGameEventManager.h"
 
 UIngameHUDWidget::UIngameHUDWidget()
 {
@@ -69,7 +69,8 @@ void UIngameHUDWidget::OnSlotDroppedEvent(UUnitSelectionSlot* InUnitSlot, FVecto
 
 	if (PlaceholderUnit)
 	{
-		PlaceholderUnit->ClientPlaceOnCell();
+		//PlaceholderUnit->ClientPlaceOnCell();
+		AClientGameEventManager::GetInstance(this->GetWorld())->OnClientUnitDropped.Broadcast(PlaceholderUnit, InDropPosition);
 		PlaceholderUnit = nullptr; // reset place holder unit ptr
 		CurrentSelectedSlot = nullptr; // reset too
 	}

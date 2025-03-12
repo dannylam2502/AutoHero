@@ -5,6 +5,7 @@
 
 #include "Actors/BaseUnit.h"
 #include "Actors/UnitCell.h"
+#include "Events/ClientGameEventManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -24,6 +25,9 @@ AUnitGrid::AUnitGrid()
 void AUnitGrid::BeginPlay()
 {
 	Super::BeginPlay();
+	// Register Event
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AUnitGrid::OnClientUnitDropped);
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.AddDynamic(this, &AUnitGrid::OnClientUnitDragging);
 	// Server Initialize only
 	if (HasAuthority())
 	{
@@ -205,5 +209,70 @@ void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)
 		{
 			LastHighlightedCell->HighlightCell(false);
 		}
+	}
+}
+
+void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
+{
+	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, TEXT("PlaceUnitOnCellLocally"));
+	if (BaseUnit == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, TEXT("BaseUnit is nullptr"));
+		return;
+	}
+	// Find Old Cell and Vacate it
+	AUnitCell* OldCell = BaseUnit->GetCurrentCell();
+	if (OldCell)
+	{
+		this->VacateCell(OldCell);
+		OldCell->SelectCell(false);
+	}
+	//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
+	if (AUnitCell* NearestCell = this->GetNearestCell())
+	{
+		FVector SnappedPosition = NearestCell->GetCellCenterLocation();
+		SetActorLocation(SnappedPosition + BaseUnit->GetOffsetWhenPlace());
+		BaseUnit->SetUnitState(EUnitState::WaitingForPlacement);
+		// If NearestCell is occupied, we need to switch it with the old cell
+		if (this->IsCellOccupied(NearestCell))
+		{
+			// Switch from a cell to another cell
+			if (OldCell)
+			{
+				ABaseUnit* NearestCellCurUnit = this->GetUnitInCell(NearestCell);
+				if (NearestCellCurUnit)
+				{
+					NearestCellCurUnit->SetActorLocation(OldCell->GetCellCenterLocation() + BaseUnit->GetOffsetWhenPlace());
+					this->OccupyCell(OldCell, NearestCellCurUnit);
+					NearestCellCurUnit->SetCurrentCell(OldCell);
+				}
+			}
+			else
+			{
+				// Switch from widget to a unit cell
+				ABaseUnit* NearestCellCurUnit = this->GetUnitInCell(NearestCell);
+				if (NearestCellCurUnit)
+				{
+					NearestCellCurUnit->RemoveFromField();
+				}
+			}
+		}
+		// Set Nearest Cell occupied
+		this->OccupyCell(NearestCell, BaseUnit);
+		BaseUnit->SetCurrentCell(NearestCell);
+		NearestCell->HighlightCell(false);
+	}
+}
+
+void AUnitGrid::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation)
+{
+	PlaceUnitOnCellLocally(BaseUnit);
+}
+
+void AUnitGrid::OnClientUnitDragging(ABaseUnit* BaseUnit)
+{
+	if (BaseUnit)
+	{
+		HighlightNearestCell(BaseUnit->GetActorLocation());
 	}
 }
