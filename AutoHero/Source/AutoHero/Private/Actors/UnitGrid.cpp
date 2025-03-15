@@ -214,6 +214,7 @@ void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)
 
 void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 {
+	// TODO
 	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, TEXT("PlaceUnitOnCellLocally"));
 	if (BaseUnit == nullptr)
 	{
@@ -231,7 +232,7 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 	if (AUnitCell* NearestCell = this->GetNearestCell())
 	{
 		FVector SnappedPosition = NearestCell->GetCellCenterLocation();
-		SetActorLocation(SnappedPosition + BaseUnit->GetOffsetWhenPlace());
+		BaseUnit->SetActorLocation(SnappedPosition + BaseUnit->GetOffsetWhenPlace());
 		BaseUnit->SetUnitState(EUnitState::WaitingForPlacement);
 		// If NearestCell is occupied, we need to switch it with the old cell
 		if (this->IsCellOccupied(NearestCell))

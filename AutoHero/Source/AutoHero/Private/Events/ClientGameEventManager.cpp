@@ -24,6 +24,11 @@ AClientGameEventManager* AClientGameEventManager::GetInstance(UWorld* World)
 	return Instance;
 }
 
+void AClientGameEventManager::BPBroadCastOnUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)
+{
+	OnClientUnitDropped.Broadcast(BaseUnit, InDropPosition);
+}
+
 // Called when the game starts or when spawned
 void AClientGameEventManager::BeginPlay()
 {
