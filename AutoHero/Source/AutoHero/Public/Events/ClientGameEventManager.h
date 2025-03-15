@@ -10,7 +10,8 @@ class ABaseUnit;
 class UUnitSelectionSlot;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientUnitDropped, ABaseUnit*, BaseUnit, FVector2D, InDropPosition);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitDragging, ABaseUnit*, BaseUnit);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitSpawned, ABaseUnit*, BaseUnit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitRemovedFromField, ABaseUnit*, BaseUnit);
 
 UCLASS()
 class AUTOHERO_API AClientGameEventManager : public AActor
@@ -34,9 +35,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Called when ClientUnit Dropped
 	UPROPERTY()
 	FOnClientUnitDropped OnClientUnitDropped;
+	// Called during ClientUnit Dragging
 	UPROPERTY()
 	FOnClientUnitDragging OnClientUnitDragging;
+	// Called when ClientUnit Spawned
+	UPROPERTY()
+	FOnClientUnitDragging OnClientUnitSpawned;
+	// Called when ClientUnit Removed from field
+	UPROPERTY()
+	FOnClientUnitRemovedFromField OnClientUnitRemovedFromField;
 	
 };

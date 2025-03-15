@@ -13,7 +13,7 @@
 
 void UUnitSelectionSlot::LoadData(FUnitData* Data)
 {
-	this->UnitID = Data->UnitID;
+	this->UnitID = Data->UnitId;
 	this->SetUnitName(FText::FromString(Data->UnitName));
 	this->SetIcon(Data->UnitIcon);
 }

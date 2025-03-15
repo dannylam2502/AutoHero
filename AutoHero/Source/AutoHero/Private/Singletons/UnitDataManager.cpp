@@ -56,7 +56,7 @@ void UUnitDataManager::PopulateUnitDataMap()
 	{
 		if (Row)
 		{
-			UnitDataMap.Add(Row->UnitID, *Row);
+			UnitDataMap.Add(Row->UnitId, *Row);
 		}
 	}
 

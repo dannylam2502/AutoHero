@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "AutoHeroPlayerState.generated.h"
 
+class ABaseUnit;
 /**
  * 
  */
@@ -18,9 +19,10 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerIndex, BlueprintReadOnly, Category = "Units")
 	int PlayerIndex;
-	
+
 public:
 	AAutoHeroPlayerState();
+	virtual void ClientInitialize(AController* C) override;
 	// The list of selected units on this player's board, will be replicated
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")
 	TArray<int32> SelectedUnitIds;
@@ -43,6 +45,11 @@ public:
 
 	UFUNCTION()
 	void OnRep_PlayerIndex();
+
+	UFUNCTION()
+	void OnClientUnitSpawned(ABaseUnit* BaseUnit);
+	UFUNCTION()
+	void OnClientUnitRemoved(ABaseUnit* BaseUnit);
 
 	void SetPlayerIndex(int InPlayerIndex);
 	int GetPlayerIndex();

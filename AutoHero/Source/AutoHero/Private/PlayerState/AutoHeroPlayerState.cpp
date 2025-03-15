@@ -4,6 +4,7 @@
 #include "PlayerState/AutoHeroPlayerState.h"
 
 #include "AutoHero/AutoHeroPlayerController.h"
+#include "Events/ClientGameEventManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -21,6 +22,14 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 AAutoHeroPlayerState::AAutoHeroPlayerState()
 {
 	bReplicates = true;
+}
+
+void AAutoHeroPlayerState::ClientInitialize(AController* C)
+{
+	Super::ClientInitialize(C);
+	// Register some events for unit
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitSpawned.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitSpawned);
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitRemoved);
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -82,6 +91,16 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 			SpringArm->SetWorldRotation(SpringArmRotation);
 		}
 	}
+}
+
+void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)
+{
+	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("OnClientUnitSpawned"));
+}
+
+void AAutoHeroPlayerState::OnClientUnitRemoved(ABaseUnit* BaseUnit)
+{
+	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("OnClientUnitRemoved"));
 }
 
 void AAutoHeroPlayerState::SetPlayerIndex(int InPlayerIndex)

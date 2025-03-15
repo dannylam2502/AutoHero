@@ -15,7 +15,7 @@ struct FUnitData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Data")
-	int32 UnitID;
+	int32 UnitId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Data")
 	FString UnitName;

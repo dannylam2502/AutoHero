@@ -298,6 +298,7 @@ void ABaseUnit::HandleStateChange(EUnitState NewState)
 void ABaseUnit::RemoveFromField()
 {
 	OnUnitRemovedFromField.Broadcast(this);
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.Broadcast(this);
 	Destroy();
 }
 
