@@ -1,5 +1,6 @@
 ﻿#pragma once
-
+#include "CoreMinimal.h"
+#include "PendingUnitData.generated.h"
 USTRUCT(BlueprintType)
 struct FPendingUnitData
 {

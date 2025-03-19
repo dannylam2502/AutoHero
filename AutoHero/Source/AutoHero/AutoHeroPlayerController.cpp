@@ -9,6 +9,7 @@
 #include "Camera/AHPlayerCameraManager.h"
 #include "Core/GameMode/NormalGameMode.h"
 #include "Core/GameState/NormalModeGameState.h"
+#include "Events/ClientGameEventManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singletons/UnitDataManager.h"
 #include "PlayerState/AutoHeroPlayerState.h"
@@ -57,12 +58,46 @@ void AAutoHeroPlayerController::OnCameraSymmetricTest()
 	}
 }
 
+void AAutoHeroPlayerController::AddUnitToPendingList(int UnitID, FVector2D GridPosition)
+{
+	FPendingUnitData NewUnit;
+	NewUnit.UnitID = UnitID;
+	NewUnit.GridPosition = GridPosition;
+    
+	PendingUnits.Add(NewUnit);
+	UE_LOG(LogTemp, Log, TEXT("Added unit to pending list at (%f, %f)"), GridPosition.X, GridPosition.Y);
+}
+
+void AAutoHeroPlayerController::SubmitUnitsToServer()
+{
+	if (PendingUnits.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No pending units to submit!"));
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, FString::Printf(TEXT("Submitted to Server Num = %d"), PendingUnits.Num()));
+	// Send to Server
+	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
+	if (AAPlayerState && HasAuthority())
+	{
+		AAPlayerState->Server_ProcessPendingUnits(PendingUnits);
+		PendingUnits.Empty();
+	}
+}
+
 void AAutoHeroPlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 
 	ServerGenerateUnitList();
+
+	// Check if this is Client
+	if (!HasAuthority())
+	{
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+	}
 }
 
 void AAutoHeroPlayerController::SetPlayerReady()
@@ -142,4 +177,10 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	{
 		PS->SetCurrentUnitIDs(RandomUnitIDs);
 	}
+}
+
+void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)
+{
+	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitDropped"));
+	AddUnitToPendingList(BaseUnit->GetUnitID(), InDropPosition);
 }

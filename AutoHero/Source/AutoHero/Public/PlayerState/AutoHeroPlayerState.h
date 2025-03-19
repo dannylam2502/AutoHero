@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Defines/PendingUnitData.h"
 #include "GameFramework/PlayerState.h"
 #include "AutoHeroPlayerState.generated.h"
 
@@ -15,13 +16,9 @@ class AUTOHERO_API AAutoHeroPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	UPROPERTY(ReplicatedUsing = OnRep_PlayerIndex, BlueprintReadOnly, Category = "Units")
-	int PlayerIndex;
-
 public:
 	AAutoHeroPlayerState();
+	virtual void BeginPlay() override;
 	virtual void ClientInitialize(AController* C) override;
 	// The list of selected units on this player's board, will be replicated
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")
@@ -44,13 +41,27 @@ public:
 	void OnRep_SelectedUnitIds();
 
 	UFUNCTION()
-	void OnRep_PlayerIndex();
-
-	UFUNCTION()
 	void OnClientUnitSpawned(ABaseUnit* BaseUnit);
 	UFUNCTION()
 	void OnClientUnitRemoved(ABaseUnit* BaseUnit);
 
 	void SetPlayerIndex(int InPlayerIndex);
 	int GetPlayerIndex();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_ProcessPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits);
+	
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerIndex, BlueprintReadOnly, Category = "Units")
+	int PlayerIndex;
+	
+	UFUNCTION()
+	void OnRep_PlayerIndex();
+	
+	UPROPERTY(ReplicatedUsing=OnRep_PendingUnits, BlueprintReadOnly, Category="Units")
+	TArray<FPendingUnitData> PendingUnits;
+
+	UFUNCTION()
+	void OnRep_PendingUnits();
 };

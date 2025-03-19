@@ -24,12 +24,24 @@ AAutoHeroPlayerState::AAutoHeroPlayerState()
 	bReplicates = true;
 }
 
+void AAutoHeroPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AAutoHeroPlayerState::ClientInitialize(AController* C)
 {
 	Super::ClientInitialize(C);
 	// Register some events for unit
 	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitSpawned.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitSpawned);
 	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitRemoved);
+	// Ensure PlayerIndex is unique
+	if (AController* OwnerController = GetOwner<AController>())
+	{
+		PlayerIndex = OwnerController->GetPlayerState<APlayerState>()->GetPlayerId();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("PlayerState initialized with PlayerIndex: %d"), PlayerIndex);
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -93,6 +105,11 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 	}
 }
 
+void AAutoHeroPlayerState::OnRep_PendingUnits()
+{
+	UE_LOG(LogTemp, Log, TEXT("Units confirmed by server, updating all clients"));
+}
+
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)
 {
 	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("OnClientUnitSpawned"));
@@ -111,6 +128,18 @@ void AAutoHeroPlayerState::SetPlayerIndex(int InPlayerIndex)
 int AAutoHeroPlayerState::GetPlayerIndex()
 {
 	return PlayerIndex;
+}
+
+void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& ReceivedUnits)
+{
+	if (!HasAuthority()) return;
+	PendingUnits = ReceivedUnits;
+	OnRep_PendingUnits();
+}
+
+bool AAutoHeroPlayerState::Server_ProcessPendingUnits_Validate(const TArray<FPendingUnitData>& ReceivedUnits)
+{
+	return true;
 }
 
 void AAutoHeroPlayerState::ServerSetSelectedUnits_Implementation(const TArray<int32>& UnitIDs)

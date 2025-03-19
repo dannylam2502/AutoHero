@@ -37,6 +37,10 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Team")
 	EActorTeam ETeam;
 
+	// Which ID?
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Data")
+	int UnitID;
+
 	// The number *Star
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Level")
 	int UnitLevel;
@@ -61,6 +65,8 @@ public:
 	FVector GetOffsetWhenDragging() const;
 	UFUNCTION(BlueprintCallable)
 	FVector GetOffsetWhenPlace();
+	void SetUnitID(int InUnitID);
+	int GetUnitID();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

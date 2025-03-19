@@ -25,13 +25,16 @@ AUnitGrid::AUnitGrid()
 void AUnitGrid::BeginPlay()
 {
 	Super::BeginPlay();
-	// Register Event
-	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AUnitGrid::OnClientUnitDropped);
-	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.AddDynamic(this, &AUnitGrid::OnClientUnitDragging);
 	// Server Initialize only
 	if (HasAuthority())
 	{
 		InitializeGrid();
+	}
+	else
+	{
+		// Register Client Local Events
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AUnitGrid::OnClientUnitDropped);
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.AddDynamic(this, &AUnitGrid::OnClientUnitDragging);
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "UI/Widgets/IngameHUDWidget.h"
 
+#include "AutoHero/AutoHeroPlayerController.h"
 #include "Components/VerticalBox.h"
 #include "Defines/FUnitData.h"
 #include "Kismet/GameplayStatics.h"
@@ -97,6 +98,7 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 				PlaceholderUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate);
 				if (PlaceholderUnit)
 				{
+					PlaceholderUnit->SetUnitID(UnitData->UnitID);
 					PlaceholderUnit->SetUnitState(EUnitState::DraggingFromWidget);
 					PlaceholderUnit->OnUnitRemovedFromField.AddDynamic(CurrentSelectedSlot, &UUnitSelectionSlot::OnUnitRemovedFromField);
 					AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitSpawned.Broadcast(PlaceholderUnit);
@@ -117,9 +119,14 @@ void UIngameHUDWidget::OnClickBtnSubmit()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("OnClickBtnSubmit"));
 	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
-	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
-	if (PlayerState)
+	if (AAutoHeroPlayerController* AutoHeroController = Cast<AAutoHeroPlayerController>(Controller))
 	{
-		PlayerState->SendRequestSubmit();
+		// Successfully cast, now use AutoHeroController safely
+		AutoHeroController->SubmitUnitsToServer();
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Controller is not of type AAutoHeroPlayerController!"));
+	}
+
 }

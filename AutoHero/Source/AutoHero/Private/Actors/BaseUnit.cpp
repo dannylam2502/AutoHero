@@ -435,6 +435,16 @@ FVector ABaseUnit::GetOffsetWhenPlace()
 	return FVector(0.0f, 0.0f, 56.5f);
 }
 
+void ABaseUnit::SetUnitID(int InUnitID)
+{
+	UnitID = InUnitID;
+}
+
+int ABaseUnit::GetUnitID()
+{
+	return UnitID;
+}
+
 void ABaseUnit::SetUnitState(EUnitState NewState)
 {
 	if (CurrentState != NewState)
