@@ -79,11 +79,16 @@ void AAutoHeroPlayerController::SubmitUnitsToServer()
 	GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, FString::Printf(TEXT("Submitted to Server Num = %d"), PendingUnits.Num()));
 	// Send to Server
 	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
-	if (AAPlayerState && HasAuthority())
+	if (AAPlayerState)
 	{
 		AAPlayerState->Server_ProcessPendingUnits(PendingUnits);
 		PendingUnits.Empty();
 	}
+}
+
+void AAutoHeroPlayerController::UpdateUnitOnFieldFromServer()
+{
+	
 }
 
 void AAutoHeroPlayerController::BeginPlay()

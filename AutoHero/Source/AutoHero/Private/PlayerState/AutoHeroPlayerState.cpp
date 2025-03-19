@@ -17,6 +17,7 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
+	DOREPLIFETIME(AAutoHeroPlayerState, PendingUnits);
 }
 
 AAutoHeroPlayerState::AAutoHeroPlayerState()
@@ -52,24 +53,6 @@ void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
 void AAutoHeroPlayerState::SetCurrentUnitIDs(const TArray<int32>& UnitIDs)
 {
 	CurrentUnitIds = UnitIDs;
-}
-
-void AAutoHeroPlayerState::SendRequestSubmit()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SendRequestSubmit"));
-
-	if (HasAuthority())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SendRequestSubmit HasAuthority"));
-		// Server code
-		ServerSetSelectedUnits(SelectedUnitIds);
-	}
-	else
-	{
-		// Client code, allow requesting to server function
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SendRequestSubmit Not HasAuthority"));
-		ServerSetSelectedUnits(SelectedUnitIds);
-	}
 }
 
 void AAutoHeroPlayerState::OnRep_SelectedUnitIds()
@@ -108,6 +91,12 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 void AAutoHeroPlayerState::OnRep_PendingUnits()
 {
 	UE_LOG(LogTemp, Log, TEXT("Units confirmed by server, updating all clients"));
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("OnRep_PendingUnits"));
+	APlayerController* PlayerController = GetPlayerController();
+	if (AAutoHeroPlayerController* AutoHeroPlayerController = Cast<AAutoHeroPlayerController>(PlayerController))
+	{
+		AutoHeroPlayerController->UpdateUnitOnFieldFromServer();
+	}
 }
 
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)

@@ -30,9 +30,6 @@ public:
 
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
 	void SetCurrentUnitIDs(const TArray<int32>& UnitIDs);
-
-	UFUNCTION()
-	void SendRequestSubmit();
 	
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerSetSelectedUnits(const TArray<int32>& UnitIDs);

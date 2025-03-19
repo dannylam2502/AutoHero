@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Units")
 	void SubmitUnitsToServer();
 
+	UFUNCTION()
+	void UpdateUnitOnFieldFromServer();
+
 protected:
 	
 	// Called when the game starts or when spawned
