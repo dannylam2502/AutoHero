@@ -58,37 +58,48 @@ void AAutoHeroPlayerController::OnCameraSymmetricTest()
 	}
 }
 
-void AAutoHeroPlayerController::AddUnitToPendingList(int UnitID, FVector2D GridPosition)
-{
-	FPendingUnitData NewUnit;
-	NewUnit.UnitID = UnitID;
-	NewUnit.GridPosition = GridPosition;
-    
-	PendingUnits.Add(NewUnit);
-	UE_LOG(LogTemp, Log, TEXT("Added unit to pending list at (%f, %f)"), GridPosition.X, GridPosition.Y);
-}
-
 void AAutoHeroPlayerController::SubmitUnitsToServer()
 {
-	if (PendingUnits.Num() == 0)
+	if (LocalPendingUnits.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No pending units to submit!"));
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, FString::Printf(TEXT("Submitted to Server Num = %d"), PendingUnits.Num()));
+	GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, FString::Printf(TEXT("Submitted to Server Num = %d"), LocalPendingUnits.Num()));
 	// Send to Server
 	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
 	if (AAPlayerState)
 	{
-		AAPlayerState->Server_ProcessPendingUnits(PendingUnits);
-		PendingUnits.Empty();
+		TArray<FPendingUnitData> PendingUnitsData;
+		for (auto Unit : LocalPendingUnits)
+		{
+			FPendingUnitData UnitData;
+			UnitData.UnitID = Unit->GetUnitID();
+			UnitData.UnitLocation = Unit->GetActorLocation();
+			PendingUnitsData.Add(UnitData);
+		}
+		AAPlayerState->Server_ProcessPendingUnits(PendingUnitsData);
 	}
 }
 
-void AAutoHeroPlayerController::UpdateUnitOnFieldFromServer()
+void AAutoHeroPlayerController::UpdateUnitOnFieldFromServer(TArray<FPendingUnitData> SubmittedUnits)
 {
-	
+	// This Client has local units, remove them
+	if (!LocalPendingUnits.IsEmpty())
+	{
+		GEngine->AddOnScreenDebugMessage(3, 5.0f, FColor::Red, TEXT("Destroy Local Units"));
+		for (auto LocalUnit : LocalPendingUnits)
+		{
+			LocalUnit->Destroy();
+		}
+	}
+	LocalPendingUnits.Empty();
+	for (auto SubmittedUnit : SubmittedUnits)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString::Printf(
+			TEXT("Submitted %d, at (%s)"), SubmittedUnit.UnitID, *SubmittedUnit.GridPosition.ToString()));
+	}
 }
 
 void AAutoHeroPlayerController::BeginPlay()
@@ -187,5 +198,5 @@ void AAutoHeroPlayerController::GenerateUnitList()
 void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)
 {
 	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitDropped"));
-	AddUnitToPendingList(BaseUnit->GetUnitID(), InDropPosition);
+	LocalPendingUnits.Add(BaseUnit);
 }

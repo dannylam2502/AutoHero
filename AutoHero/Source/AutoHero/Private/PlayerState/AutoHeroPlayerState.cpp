@@ -7,7 +7,7 @@
 #include "Events/ClientGameEventManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
-
+#include "Singletons/UnitDataManager.h"
 
 
 void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -95,8 +95,58 @@ void AAutoHeroPlayerState::OnRep_PendingUnits()
 	APlayerController* PlayerController = GetPlayerController();
 	if (AAutoHeroPlayerController* AutoHeroPlayerController = Cast<AAutoHeroPlayerController>(PlayerController))
 	{
-		AutoHeroPlayerController->UpdateUnitOnFieldFromServer();
+		AutoHeroPlayerController->UpdateUnitOnFieldFromServer(PendingUnits);
 	}
+}
+
+void AAutoHeroPlayerState::Server_SpawnPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits)
+{
+	for (auto PendingUnitData : ReceivedUnits)
+	{
+		// 1. Retrieve Unit Data
+		FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(PendingUnitData.UnitID);
+		if (!UnitData)
+		{
+			UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitID);
+			continue; // Skip this iteration if UnitData is null
+		}
+
+		// 2. Retrieve Unit Template
+		TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
+		if (!UnitTemplate)
+		{
+			UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitID);
+			continue; // Skip this iteration if UnitTemplate is null
+		}
+
+		// 3. Check World Context
+		if (!GetWorld())
+		{
+			UE_LOG(LogTemp, Error, TEXT("GetWorld() returned NULL!"));
+			return;  // Cannot spawn without a valid world
+		}
+
+		// 4. Spawn the Unit
+		FVector SpawnLocation = PendingUnitData.UnitLocation;
+		FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
+		if (!NewUnit)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitID);
+			continue; // Skip this iteration if spawning fails
+		}
+
+		// 5. Initialize Unit
+		NewUnit->SetUnitID(UnitData->UnitID);
+		NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+
+		// 6. Add to ServerConfirmedUnits
+		ServerConfirmedUnits.Add(NewUnit);
+		UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitID);
+	}
+
 }
 
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)
@@ -122,23 +172,12 @@ int AAutoHeroPlayerState::GetPlayerIndex()
 void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& ReceivedUnits)
 {
 	if (!HasAuthority()) return;
-	PendingUnits = ReceivedUnits;
-	OnRep_PendingUnits();
+	//PendingUnits = ReceivedUnits;
+	Server_SpawnPendingUnits(ReceivedUnits);
+	//OnRep_PendingUnits();
 }
 
 bool AAutoHeroPlayerState::Server_ProcessPendingUnits_Validate(const TArray<FPendingUnitData>& ReceivedUnits)
-{
-	return true;
-}
-
-void AAutoHeroPlayerState::ServerSetSelectedUnits_Implementation(const TArray<int32>& UnitIDs)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ServerSetSelectedUnits_Implementation"));
-	UE_LOG(LogTemp, Warning, TEXT("ServerSetSelectedUnits has been called on the server Num = %d"), UnitIDs.Num());
-	SelectedUnitIds = UnitIDs;
-}
-
-bool AAutoHeroPlayerState::ServerSetSelectedUnits_Validate(const TArray<int32>& UnitIDs)
 {
 	return true;
 }

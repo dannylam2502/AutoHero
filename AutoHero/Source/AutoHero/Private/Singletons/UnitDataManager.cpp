@@ -11,6 +11,7 @@ UUnitDataManager* UUnitDataManager::Get()
 		Singleton->AddToRoot();
 		Singleton->Initialize();
 	}
+	
 	return Singleton;
 }
 

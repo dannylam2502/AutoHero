@@ -31,9 +31,6 @@ public:
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
 	void SetCurrentUnitIDs(const TArray<int32>& UnitIDs);
 	
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerSetSelectedUnits(const TArray<int32>& UnitIDs);
-
 	UFUNCTION()
 	void OnRep_SelectedUnitIds();
 
@@ -61,4 +58,10 @@ protected:
 
 	UFUNCTION()
 	void OnRep_PendingUnits();
+
+	UFUNCTION()
+	void Server_SpawnPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits);
+
+	// Confirmed Units from Server
+	TArray<ABaseUnit*> ServerConfirmedUnits;
 };

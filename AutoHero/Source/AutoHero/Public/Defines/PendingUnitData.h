@@ -11,10 +11,14 @@ struct FPendingUnitData
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector2D GridPosition;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector UnitLocation;
 
 	FPendingUnitData()
 	{
 		UnitID = 0;
 		GridPosition = FVector2D::ZeroVector;
+		UnitLocation = FVector::Zero();
 	}
 };

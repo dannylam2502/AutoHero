@@ -44,24 +44,17 @@ public:
 	// Networking Functions
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerGenerateUnitList();
-
-	/** Units pending generation */
-	UPROPERTY(BlueprintReadWrite, Category="Units")
-	TArray<FPendingUnitData> PendingUnits;
 	
-	/** Add a unit to the pending list */
-	UFUNCTION(BlueprintCallable, Category="Units")
-	void AddUnitToPendingList(int UnitID, FVector2D GridPosition);
-
 	/** Submit all units to the server */
 	UFUNCTION(BlueprintCallable, Category="Units")
 	void SubmitUnitsToServer();
 
 	UFUNCTION()
-	void UpdateUnitOnFieldFromServer();
+	void UpdateUnitOnFieldFromServer(TArray<FPendingUnitData> SubmittedUnits);
 
 protected:
-	
+	// Will be removed when server update
+	TArray<ABaseUnit*> LocalPendingUnits;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
