@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/GameInstances/NormalGameInstance.h"
 #include "PlayerState/AutoHeroPlayerState.h"
+#include "Singletons/UnitDataManager.h"
 
 ANormalModeGameState::ANormalModeGameState()
 {
@@ -101,6 +102,55 @@ void ANormalModeGameState::SetSymmetricView(APlayerController* PlayerController)
 
     // Inform other systems of the player's role
     // NotifySymmetricViewSetup(PlayerController, bIsPlayer1);
+}
+
+void ANormalModeGameState::Server_ProcessPendingUnits(EActorTeam Team, TArray<FPendingUnitData> PendingUnits)
+{
+    for (auto PendingUnitData : PendingUnits)
+    {
+        // 1. Retrieve Unit Data
+        FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(PendingUnitData.UnitID);
+        if (!UnitData)
+        {
+            UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitID);
+            continue; // Skip this iteration if UnitData is null
+        }
+
+        // 2. Retrieve Unit Template
+        TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
+        if (!UnitTemplate)
+        {
+            UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitID);
+            continue; // Skip this iteration if UnitTemplate is null
+        }
+
+        // 3. Check World Context
+        if (!GetWorld())
+        {
+            UE_LOG(LogTemp, Error, TEXT("GetWorld() returned NULL!"));
+            return;  // Cannot spawn without a valid world
+        }
+
+        // 4. Spawn the Unit
+        FVector SpawnLocation = PendingUnitData.UnitLocation;
+        FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
+        if (!NewUnit)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitID);
+            continue; // Skip this iteration if spawning fails
+        }
+
+        // 5. Initialize Unit
+        NewUnit->SetUnitID(UnitData->UnitID);
+        NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+
+        // 6. Add to ServerConfirmedUnits
+        TeamToUnitMap.Add(Team, NewUnit);
+        UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitID);
+    }
 }
 
 void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()

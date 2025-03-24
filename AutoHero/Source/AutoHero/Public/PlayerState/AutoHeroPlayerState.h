@@ -49,19 +49,12 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerIndex, BlueprintReadOnly, Category = "Units")
 	int PlayerIndex;
+	// Confirmed Units from Server
+	TArray<ABaseUnit*> ServerConfirmedUnits;
 	
 	UFUNCTION()
 	void OnRep_PlayerIndex();
-	
-	UPROPERTY(ReplicatedUsing=OnRep_PendingUnits, BlueprintReadOnly, Category="Units")
-	TArray<FPendingUnitData> PendingUnits;
-
-	UFUNCTION()
-	void OnRep_PendingUnits();
 
 	UFUNCTION()
 	void Server_SpawnPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits);
-
-	// Confirmed Units from Server
-	TArray<ABaseUnit*> ServerConfirmedUnits;
 };

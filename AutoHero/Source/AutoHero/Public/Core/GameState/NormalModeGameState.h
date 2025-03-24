@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Defines/PendingUnitData.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameEnums.h"
 #include "NormalModeGameState.generated.h"
 
+class ABaseUnit;
 /**
  * 
  */
@@ -26,6 +29,10 @@ protected:
 
 	FTimerHandle RoundTimerHandle;
 	FTimerHandle PreparationTimerHandle;
+
+	// For Team, Players
+	UPROPERTY()
+	TMap<EActorTeam, ABaseUnit*> TeamToUnitMap;
 
 	UFUNCTION()
 	void OnRep_RoundState();
@@ -58,4 +65,7 @@ public:
 	void MulticastOnLevelLoaded();
 
 	void SetSymmetricView(APlayerController* PlayerController);
+
+	// Process submitted units from Client
+	void Server_ProcessPendingUnits(EActorTeam Team, TArray<FPendingUnitData> SubmittedUnits);
 };
