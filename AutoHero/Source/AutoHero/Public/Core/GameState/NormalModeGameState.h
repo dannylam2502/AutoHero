@@ -67,5 +67,6 @@ public:
 	void SetSymmetricView(APlayerController* PlayerController);
 
 	// Process submitted units from Client
-	void Server_ProcessPendingUnits(EActorTeam Team, TArray<FPendingUnitData> SubmittedUnits);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
 };

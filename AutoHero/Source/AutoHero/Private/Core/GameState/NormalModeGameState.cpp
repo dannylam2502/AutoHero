@@ -104,7 +104,13 @@ void ANormalModeGameState::SetSymmetricView(APlayerController* PlayerController)
     // NotifySymmetricViewSetup(PlayerController, bIsPlayer1);
 }
 
-void ANormalModeGameState::Server_ProcessPendingUnits(EActorTeam Team, TArray<FPendingUnitData> PendingUnits)
+bool ANormalModeGameState::Server_ProcessPendingUnits_Validate(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits)
+{
+    return true;
+}
+
+void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam Team,
+                                                                     const TArray<FPendingUnitData>& PendingUnits)
 {
     for (auto PendingUnitData : PendingUnits)
     {

@@ -91,9 +91,9 @@ void ANormalGameMode::StartGame()
 		AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
 		if (PlayerState)
 		{
+			PlayerIndex++;
 			PlayerState->SetPlayerIndex(PlayerIndex);
 			UE_LOG(LogTemp, Log, TEXT("Assigned PlayerIndex %d to %s"), PlayerIndex, *PlayerController->GetName());
-			PlayerIndex++;
 		}
 	}
 

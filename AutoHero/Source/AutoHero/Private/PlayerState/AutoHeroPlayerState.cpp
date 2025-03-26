@@ -44,6 +44,7 @@ void AAutoHeroPlayerState::ClientInitialize(AController* C)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("PlayerState initialized with PlayerIndex: %d"), PlayerIndex);
+	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("Player Index = %d"), PlayerIndex));
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -63,9 +64,11 @@ void AAutoHeroPlayerState::OnRep_SelectedUnitIds()
 
 void AAutoHeroPlayerState::OnRep_PlayerIndex()
 {
-	if (HasAuthority())
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (PC && PC->PlayerState == this)
 	{
-		
+		GEngine->AddOnScreenDebugMessage(3, 10.0f, FColor::Blue,
+			FString::Printf(TEXT("PlayerState Index = %d"), PlayerIndex));
 		if (this->PlayerIndex == 1)
 		{
 			APlayerController* PlayerController = this->GetPlayerController();
@@ -89,15 +92,6 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 	}
 }
 
-void AAutoHeroPlayerState::Server_SpawnPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits)
-{
-	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
-	if (NMGameState)
-	{
-		NMGameState->Server_ProcessPendingUnits(EActorTeam::Blue, ReceivedUnits);
-	}
-}
-
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)
 {
 	GEngine->AddOnScreenDebugMessage(0, 2.0f, FColor::Red, TEXT("OnClientUnitSpawned"));
@@ -118,13 +112,18 @@ int AAutoHeroPlayerState::GetPlayerIndex()
 	return PlayerIndex;
 }
 
-void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& ReceivedUnits)
+void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& PendingUnits)
 {
 	if (!HasAuthority()) return;
-	Server_SpawnPendingUnits(ReceivedUnits);
+	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
+	if (NMGameState)
+	{
+		EActorTeam Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
+		NMGameState->Server_ProcessPendingUnits(Team, PendingUnits);
+	}
 }
 
-bool AAutoHeroPlayerState::Server_ProcessPendingUnits_Validate(const TArray<FPendingUnitData>& ReceivedUnits)
+bool AAutoHeroPlayerState::Server_ProcessPendingUnits_Validate(const TArray<FPendingUnitData>& PendingUnits)
 {
 	return true;
 }

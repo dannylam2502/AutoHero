@@ -43,7 +43,7 @@ public:
 	int GetPlayerIndex();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ProcessPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits);
+	void Server_ProcessPendingUnits(const TArray<FPendingUnitData>& PendingUnits);
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -54,7 +54,4 @@ protected:
 	
 	UFUNCTION()
 	void OnRep_PlayerIndex();
-
-	UFUNCTION()
-	void Server_SpawnPendingUnits(const TArray<FPendingUnitData>& ReceivedUnits);
 };
