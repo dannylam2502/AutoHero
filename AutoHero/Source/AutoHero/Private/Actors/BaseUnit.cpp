@@ -302,6 +302,26 @@ void ABaseUnit::RemoveFromField()
 	Destroy();
 }
 
+void ABaseUnit::RotateToFaceEnemy()
+{
+	FRotator NewRotation = GetActorRotation();
+	NewRotation.Yaw = 180.f;
+	SetActorRotation(NewRotation);
+}
+
+void ABaseUnit::ClientRotateToFaceEnemy()
+{
+	RotateToFaceEnemy();
+}
+
+void ABaseUnit::MulticastRotateToFaceEnemy_Implementation()
+{
+	if (HasAuthority())
+	{
+		RotateToFaceEnemy();
+	}
+}
+
 //
 // void ABaseUnit::OnRep_ReplicatedMovement()
 // {

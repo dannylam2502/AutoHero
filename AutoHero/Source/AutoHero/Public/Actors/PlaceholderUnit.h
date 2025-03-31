@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
 #include "GameFramework/Actor.h"
 #include "PlaceholderUnit.generated.h"
 
@@ -21,9 +22,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void SetUnitPosition(FVector NewPosition);
 
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	void SetTeam(EActorTeam InTeam);
+
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	EActorTeam GetTeam();
+
+
 protected:
 	virtual void Tick(float DeltaTime) override;
 	FVector TargetPosition;
-	
+
+	UPROPERTY()
+	EActorTeam Team;
 	
 };

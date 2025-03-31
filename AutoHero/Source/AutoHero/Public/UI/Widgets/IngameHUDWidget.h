@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
 #include "Components/Button.h"
 #include "UI/Widgets/BaseWidget.h"
 #include "IngameHUDWidget.generated.h"
@@ -57,4 +58,6 @@ public:
 
 	UFUNCTION()
 	void OnClickBtnSubmit();
+
+	EActorTeam Team;
 };

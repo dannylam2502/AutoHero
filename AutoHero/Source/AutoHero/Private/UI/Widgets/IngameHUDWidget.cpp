@@ -3,6 +3,7 @@
 
 #include "UI/Widgets/IngameHUDWidget.h"
 
+#include "GameEnums.h"
 #include "AutoHero/AutoHeroPlayerController.h"
 #include "Components/VerticalBox.h"
 #include "Defines/FUnitData.h"
@@ -95,11 +96,24 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 			TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
 			if (UnitTemplate && GetWorld())
 			{
+				EActorTeam CurrentTeam = EActorTeam::Blue;
+				APlayerController* Controller = GetWorld()->GetFirstPlayerController();
+				AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
+				if (PlayerState)
+				{
+					CurrentTeam	= PlayerState->GetTeam();
+				}
 				PlaceholderUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate);
 				if (PlaceholderUnit)
 				{
 					PlaceholderUnit->SetUnitID(UnitData->UnitID);
 					PlaceholderUnit->SetUnitState(EUnitState::DraggingFromWidget);
+					PlaceholderUnit->ETeam = CurrentTeam;
+					// If Team Red Rotate Y to face Enemy
+					if (PlaceholderUnit->ETeam == EActorTeam::Red)
+					{
+						PlaceholderUnit->ClientRotateToFaceEnemy();
+					}
 					PlaceholderUnit->OnUnitRemovedFromField.AddDynamic(CurrentSelectedSlot, &UUnitSelectionSlot::OnUnitRemovedFromField);
 					AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitSpawned.Broadcast(PlaceholderUnit);
 				}

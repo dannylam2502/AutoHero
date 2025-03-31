@@ -23,6 +23,16 @@ void APlaceholderUnit::SetUnitPosition(FVector NewPosition)
 	TargetPosition = NewPosition;
 }
 
+void APlaceholderUnit::SetTeam(EActorTeam InTeam)
+{
+	this->Team = InTeam;
+}
+
+EActorTeam APlaceholderUnit::GetTeam()
+{
+	return Team;
+}
+
 // Called every frame
 void APlaceholderUnit::Tick(float DeltaTime)
 {
@@ -43,7 +53,7 @@ void APlaceholderUnit::Tick(float DeltaTime)
 		// Highlight the nearest cell in the grid manager
 		if (UnitGrid)
 		{
-			UnitGrid->HighlightNearestCell(GetActorLocation());
+			UnitGrid->HighlightNearestCell(Team, GetActorLocation());
 		}
 	}
 }

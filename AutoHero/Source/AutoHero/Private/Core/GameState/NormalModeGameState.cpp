@@ -152,6 +152,13 @@ void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam 
         // 5. Initialize Unit
         NewUnit->SetUnitID(UnitData->UnitID);
         NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+        NewUnit->ETeam = Team;
+
+        // If Team Red Rotate Y to face Enemy
+        if (NewUnit->ETeam == EActorTeam::Red)
+        {
+            NewUnit->MulticastRotateToFaceEnemy();
+        }
 
         // 6. Add to ServerConfirmedUnits
         TeamToUnitMap.Add(Team, NewUnit);

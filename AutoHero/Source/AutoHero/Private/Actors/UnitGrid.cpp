@@ -107,8 +107,11 @@ FVector AUnitGrid::GetNearestCellLocation(const FVector& WorldPosition)
 	return StartLocation + FVector(CellX * CellSize.X, CellY * CellSize.Y, CellZ * CellSize.Z);
 }
 
-void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
+void AUnitGrid::HighlightNearestCell(EActorTeam Team, const FVector& WorldPosition)
 {
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue,
+		FString::Printf(TEXT("Team is %hs"), Team == EActorTeam::Blue ? "Blue" : "Red"));
+	TArray<AUnitCell*> UnitCellsList = (Team == EActorTeam::Blue ? BottomGridCells : TopGridCells);
 	AUnitCell* NearestCell = nullptr;
 	float MinDistance = FLT_MAX;
 
@@ -116,7 +119,7 @@ void AUnitGrid::HighlightNearestCell(const FVector& WorldPosition)
 	{
 		for (int32 Column = 0; Column < Columns; ++Column)
 		{
-			AUnitCell* Cell = BottomGridCells[Row * Columns + Column];
+			AUnitCell* Cell = UnitCellsList[Row * Columns + Column];
 			if (Cell && !Cell->IsHidden())
 			{
 				float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
@@ -277,6 +280,8 @@ void AUnitGrid::OnClientUnitDragging(ABaseUnit* BaseUnit)
 {
 	if (BaseUnit)
 	{
-		HighlightNearestCell(BaseUnit->GetActorLocation());
+		GEngine->AddOnScreenDebugMessage(4, 5.0f, FColor::Red,
+			FString::Printf(TEXT("OnClientUnitDragging %hs"), BaseUnit->ETeam == EActorTeam::Red ? "Red" : "Blue"));
+		HighlightNearestCell(BaseUnit->ETeam, BaseUnit->GetActorLocation());
 	}
 }

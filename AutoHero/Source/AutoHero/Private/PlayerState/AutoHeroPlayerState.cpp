@@ -12,6 +12,11 @@
 #include "Singletons/UnitDataManager.h"
 
 
+EActorTeam AAutoHeroPlayerState::GetTeam()
+{
+	return Team;
+}
+
 void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -19,11 +24,13 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
+	DOREPLIFETIME(AAutoHeroPlayerState, Team);
 }
 
 AAutoHeroPlayerState::AAutoHeroPlayerState()
 {
 	bReplicates = true;
+	Team = EActorTeam::Blue;
 }
 
 void AAutoHeroPlayerState::BeginPlay()
@@ -38,13 +45,12 @@ void AAutoHeroPlayerState::ClientInitialize(AController* C)
 	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitSpawned.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitSpawned);
 	AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.AddDynamic(this, &AAutoHeroPlayerState::OnClientUnitRemoved);
 	// Ensure PlayerIndex is unique
-	if (AController* OwnerController = GetOwner<AController>())
-	{
-		PlayerIndex = OwnerController->GetPlayerState<APlayerState>()->GetPlayerId();
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("PlayerState initialized with PlayerIndex: %d"), PlayerIndex);
-	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("Player Index = %d"), PlayerIndex));
+	// if (AController* OwnerController = GetOwner<AController>())
+	// {
+	// 	int PlayerIndex = OwnerController->GetPlayerState<APlayerState>()->GetPlayerId();
+	// 	UE_LOG(LogTemp, Log, TEXT("PlayerState initialized with PlayerIndex: %d"), PlayerIndex);
+	// 	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, FString::Printf(TEXT("Player Index = %d"), PlayerIndex));
+	// }
 }
 
 void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
@@ -67,25 +73,26 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (PC && PC->PlayerState == this)
 	{
+		//Team = PlayerIndex == 2 ? EActorTeam::Red : EActorTeam::Blue;
 		GEngine->AddOnScreenDebugMessage(3, 10.0f, FColor::Blue,
 			FString::Printf(TEXT("PlayerState Index = %d"), PlayerIndex));
-		if (this->PlayerIndex == 1)
+		if (Team == EActorTeam::Red)
 		{
 			APlayerController* PlayerController = this->GetPlayerController();
 			APawn* ControlledPawn = PlayerController->GetPawn();
 			if (!ControlledPawn) return;
-
+		
 			// Get the spring arm component attached to the pawn
 			USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
 			if (!SpringArm) return;
-
+		
 			// Get the current spring arm rotation
 			FRotator SpringArmRotation = SpringArm->GetComponentRotation();
-
+		
 			// Flip the Z (yaw) component for a mirrored view
 			SpringArmRotation.Yaw += 180.0f;
 			SpringArmRotation.Yaw = FMath::Fmod(SpringArmRotation.Yaw, 360.0f); // Keep yaw within [0, 360)
-
+		
 			// Apply the flipped rotation
 			SpringArm->SetWorldRotation(SpringArmRotation);
 		}
@@ -105,6 +112,7 @@ void AAutoHeroPlayerState::OnClientUnitRemoved(ABaseUnit* BaseUnit)
 void AAutoHeroPlayerState::SetPlayerIndex(int InPlayerIndex)
 {
 	this->PlayerIndex = InPlayerIndex;
+	this->Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
 }
 
 int AAutoHeroPlayerState::GetPlayerIndex()
@@ -118,7 +126,8 @@ void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArra
 	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
 	if (NMGameState)
 	{
-		EActorTeam Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
+		//EActorTeam Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
+		UE_LOG(LogTemp, Log, TEXT("Process Team = %hs"), Team == EActorTeam::Blue ? "Blue" : "Red");
 		NMGameState->Server_ProcessPendingUnits(Team, PendingUnits);
 	}
 }

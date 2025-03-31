@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
 #include "Defines/PendingUnitData.h"
 #include "GameFramework/PlayerState.h"
 #include "AutoHeroPlayerState.generated.h"
@@ -44,6 +45,9 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ProcessPendingUnits(const TArray<FPendingUnitData>& PendingUnits);
+
+	UFUNCTION(BlueprintCallable)
+	EActorTeam GetTeam();
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -54,4 +58,7 @@ protected:
 	
 	UFUNCTION()
 	void OnRep_PlayerIndex();
+
+	UPROPERTY(Replicated)
+	EActorTeam Team;
 };

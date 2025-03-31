@@ -99,6 +99,12 @@ public:
 	class AUnitCell* GetCurrentCell();
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void RemoveFromField();
+	UFUNCTION()
+	// For Red Team
+	void RotateToFaceEnemy();
+	void ClientRotateToFaceEnemy();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRotateToFaceEnemy();
 protected:
 	UPROPERTY()
 	class AUnitCell* CurrentCell;

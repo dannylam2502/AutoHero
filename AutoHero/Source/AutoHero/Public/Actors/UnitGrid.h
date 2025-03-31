@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
 #include "GameFramework/Actor.h"
 #include "UnitGrid.generated.h"
 
@@ -50,7 +51,7 @@ public:
 	FVector GetNearestCellLocation(const FVector& WorldPosition);
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	void HighlightNearestCell(const FVector& WorldPosition);
+	void HighlightNearestCell(EActorTeam Team, const FVector& WorldPosition);
 
 	bool IsCellOccupied(AUnitCell* UnitCell) const;
 	void OccupyCell(AUnitCell* UnitCell, class ABaseUnit* Unit);
