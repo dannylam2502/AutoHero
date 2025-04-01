@@ -49,14 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Units")
 	void SubmitUnitsToServer();
 
-	UFUNCTION()
-	void UpdateUnitOnFieldFromServer(TArray<FPendingUnitData> SubmittedUnits);
+	void RemoveLocalUnitsOnField();
 
 protected:
 	// Will be removed when server update
 	TArray<ABaseUnit*> LocalPendingUnits;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Player readiness
 	UFUNCTION(BlueprintCallable)

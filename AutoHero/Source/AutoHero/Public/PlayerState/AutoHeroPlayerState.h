@@ -20,6 +20,7 @@ class AUTOHERO_API AAutoHeroPlayerState : public APlayerState
 public:
 	AAutoHeroPlayerState();
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void ClientInitialize(AController* C) override;
 	// The list of selected units on this player's board, will be replicated
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedUnitIds, BlueprintReadOnly, Category = "Units")

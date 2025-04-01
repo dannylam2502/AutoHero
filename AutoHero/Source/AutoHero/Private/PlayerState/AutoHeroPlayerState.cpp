@@ -38,6 +38,20 @@ void AAutoHeroPlayerState::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AAutoHeroPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if (!HasAuthority())
+	{
+		AClientGameEventManager* Manager = AClientGameEventManager::GetInstance(GetWorld());
+		if (Manager)
+		{
+			Manager->OnClientUnitSpawned.RemoveDynamic(this, &AAutoHeroPlayerState::OnClientUnitSpawned);
+			Manager->OnClientUnitRemovedFromField.RemoveDynamic(this, &AAutoHeroPlayerState::OnClientUnitRemoved);
+		}
+	}
+}
+
 void AAutoHeroPlayerState::ClientInitialize(AController* C)
 {
 	Super::ClientInitialize(C);
@@ -73,7 +87,7 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (PC && PC->PlayerState == this)
 	{
-		//Team = PlayerIndex == 2 ? EActorTeam::Red : EActorTeam::Blue;
+		Team = PlayerIndex == 2 ? EActorTeam::Red : EActorTeam::Blue;
 		GEngine->AddOnScreenDebugMessage(3, 10.0f, FColor::Blue,
 			FString::Printf(TEXT("PlayerState Index = %d"), PlayerIndex));
 		if (Team == EActorTeam::Red)

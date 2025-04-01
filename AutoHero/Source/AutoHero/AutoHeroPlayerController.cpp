@@ -80,10 +80,11 @@ void AAutoHeroPlayerController::SubmitUnitsToServer()
 			PendingUnitsData.Add(UnitData);
 		}
 		AAPlayerState->Server_ProcessPendingUnits(PendingUnitsData);
+		RemoveLocalUnitsOnField();
 	}
 }
 
-void AAutoHeroPlayerController::UpdateUnitOnFieldFromServer(TArray<FPendingUnitData> SubmittedUnits)
+void AAutoHeroPlayerController::RemoveLocalUnitsOnField()
 {
 	// This Client has local units, remove them
 	if (!LocalPendingUnits.IsEmpty())
@@ -95,11 +96,6 @@ void AAutoHeroPlayerController::UpdateUnitOnFieldFromServer(TArray<FPendingUnitD
 		}
 	}
 	LocalPendingUnits.Empty();
-	for (auto SubmittedUnit : SubmittedUnits)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString::Printf(
-			TEXT("Submitted %d, at (%s)"), SubmittedUnit.UnitID, *SubmittedUnit.GridPosition.ToString()));
-	}
 }
 
 void AAutoHeroPlayerController::BeginPlay()
@@ -113,6 +109,19 @@ void AAutoHeroPlayerController::BeginPlay()
 	if (!HasAuthority())
 	{
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+	}
+}
+
+void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if (!HasAuthority())
+	{
+		AClientGameEventManager* Manager = AClientGameEventManager::GetInstance(GetWorld());
+		if (Manager)
+		{
+			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+		}
 	}
 }
 
