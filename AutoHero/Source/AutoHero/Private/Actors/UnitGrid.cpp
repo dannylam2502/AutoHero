@@ -80,7 +80,7 @@ void AUnitGrid::InitializeGrid()
 	}
 	
 	// TODO: configurable
-	//HideRandomCells(2);
+	HideRandomCells(2);
 }
 
 FVector AUnitGrid::GetGridCellLocation(int32 Row, int32 Column)
@@ -190,15 +190,16 @@ void AUnitGrid::HideRandomCells(int32 num)
 		int32 Column = randomIndex % Columns;
 
 		// Hide the corresponding cell in the BottomGridCells
-		if (BottomGridCells.IsValidIndex(Row * Column + Column))
+		if (BottomGridCells.IsValidIndex(Row * Columns + Column))
 		{
-			BottomGridCells[Row * Column + Column]->SetActorHiddenInGame(true);
+			BottomGridCells[Row * Columns + Column]->SetActorHiddenInGame(true);
 		}
 
+		int32 TopColumn = Columns - 1 - Column;
 		// Optionally hide the corresponding cell in TopGridCells (mirrored position)
-		if (TopGridCells.IsValidIndex(Row * Column + Column))
+		if (TopGridCells.IsValidIndex(Row * Columns + TopColumn))
 		{
-			TopGridCells[Row * Column + Column]->SetActorHiddenInGame(true);
+			TopGridCells[Row * Columns + TopColumn]->SetActorHiddenInGame(true);
 		}
 	}
 }
