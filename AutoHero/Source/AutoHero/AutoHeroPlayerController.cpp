@@ -98,6 +98,20 @@ void AAutoHeroPlayerController::RemoveLocalUnitsOnField()
 	LocalPendingUnits.Empty();
 }
 
+void AAutoHeroPlayerController::ServerStartQuickTest_Implementation()
+{
+	ANormalModeGameState* GameState = GetWorld()->GetGameState<ANormalModeGameState>();
+	if (GameState)
+	{
+		GameState->UpdateAllAIBlackboardKeys(true);
+	}
+}
+
+bool AAutoHeroPlayerController::ServerStartQuickTest_Validate()
+{
+	return true;
+}
+
 void AAutoHeroPlayerController::BeginPlay()
 {
 	// Call the base class  

@@ -29,6 +29,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UButton* BtnSubmit;
 
+	UPROPERTY(meta=(BindWidget))
+	UButton* BtnTestQuickPlay;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Slot")
 	TSubclassOf<UBaseWidget> UnitSlotTemplate;
 
@@ -56,8 +59,12 @@ public:
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeConstruct() override;
 
+	// Button Submit
 	UFUNCTION()
 	void OnClickBtnSubmit();
+
+	UFUNCTION()
+	void OnClickBtnTest();
 
 	EActorTeam Team;
 };

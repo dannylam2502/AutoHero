@@ -47,6 +47,8 @@ ABaseUnit::ABaseUnit()
 	CurrentState = EUnitState::Default;
 	CurrentCell = nullptr;
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);

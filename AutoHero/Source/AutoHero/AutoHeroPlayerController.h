@@ -51,6 +51,9 @@ public:
 
 	void RemoveLocalUnitsOnField();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerStartQuickTest();
+
 protected:
 	// Will be removed when server update
 	TArray<ABaseUnit*> LocalPendingUnits;

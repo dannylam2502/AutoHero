@@ -39,9 +39,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_IsPreparationPhase();
-
-	void UpdateAllAIBlackboardKeys(bool bCanExecute);
-
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	void StartLoadLevelSequence();
@@ -69,4 +67,7 @@ public:
 	// Process submitted units from Client
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
+
+	// Set the flag to control the AI behaviors
+	void UpdateAllAIBlackboardKeys(bool bCanExecute);
 };

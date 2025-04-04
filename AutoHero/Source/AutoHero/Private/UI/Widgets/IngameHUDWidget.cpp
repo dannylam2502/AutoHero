@@ -18,6 +18,13 @@ UIngameHUDWidget::UIngameHUDWidget()
 	CurrentSelectedSlot = nullptr;
 }
 
+void UIngameHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	BtnSubmit->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnSubmit);
+	BtnTestQuickPlay->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnTest);
+}
+
 void UIngameHUDWidget::LoadListUnit()
 {
 	// Check context
@@ -123,12 +130,6 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
 }
 
-void UIngameHUDWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-	BtnSubmit->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnSubmit);
-}
-
 void UIngameHUDWidget::OnClickBtnSubmit()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("OnClickBtnSubmit"));
@@ -143,4 +144,14 @@ void UIngameHUDWidget::OnClickBtnSubmit()
 		UE_LOG(LogTemp, Warning, TEXT("Controller is not of type AAutoHeroPlayerController!"));
 	}
 
+}
+
+void UIngameHUDWidget::OnClickBtnTest()
+{
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("CLICK BTN TEST"));
+	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
+	if (AAutoHeroPlayerController* AutoHeroController = Cast<AAutoHeroPlayerController>(Controller))
+	{
+		AutoHeroController->ServerStartQuickTest();
+	}
 }
