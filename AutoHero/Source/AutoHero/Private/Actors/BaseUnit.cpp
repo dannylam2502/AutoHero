@@ -47,13 +47,28 @@ ABaseUnit::ABaseUnit()
 	CurrentState = EUnitState::Default;
 	CurrentCell = nullptr;
 
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	bIsClientPlaceHolder = true;
 
 	// Setup detection sphere
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);
 	DetectionSphere->SetSphereRadius(DETECTION_RADIUS);*/
 }
+
+void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseUnit, ETeam);
+	DOREPLIFETIME(ABaseUnit, UnitLevel);
+	DOREPLIFETIME(ABaseUnit, Attributes);
+	DOREPLIFETIME(ABaseUnit, AbilitySystemComponent);
+	DOREPLIFETIME(ABaseUnit, UnitID);
+	DOREPLIFETIME(ABaseUnit, bIsClientPlaceHolder);
+}
+
 
 UAbilitySystemComponent* ABaseUnit::GetAbilitySystemComponent() const
 {
@@ -190,16 +205,6 @@ AUnitCell* ABaseUnit::GetCurrentCell()
 	return CurrentCell;
 }
 
-void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ABaseUnit, ETeam);
-	DOREPLIFETIME(ABaseUnit, UnitLevel);
-	DOREPLIFETIME(ABaseUnit, Attributes);
-	DOREPLIFETIME(ABaseUnit, AbilitySystemComponent);
-}
-
 // Called when the game starts or when spawned
 void ABaseUnit::BeginPlay()
 {
@@ -243,6 +248,11 @@ void ABaseUnit::BeginPlay()
 	if (Attributes)
 	{
 		Attributes->OnDamageReceived.AddDynamic(this, &ABaseUnit::OnDamageReceived);
+	}
+
+	if (!HasAuthority() && !bIsClientPlaceHolder)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("Got A Unit Spawned By Server"));
 	}
 
 	// UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));

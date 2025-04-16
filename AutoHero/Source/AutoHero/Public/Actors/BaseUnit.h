@@ -44,6 +44,11 @@ public:
 	// The number *Star
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Level")
 	int UnitLevel;
+	
+	// If True, this unit is client-spawned, otherwise, it's server-spawned
+	UPROPERTY(Replicated)
+	bool bIsClientPlaceHolder;
+	
 	// Attributes
 	UPROPERTY(Instanced, VisibleAnywhere, Replicated, BlueprintReadOnly, Category = "Attribute New Set", meta = (AllowPrivateAccess = true))
 	const class UUnitAttributeSet* Attributes;

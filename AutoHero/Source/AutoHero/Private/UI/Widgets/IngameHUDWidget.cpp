@@ -113,6 +113,7 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 				PlaceholderUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate);
 				if (PlaceholderUnit)
 				{
+					PlaceholderUnit->SetReplicates(false);
 					PlaceholderUnit->SetUnitID(UnitData->UnitID);
 					PlaceholderUnit->SetUnitState(EUnitState::DraggingFromWidget);
 					PlaceholderUnit->ETeam = CurrentTeam;

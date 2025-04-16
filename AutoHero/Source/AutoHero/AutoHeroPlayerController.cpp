@@ -92,6 +92,7 @@ void AAutoHeroPlayerController::RemoveLocalUnitsOnField()
 		GEngine->AddOnScreenDebugMessage(3, 5.0f, FColor::Red, TEXT("Destroy Local Units"));
 		for (auto LocalUnit : LocalPendingUnits)
 		{
+			AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.Broadcast(LocalUnit);
 			LocalUnit->Destroy();
 		}
 	}
@@ -103,7 +104,7 @@ void AAutoHeroPlayerController::ServerStartQuickTest_Implementation()
 	ANormalModeGameState* GameState = GetWorld()->GetGameState<ANormalModeGameState>();
 	if (GameState)
 	{
-		GameState->UpdateAllAIBlackboardKeys(true);
+		GameState->StartBattle();
 	}
 }
 

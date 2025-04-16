@@ -31,8 +31,7 @@ protected:
 	FTimerHandle PreparationTimerHandle;
 
 	// For Team, Players
-	UPROPERTY()
-	TMap<EActorTeam, ABaseUnit*> TeamToUnitMap;
+	TMap<EActorTeam, TArray<ABaseUnit*>> TeamToUnitMap;
 
 	UFUNCTION()
 	void OnRep_RoundState();
@@ -70,4 +69,11 @@ public:
 
 	// Set the flag to control the AI behaviors
 	void UpdateAllAIBlackboardKeys(bool bCanExecute);
+
+	TArray<ABaseUnit*> GetUnitsInTeam(EActorTeam Team);
+
+	UFUNCTION()
+	void StartBattle();
+
+	void PossessUnitsInTeam(EActorTeam Team);
 };

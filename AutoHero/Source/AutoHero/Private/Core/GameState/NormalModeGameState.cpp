@@ -1,6 +1,7 @@
 #include "Core/GameState/NormalModeGameState.h"
 
 #include "AIController.h"
+#include "BrainComponent.h"
 #include "EngineUtils.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -148,20 +149,33 @@ void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam 
             UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitID);
             continue; // Skip this iteration if spawning fails
         }
+        else
+        {
+            FVector ActualLocation = NewUnit->GetActorLocation();
+            UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
+                PendingUnitData.UnitID,
+                *SpawnLocation.ToString(),
+                *ActualLocation.ToString()
+            );
+        }
 
         // 5. Initialize Unit
         NewUnit->SetUnitID(UnitData->UnitID);
         NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+        NewUnit->SetReplicates(true);
+        NewUnit->SetReplicateMovement(true);
         NewUnit->ETeam = Team;
+        NewUnit->bIsClientPlaceHolder = false;
 
         // If Team Red Rotate Y to face Enemy
         if (NewUnit->ETeam == EActorTeam::Red)
         {
-            NewUnit->MulticastRotateToFaceEnemy();
+            NewUnit->RotateToFaceEnemy();
+            //NewUnit->MulticastRotateToFaceEnemy();
         }
 
         // 6. Add to ServerConfirmedUnits
-        TeamToUnitMap.Add(Team, NewUnit);
+        TeamToUnitMap.FindOrAdd(Team).Add(NewUnit);
         UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitID);
     }
 }
@@ -248,6 +262,66 @@ void ANormalModeGameState::UpdateAllAIBlackboardKeys(bool bCanExecute)
         if (AIController && AIController->GetBlackboardComponent())
         {
             AIController->GetBlackboardComponent()->SetValueAsBool(TEXT("bCanExecuteBehavior"), bCanExecute);
+        }
+    }
+}
+
+TArray<ABaseUnit*> ANormalModeGameState::GetUnitsInTeam(EActorTeam Team)
+{
+    return TeamToUnitMap[Team];
+}
+
+void ANormalModeGameState::StartBattle()
+{
+    if (!HasAuthority()) return;
+
+    // Ensure all blackboard/AI setup is in place first
+    //GameState->UpdateAllAIBlackboardKeys(true);
+
+    // Loop through all units (you might have a list inside GameState)
+    PossessUnitsInTeam(EActorTeam::Blue);
+    PossessUnitsInTeam(EActorTeam::Red);
+}
+
+void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
+{
+    TArray<ABaseUnit*>* List = this->TeamToUnitMap.Find(Team);
+    if (!List) return;
+    for (ABaseUnit* Unit : *List)
+    {
+        if (!Unit || Unit->bIsClientPlaceHolder) continue;
+
+        // Skip if already possessed
+        if (Unit->GetController()) continue;
+
+        // Spawn AIController manually
+        if (Unit->AIControllerClass)
+        {
+            AAIController* NewAI = GetWorld()->SpawnActor<AAIController>(Unit->AIControllerClass);
+            if (NewAI)
+            {
+                NewAI->Possess(Unit);
+                // Optional: temporarily disable AI logic to avoid unwanted movement
+                if (NewAI->BrainComponent)
+                {
+                    NewAI->BrainComponent->StopLogic(TEXT("Delaying AI activation"));
+                }
+
+                // Ensure position is locked to exact grid (skip navmesh adjustment)
+                FVector SnappedLocation = Unit->GetActorLocation();
+                Unit->SetActorLocation(SnappedLocation, false, nullptr, ETeleportType::TeleportPhysics);
+
+                UE_LOG(LogTemp, Log, TEXT("AIController possessed UnitID %d at %s"),
+                    Unit->GetUnitID(), *Unit->GetActorLocation().ToString());
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to spawn AIController for UnitID %d"), Unit->GetUnitID());
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("No AIControllerClass set on UnitID %d"), Unit->GetUnitID());
         }
     }
 }

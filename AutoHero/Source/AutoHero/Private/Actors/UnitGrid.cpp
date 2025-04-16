@@ -26,15 +26,19 @@ void AUnitGrid::BeginPlay()
 {
 	Super::BeginPlay();
 	// Server Initialize only
-	if (HasAuthority())
+	if (HasAuthority() && !IsRunningDedicatedServer())
 	{
+		// Server logic
 		InitializeGrid();
 	}
-	else
+
+	ENetMode NetMode = GetNetMode();
+	if (NetMode == NM_Standalone || NetMode == NM_Client)
 	{
-		// Register Client Local Events
+		// Register client events, even in Standalone
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AUnitGrid::OnClientUnitDropped);
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.AddDynamic(this, &AUnitGrid::OnClientUnitDragging);
+	
 	}
 }
 
@@ -239,7 +243,17 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 	if (AUnitCell* NearestCell = this->GetNearestCell())
 	{
 		FVector SnappedPosition = NearestCell->GetCellCenterLocation();
-		BaseUnit->SetActorLocation(SnappedPosition + BaseUnit->GetOffsetWhenPlace());
+		FVector Offset = BaseUnit->GetOffsetWhenPlace();
+		FVector FinalPosition = SnappedPosition + Offset;
+
+		UE_LOG(LogTemp, Warning, TEXT("Unit [%s] - SnappedPosition: %s | Offset: %s | FinalPosition: %s"),
+			*BaseUnit->GetName(),
+			*SnappedPosition.ToString(),
+			*Offset.ToString(),
+			*FinalPosition.ToString()
+		);
+
+		BaseUnit->SetActorLocation(FinalPosition);
 		BaseUnit->SetUnitState(EUnitState::WaitingForPlacement);
 		// If NearestCell is occupied, we need to switch it with the old cell
 		if (this->IsCellOccupied(NearestCell))
@@ -257,7 +271,7 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 			}
 			else
 			{
-				// Switch from widget to a unit cell
+				// Exchange the position of Unit from widget to a unit cell
 				ABaseUnit* NearestCellCurUnit = this->GetUnitInCell(NearestCell);
 				if (NearestCellCurUnit)
 				{
