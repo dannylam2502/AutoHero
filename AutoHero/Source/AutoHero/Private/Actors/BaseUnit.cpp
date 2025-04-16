@@ -8,6 +8,7 @@
 #include "Actors/BaseProjectile.h"
 #include "Actors/UnitCell.h"
 #include "Events/ClientGameEventManager.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/UnitAbilitySystemComponent.h"
 #include "Gameplay/UnitAttributeSet.h"
 #include "Gameplay/UnitGameplayAbility.h"
@@ -55,6 +56,11 @@ ABaseUnit::ABaseUnit()
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);
 	DetectionSphere->SetSphereRadius(DETECTION_RADIUS);*/
+
+	// Test fix
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation  = false; // prevents snapping
 }
 
 void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
