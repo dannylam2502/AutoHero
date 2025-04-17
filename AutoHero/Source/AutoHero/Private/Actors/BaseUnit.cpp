@@ -56,11 +56,6 @@ ABaseUnit::ABaseUnit()
 	/*DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
 	DetectionSphere->SetupAttachment(RootComponent);
 	DetectionSphere->SetSphereRadius(DETECTION_RADIUS);*/
-
-	// Test fix
-	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
-	GetCharacterMovement()->bUseControllerDesiredRotation  = false; // prevents snapping
 }
 
 void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

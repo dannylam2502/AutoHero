@@ -275,12 +275,12 @@ void ANormalModeGameState::StartBattle()
 {
     if (!HasAuthority()) return;
 
-    // Ensure all blackboard/AI setup is in place first
-    //GameState->UpdateAllAIBlackboardKeys(true);
-
     // Loop through all units (you might have a list inside GameState)
     PossessUnitsInTeam(EActorTeam::Blue);
     PossessUnitsInTeam(EActorTeam::Red);
+
+    // Ensure all blackboard/AI setup is in place first
+    this->UpdateAllAIBlackboardKeys(true);
 }
 
 void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
@@ -302,10 +302,10 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
             {
                 NewAI->Possess(Unit);
                 // Optional: temporarily disable AI logic to avoid unwanted movement
-                if (NewAI->BrainComponent)
-                {
-                    NewAI->BrainComponent->StopLogic(TEXT("Delaying AI activation"));
-                }
+                // if (NewAI->BrainComponent)
+                // {
+                //     NewAI->BrainComponent->StopLogic(TEXT("Delaying AI activation"));
+                // }
 
                 // Ensure position is locked to exact grid (skip navmesh adjustment)
                 FVector SnappedLocation = Unit->GetActorLocation();

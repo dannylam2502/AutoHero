@@ -26,7 +26,8 @@ void AUnitGrid::BeginPlay()
 {
 	Super::BeginPlay();
 	// Server Initialize only
-	if (HasAuthority() && !IsRunningDedicatedServer())
+	//if (HasAuthority() && !IsRunningDedicatedServer())
+	if (HasAuthority())
 	{
 		// Server logic
 		InitializeGrid();
@@ -39,6 +40,18 @@ void AUnitGrid::BeginPlay()
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AUnitGrid::OnClientUnitDropped);
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDragging.AddDynamic(this, &AUnitGrid::OnClientUnitDragging);
 	
+	}
+}
+
+void AUnitGrid::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	AClientGameEventManager* Manager = AClientGameEventManager::GetInstance(GetWorld());
+	if (Manager)
+	{
+		Manager->OnClientUnitDropped.RemoveDynamic(this, &AUnitGrid::OnClientUnitDropped);
+		Manager->OnClientUnitDragging.RemoveDynamic(this, &AUnitGrid::OnClientUnitDragging);
 	}
 }
 
