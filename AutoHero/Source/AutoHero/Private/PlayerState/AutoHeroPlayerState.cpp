@@ -126,7 +126,7 @@ void AAutoHeroPlayerState::OnClientUnitRemoved(ABaseUnit* BaseUnit)
 void AAutoHeroPlayerState::SetPlayerIndex(int InPlayerIndex)
 {
 	this->PlayerIndex = InPlayerIndex;
-	this->Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
+	this->Team = PlayerIndex == 2 ? EActorTeam::Red : EActorTeam::Blue;
 }
 
 int AAutoHeroPlayerState::GetPlayerIndex()

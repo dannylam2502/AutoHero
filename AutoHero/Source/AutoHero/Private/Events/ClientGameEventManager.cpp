@@ -16,12 +16,14 @@ AClientGameEventManager::AClientGameEventManager()
 
 AClientGameEventManager* AClientGameEventManager::GetInstance(UWorld* World)
 {
-	static AClientGameEventManager* Instance = nullptr;
-	if (!Instance)
-	{
-		Instance = Cast<AClientGameEventManager>(UGameplayStatics::GetActorOfClass(World, AClientGameEventManager::StaticClass()));
-	}
-	return Instance;
+	// static AClientGameEventManager* Instance = nullptr;
+	// if (!Instance)
+	// {
+	// 	Instance = Cast<AClientGameEventManager>(UGameplayStatics::GetActorOfClass(World, AClientGameEventManager::StaticClass()));
+	// }
+	// return Instance;
+	if (!World) return nullptr;
+	return Cast<AClientGameEventManager>(UGameplayStatics::GetActorOfClass(World, AClientGameEventManager::StaticClass()));
 }
 
 void AClientGameEventManager::BPBroadCastOnUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)

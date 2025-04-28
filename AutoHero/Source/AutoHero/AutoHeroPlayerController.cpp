@@ -121,7 +121,8 @@ void AAutoHeroPlayerController::BeginPlay()
 	ServerGenerateUnitList();
 
 	// Check if this is Client
-	if (!HasAuthority())
+	ENetMode NetMode = GetNetMode();
+	if (NetMode == NM_Standalone || NetMode == NM_Client)
 	{
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
 	}
@@ -130,7 +131,8 @@ void AAutoHeroPlayerController::BeginPlay()
 void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	if (!HasAuthority())
+	ENetMode NetMode = GetNetMode();
+	if (NetMode == NM_Standalone || NetMode == NM_Client)
 	{
 		AClientGameEventManager* Manager = AClientGameEventManager::GetInstance(GetWorld());
 		if (Manager)

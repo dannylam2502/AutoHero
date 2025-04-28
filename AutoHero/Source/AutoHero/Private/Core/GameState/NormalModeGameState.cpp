@@ -3,6 +3,7 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "EngineUtils.h"
+#include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/PlayerController.h"
@@ -182,6 +183,11 @@ void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam 
 
 void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
 {
+    UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+    if (NavSys)
+    {
+        NavSys->Build(); // Force Rebuild
+    }
     // Logic for both server and clients when level is loaded
     UE_LOG(LogTemp, Log, TEXT("Level Loaded for all clients!"));
     // Get the game instance and trigger the delegate
@@ -198,7 +204,7 @@ void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
         if (!PlayerController) continue;
         AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
         // Check if this is Player 2 based on some custom logic (e.g., index or role)
-        if (PlayerState->GetPlayerIndex() == 0) // Assuming NetPlayerIndex == 1 for Player 2
+        if (PlayerState->GetPlayerIndex() == 2) // Assuming NetPlayerIndex == 1 for Player 2
         {
             SetSymmetricView(PlayerController); // Call your symmetric view function
         }
@@ -308,8 +314,8 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
                 // }
 
                 // Ensure position is locked to exact grid (skip navmesh adjustment)
-                FVector SnappedLocation = Unit->GetActorLocation();
-                Unit->SetActorLocation(SnappedLocation, false, nullptr, ETeleportType::TeleportPhysics);
+                // FVector SnappedLocation = Unit->GetActorLocation();
+                // Unit->SetActorLocation(SnappedLocation, false, nullptr, ETeleportType::TeleportPhysics);
 
                 UE_LOG(LogTemp, Log, TEXT("AIController possessed UnitID %d at %s"),
                     Unit->GetUnitID(), *Unit->GetActorLocation().ToString());
