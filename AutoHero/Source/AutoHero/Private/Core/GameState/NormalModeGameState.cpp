@@ -198,17 +198,17 @@ void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
     }
 
     // Iterate through all player controllers and set symmetric view for Player 2
-    for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-    {
-        APlayerController* PlayerController = Iterator->Get(); // Get the player controller
-        if (!PlayerController) continue;
-        AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
-        // Check if this is Player 2 based on some custom logic (e.g., index or role)
-        if (PlayerState->GetPlayerIndex() == 2) // Assuming NetPlayerIndex == 1 for Player 2
-        {
-            SetSymmetricView(PlayerController); // Call your symmetric view function
-        }
-    }
+    // for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+    // {
+    //     APlayerController* PlayerController = Iterator->Get(); // Get the player controller
+    //     if (!PlayerController) continue;
+    //     AAutoHeroPlayerState* PlayerState = Cast<AAutoHeroPlayerState>(PlayerController->PlayerState);
+    //     // Check if this is Player 2 based on some custom logic (e.g., index or role)
+    //     if (PlayerState->GetPlayerIndex() == 2) // Assuming NetPlayerIndex == 1 for Player 2
+    //     {
+    //         SetSymmetricView(PlayerController); // Call your symmetric view function
+    //     }
+    // }
 }
 
 void ANormalModeGameState::StartRound()
