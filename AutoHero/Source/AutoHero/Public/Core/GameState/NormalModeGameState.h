@@ -8,6 +8,20 @@
 #include "GameEnums.h"
 #include "NormalModeGameState.generated.h"
 
+UENUM(BlueprintType)
+enum class EGamePhase : uint8
+{
+	Start,
+	Preparation_Round1_Blue,
+	Preparation_Round1_Red,
+	Preparation_Round2_Blue,
+	Preparation_Round2_Red,
+	Preparation_Round3_Blue,
+	Preparation_Round3_Red,
+	Battle,
+	Ended
+};
+
 class ABaseUnit;
 /**
  * 
@@ -21,11 +35,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(ReplicatedUsing = OnRep_RoundState)
-	int32 CurrentRound;
-
-	UPROPERTY(ReplicatedUsing = OnRep_IsPreparationPhase)
-	bool bIsPreparationPhase;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentPhaseState)
+	EGamePhase CurrentPhase;
 
 	FTimerHandle RoundTimerHandle;
 	FTimerHandle PreparationTimerHandle;
@@ -34,11 +45,8 @@ protected:
 	TMap<EActorTeam, TArray<ABaseUnit*>> TeamToUnitMap;
 
 	UFUNCTION()
-	void OnRep_RoundState();
+	void OnRep_CurrentPhaseState();
 
-	UFUNCTION()
-	void OnRep_IsPreparationPhase();
-	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	void StartLoadLevelSequence();
@@ -46,22 +54,15 @@ public:
 	void OnLevelDevMapLoaded();
 	UFUNCTION()
 	void OnIngameMapDetailLoaded();
-	void StartRound();
-	void EndRound();
-	void StartPreparation();
-	void EndPreparation();
 	void LoadLevel(const FString& LevelName, bool ShouldBlockOnLoad);
 	void UnloadLevel(const FString& LevelName);
-	bool IsPreparationPhase();
-	int32 GetCurrentRound();
+	EGamePhase GetCurrentPhase();
 	// Function to trigger level loaded logic
 	UFUNCTION(BlueprintCallable)
 	void ServerOnLevelLoaded();
 	// Multicast delegate to notify clients
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastOnLevelLoaded();
-
-	void SetSymmetricView(APlayerController* PlayerController);
 
 	// Process submitted units from Client
 	UFUNCTION(Server, Reliable, WithValidation)

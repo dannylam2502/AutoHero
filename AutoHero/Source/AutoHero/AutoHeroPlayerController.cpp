@@ -53,7 +53,6 @@ void AAutoHeroPlayerController::OnCameraSymmetricTest()
 		ANormalModeGameState* GameState = GameMode->GetGameState<ANormalModeGameState>();
 		// Toggle between Player 1 and Player 2 for testing
 		static bool bIsPlayer1 = true;
-		//GameState->SetSymmetricView(this);
 		bIsPlayer1 = !bIsPlayer1;
 	}
 }
