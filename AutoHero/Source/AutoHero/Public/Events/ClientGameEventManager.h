@@ -6,12 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "ClientGameEventManager.generated.h"
 
+enum class EGamePhase : uint8;
 class ABaseUnit;
 class UUnitSelectionSlot;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientUnitDropped, ABaseUnit*, BaseUnit, FVector2D, InDropPosition);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitDragging, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitSpawned, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitRemovedFromField, ABaseUnit*, BaseUnit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientGamePhaseChanged, EGamePhase, GamePhase);
 
 UCLASS()
 class AUTOHERO_API AClientGameEventManager : public AActor
@@ -47,5 +49,7 @@ public:
 	// Called when ClientUnit Removed from field
 	UPROPERTY()
 	FOnClientUnitRemovedFromField OnClientUnitRemovedFromField;
-	
+	// Called when client game phase had changed
+	UPROPERTY()
+	FOnClientGamePhaseChanged OnClientGamePhaseChanged;
 };

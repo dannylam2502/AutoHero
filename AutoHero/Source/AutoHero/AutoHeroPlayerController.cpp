@@ -78,7 +78,7 @@ void AAutoHeroPlayerController::SubmitUnitsToServer()
 			UnitData.UnitLocation = Unit->GetActorLocation();
 			PendingUnitsData.Add(UnitData);
 		}
-		AAPlayerState->Server_ProcessPendingUnits(PendingUnitsData);
+		AAPlayerState->ServerProcessPendingUnits(PendingUnitsData);
 		RemoveLocalUnitsOnField();
 	}
 }
@@ -124,6 +124,7 @@ void AAutoHeroPlayerController::BeginPlay()
 	if (NetMode == NM_Standalone || NetMode == NM_Client)
 	{
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.AddDynamic(this, &AAutoHeroPlayerController::OnClientGamePhaseChanged);
 	}
 }
 
@@ -137,6 +138,7 @@ void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason
 		if (Manager)
 		{
 			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+			Manager->OnClientGamePhaseChanged.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientGamePhaseChanged);
 		}
 	}
 }
@@ -224,4 +226,21 @@ void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector
 {
 	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitDropped"));
 	LocalPendingUnits.Add(BaseUnit);
+}
+
+void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
+{
+	if (GamePhase == EGamePhase::Preparation_Round1_Blue)
+	{
+		AAutoHeroPlayerState* AAPlayerState = this->GetPlayerState<AAutoHeroPlayerState>();
+		if (AAPlayerState->GetTeam() == EActorTeam::Blue)
+		{
+			//FString CleanName = StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int64>(PlayerState->GetTeam()));
+			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, TEXT("Round 1 Blue Team Blue"));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("Round 1 Blue Team Red"));
+		}
+	}
 }

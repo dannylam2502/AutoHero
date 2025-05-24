@@ -34,6 +34,6 @@ public:
 	FTimerHandle StartGameTimerHandle;
     
 	void PlayerReady(APlayerController* PlayerController);
-	void CheckIfAllPlayersReady();
+	bool AreAllPlayersReady();
 	void StartGame();
 };

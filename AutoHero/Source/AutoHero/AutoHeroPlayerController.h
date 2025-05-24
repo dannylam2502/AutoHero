@@ -10,6 +10,7 @@
 #include "Templates/SubclassOf.h"
 #include "AutoHeroPlayerController.generated.h"
 
+enum class EGamePhase : uint8;
 class ABaseUnit;
 // Forward declaration to improve compiling times
 class UNiagaraSystem;
@@ -84,4 +85,6 @@ protected:
 
 	UFUNCTION()
 	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition);
+	UFUNCTION()
+	void OnClientGamePhaseChanged(EGamePhase GamePhase);
 };

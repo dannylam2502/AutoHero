@@ -77,4 +77,7 @@ public:
 	void StartBattle();
 
 	void PossessUnitsInTeam(EActorTeam Team);
+
+	// Process the new game phase
+	void ClientHandleGamePhaseChanged();
 };

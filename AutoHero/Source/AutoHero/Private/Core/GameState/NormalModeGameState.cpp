@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/GameInstances/NormalGameInstance.h"
+#include "Events/ClientGameEventManager.h"
 #include "PlayerState/AutoHeroPlayerState.h"
 #include "Singletons/UnitDataManager.h"
 
@@ -211,10 +212,24 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
     }
 }
 
+void ANormalModeGameState::ClientHandleGamePhaseChanged()
+{
+    AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.Broadcast(CurrentPhase);
+    if (CurrentPhase == EGamePhase::Preparation_Round1_Blue)
+    {
+        // Blue turn 1
+    }
+}
+
 void ANormalModeGameState::OnRep_CurrentPhaseState()
 {
     FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(CurrentPhase);
     UE_LOG(LogTemp, Display, TEXT("Current Phase is %s"), *PhaseName);
+
+    if (GetNetMode() == NM_Client)
+    {
+        ClientHandleGamePhaseChanged();
+    }
 }
 
 void ANormalModeGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

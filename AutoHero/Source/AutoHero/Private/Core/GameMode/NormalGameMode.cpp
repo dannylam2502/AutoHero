@@ -57,16 +57,19 @@ void ANormalGameMode::PlayerReady(APlayerController* PlayerController)
 	ReadyPlayers.Add(PlayerController);
 
 	// Check if all players are ready
-	CheckIfAllPlayersReady();
-}
-
-void ANormalGameMode::CheckIfAllPlayersReady()
-{
-	if (ReadyPlayers.Num() >= RequiredNumPlayers)
+	if (AreAllPlayersReady())
 	{
 		// If all players are ready, start the game
 		GetWorldTimerManager().ClearTimer(StartGameTimerHandle);
 		StartGame();
+	}
+}
+
+bool ANormalGameMode::AreAllPlayersReady()
+{
+	if (ReadyPlayers.Num() >= RequiredNumPlayers)
+	{
+		return true;
 	}
 }
 
@@ -96,7 +99,6 @@ void ANormalGameMode::StartGame()
 			UE_LOG(LogTemp, Log, TEXT("Assigned PlayerIndex %d to %s"), PlayerIndex, *PlayerController->GetName());
 		}
 	}
-
 	
 	// FString LevelName = TEXT("/Game/Maps/Level_DevMap");  // Replace with your map path
 	// UE_LOG(LogTemp, Warning, TEXT("Starting game, traveling to map: %s"), *LevelName);

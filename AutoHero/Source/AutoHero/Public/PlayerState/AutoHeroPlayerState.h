@@ -45,7 +45,7 @@ public:
 	int GetPlayerIndex();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ProcessPendingUnits(const TArray<FPendingUnitData>& PendingUnits);
+	void ServerProcessPendingUnits(const TArray<FPendingUnitData>& PendingUnits);
 
 	UFUNCTION(BlueprintCallable)
 	EActorTeam GetTeam();

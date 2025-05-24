@@ -134,7 +134,7 @@ int AAutoHeroPlayerState::GetPlayerIndex()
 	return PlayerIndex;
 }
 
-void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& PendingUnits)
+void AAutoHeroPlayerState::ServerProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& PendingUnits)
 {
 	if (!HasAuthority()) return;
 	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
@@ -146,7 +146,7 @@ void AAutoHeroPlayerState::Server_ProcessPendingUnits_Implementation(const TArra
 	}
 }
 
-bool AAutoHeroPlayerState::Server_ProcessPendingUnits_Validate(const TArray<FPendingUnitData>& PendingUnits)
+bool AAutoHeroPlayerState::ServerProcessPendingUnits_Validate(const TArray<FPendingUnitData>& PendingUnits)
 {
 	return true;
 }
