@@ -56,7 +56,8 @@ public:
 	void OnIngameMapDetailLoaded();
 	void LoadLevel(const FString& LevelName, bool ShouldBlockOnLoad);
 	void UnloadLevel(const FString& LevelName);
-	EGamePhase GetCurrentPhase();
+	EGamePhase GetCurrentGamePhase();
+	void SetCurrentGamePhase(EGamePhase GamePhase);
 	// Function to trigger level loaded logic
 	UFUNCTION(BlueprintCallable)
 	void ServerOnLevelLoaded();

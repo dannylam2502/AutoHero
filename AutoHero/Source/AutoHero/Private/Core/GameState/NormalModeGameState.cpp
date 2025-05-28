@@ -37,6 +37,11 @@ void ANormalModeGameState::UnloadLevel(const FString& LevelName)
     }
 }
 
+void ANormalModeGameState::SetCurrentGamePhase(EGamePhase GamePhase)
+{
+    CurrentPhase = GamePhase;
+}
+
 void ANormalModeGameState::ServerOnLevelLoaded()
 {
     // Server-side logic for level loaded
@@ -45,7 +50,7 @@ void ANormalModeGameState::ServerOnLevelLoaded()
     // Example: Notify all clients
     MulticastOnLevelLoaded();
 
-    CurrentPhase = EGamePhase::Preparation_Round1_Blue;
+    //CurrentPhase = EGamePhase::Preparation_Round1_Blue;
 }
 
 bool ANormalModeGameState::Server_ProcessPendingUnits_Validate(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits)

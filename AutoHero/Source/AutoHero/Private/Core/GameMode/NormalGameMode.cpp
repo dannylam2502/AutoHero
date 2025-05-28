@@ -71,6 +71,7 @@ bool ANormalGameMode::AreAllPlayersReady()
 	{
 		return true;
 	}
+	return false;
 }
 
 void ANormalGameMode::StartGame()
@@ -83,6 +84,19 @@ void ANormalGameMode::StartGame()
 	bGameStarted = true;
 	// Clear the timer to ensure it doesn't try to start the game again
 	GetWorldTimerManager().ClearTimer(StartGameTimerHandle);
+
+	ANormalModeGameState* NormalGameState = GetGameState<ANormalModeGameState>();
+	if (NormalGameState && HasAuthority())
+	{
+		NormalGameState->StartLoadLevelSequence();
+		NormalGameState->SetCurrentGamePhase(EGamePhase::Preparation_Round1_Blue);
+		// NormalGameState->LoadLevel("Level_DevMap", true);
+		// NormalGameState->LoadLevel("Level_IngameMapDetail", true);
+		
+		// Set a timer or wait for the level to load
+		// GetWorldTimerManager().SetTimerForNextTick(this, &ANormalGameMode::OnLevelLoaded);
+		// NormalGameState->StartPreparation();
+	}
 
 	// Assign player indices
 	int32 PlayerIndex = 0;
@@ -99,7 +113,6 @@ void ANormalGameMode::StartGame()
 			UE_LOG(LogTemp, Log, TEXT("Assigned PlayerIndex %d to %s"), PlayerIndex, *PlayerController->GetName());
 		}
 	}
-	
 	// FString LevelName = TEXT("/Game/Maps/Level_DevMap");  // Replace with your map path
 	// UE_LOG(LogTemp, Warning, TEXT("Starting game, traveling to map: %s"), *LevelName);
 	//
@@ -113,15 +126,5 @@ void ANormalGameMode::StartGame()
 	// 	UE_LOG(LogTemp, Error, TEXT("ServerTravel failed."));
 	// }
 
-	ANormalModeGameState* NormalGameState = GetGameState<ANormalModeGameState>();
-	if (NormalGameState && HasAuthority())
-	{
-		NormalGameState->StartLoadLevelSequence();
-		// NormalGameState->LoadLevel("Level_DevMap", true);
-		// NormalGameState->LoadLevel("Level_IngameMapDetail", true);
-		
-		// Set a timer or wait for the level to load
-		// GetWorldTimerManager().SetTimerForNextTick(this, &ANormalGameMode::OnLevelLoaded);
-		// NormalGameState->StartPreparation();
-	}
+
 }
