@@ -11,6 +11,7 @@
 UENUM(BlueprintType)
 enum class EGamePhase : uint8
 {
+	None,
 	Start,
 	Preparation_Round1_Blue,
 	Preparation_Round1_Red,
@@ -36,7 +37,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentPhaseState)
-	EGamePhase CurrentPhase;
+	EGamePhase CurrentGamePhase;
 
 	FTimerHandle RoundTimerHandle;
 	FTimerHandle PreparationTimerHandle;
@@ -81,4 +82,8 @@ public:
 
 	// Process the new game phase
 	void ClientHandleGamePhaseChanged();
+
+	// Change to the next game phase on server
+	void ServerChangeToNextGamePhase();
+	EGamePhase GetNextGamePhase();
 };

@@ -32,7 +32,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Networking")
 	bool bGameStarted;
 	FTimerHandle StartGameTimerHandle;
-    
+	// Header
+	FTimerHandle PhaseChangeTimerHandle;
+
+	void ChangeToNextGamePhase();
 	void PlayerReady(APlayerController* PlayerController);
 	bool AreAllPlayersReady();
 	void StartGame();

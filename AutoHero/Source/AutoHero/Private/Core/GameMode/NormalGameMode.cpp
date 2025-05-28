@@ -46,6 +46,12 @@ void ANormalGameMode::BeginPlay()
 	GetWorldTimerManager().SetTimer(StartGameTimerHandle, this, &ANormalGameMode::StartGame, 30000.0f, false);
 }
 
+void ANormalGameMode::ChangeToNextGamePhase()
+{
+	ANormalModeGameState* CastGameState = GetGameState<ANormalModeGameState>();
+	CastGameState->ServerChangeToNextGamePhase();
+}
+
 void ANormalGameMode::PlayerReady(APlayerController* PlayerController)
 {
 	if (bGameStarted)
@@ -89,7 +95,13 @@ void ANormalGameMode::StartGame()
 	if (NormalGameState && HasAuthority())
 	{
 		NormalGameState->StartLoadLevelSequence();
-		NormalGameState->SetCurrentGamePhase(EGamePhase::Preparation_Round1_Blue);
+		NormalGameState->SetCurrentGamePhase(EGamePhase::Start);
+		GetWorldTimerManager().SetTimer(
+		PhaseChangeTimerHandle,
+		this,
+		&ANormalGameMode::ChangeToNextGamePhase,
+		3.0f,
+		false);
 		// NormalGameState->LoadLevel("Level_DevMap", true);
 		// NormalGameState->LoadLevel("Level_IngameMapDetail", true);
 		

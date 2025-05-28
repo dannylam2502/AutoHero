@@ -230,6 +230,8 @@ void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector
 
 void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 {
+	FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(GamePhase);
+	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString::Printf(TEXT("GamePhase = %s"), *PhaseName));
 	if (GamePhase == EGamePhase::Preparation_Round1_Blue)
 	{
 		AAutoHeroPlayerState* AAPlayerState = this->GetPlayerState<AAutoHeroPlayerState>();

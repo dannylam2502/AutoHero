@@ -13,7 +13,7 @@
 
 ANormalModeGameState::ANormalModeGameState()
 {
-    CurrentPhase = EGamePhase::Start;
+    CurrentGamePhase = EGamePhase::None;
 }
 
 void ANormalModeGameState::BeginPlay()
@@ -39,7 +39,7 @@ void ANormalModeGameState::UnloadLevel(const FString& LevelName)
 
 void ANormalModeGameState::SetCurrentGamePhase(EGamePhase GamePhase)
 {
-    CurrentPhase = GamePhase;
+    CurrentGamePhase = GamePhase;
 }
 
 void ANormalModeGameState::ServerOnLevelLoaded()
@@ -219,16 +219,40 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
 
 void ANormalModeGameState::ClientHandleGamePhaseChanged()
 {
-    AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.Broadcast(CurrentPhase);
-    if (CurrentPhase == EGamePhase::Preparation_Round1_Blue)
+    AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.Broadcast(CurrentGamePhase);
+    if (CurrentGamePhase == EGamePhase::Start)
+    {
+        
+    }
+    else if (CurrentGamePhase == EGamePhase::Preparation_Round1_Blue)
     {
         // Blue turn 1
     }
 }
 
+void ANormalModeGameState::ServerChangeToNextGamePhase()
+{
+    CurrentGamePhase = GetNextGamePhase();
+}
+
+EGamePhase ANormalModeGameState::GetNextGamePhase()
+{
+    // Cast enum to int, increment, and clamp
+    int32 NextPhaseIndex = static_cast<int32>(CurrentGamePhase) + 1;
+    int32 MaxPhaseIndex = static_cast<int32>(EGamePhase::Ended);
+
+    if (NextPhaseIndex > MaxPhaseIndex)
+    {
+        // Optionally loop or clamp at the last phase
+        NextPhaseIndex = MaxPhaseIndex;
+    }
+
+    return static_cast<EGamePhase>(NextPhaseIndex);
+}
+
 void ANormalModeGameState::OnRep_CurrentPhaseState()
 {
-    FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(CurrentPhase);
+    FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(CurrentGamePhase);
     UE_LOG(LogTemp, Display, TEXT("Current Phase is %s"), *PhaseName);
 
     if (GetNetMode() == NM_Client)
@@ -240,7 +264,7 @@ void ANormalModeGameState::OnRep_CurrentPhaseState()
 void ANormalModeGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(ANormalModeGameState, CurrentPhase);
+    DOREPLIFETIME(ANormalModeGameState, CurrentGamePhase);
 }
 
 void ANormalModeGameState::StartLoadLevelSequence()
