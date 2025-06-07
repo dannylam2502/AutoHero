@@ -28,10 +28,10 @@ public:
 
 	// The Current List of Units that this player can choose from, appear from the UI
 	UPROPERTY(Replicated)
-	TArray<int32> CurrentUnitIds;
+	TArray<int32> CurGeneratedUnitIds;
 
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
-	void SetCurrentUnitIDs(const TArray<int32>& UnitIDs);
+	void SetCurGeneratedUnitIDs(const TArray<int32>& UnitIDs);
 	
 	UFUNCTION()
 	void OnRep_SelectedUnitIds();

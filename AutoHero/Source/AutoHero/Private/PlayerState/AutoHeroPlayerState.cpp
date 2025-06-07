@@ -22,7 +22,7 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
-	DOREPLIFETIME(AAutoHeroPlayerState, CurrentUnitIds);
+	DOREPLIFETIME(AAutoHeroPlayerState, CurGeneratedUnitIds);
 	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
 	DOREPLIFETIME(AAutoHeroPlayerState, Team);
 }
@@ -72,9 +72,9 @@ void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
 	SelectedUnitIds = UnitIDs;
 }
 
-void AAutoHeroPlayerState::SetCurrentUnitIDs(const TArray<int32>& UnitIDs)
+void AAutoHeroPlayerState::SetCurGeneratedUnitIDs(const TArray<int32>& UnitIDs)
 {
-	CurrentUnitIds = UnitIDs;
+	CurGeneratedUnitIds = UnitIDs;
 }
 
 void AAutoHeroPlayerState::OnRep_SelectedUnitIds()

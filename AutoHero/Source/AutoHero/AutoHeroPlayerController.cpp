@@ -117,7 +117,7 @@ void AAutoHeroPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	ServerGenerateUnitList();
+	//ServerGenerateUnitList();
 
 	// Check if this is Client
 	ENetMode NetMode = GetNetMode();
@@ -218,7 +218,7 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	AAutoHeroPlayerState* PS = GetPlayerState<AAutoHeroPlayerState>();
 	if (PS)
 	{
-		PS->SetCurrentUnitIDs(RandomUnitIDs);
+		PS->SetCurGeneratedUnitIDs(RandomUnitIDs);
 	}
 }
 
@@ -239,6 +239,7 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 		{
 			//FString CleanName = StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int64>(PlayerState->GetTeam()));
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, TEXT("Round 1 Blue Team Blue"));
+			ServerGenerateUnitList();
 		}
 		else
 		{
