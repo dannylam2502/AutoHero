@@ -23,6 +23,7 @@ void UIngameHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 	BtnSubmit->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnSubmit);
 	BtnTestQuickPlay->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnTest);
+	AClientGameEventManager::GetInstance(GetWorld())->OnClientSelectableUnitsGenerated.AddDynamic(this, &UIngameHUDWidget::OnClientSelectableUnitsGenerated);
 }
 
 void UIngameHUDWidget::LoadListUnit()
@@ -155,4 +156,9 @@ void UIngameHUDWidget::OnClickBtnTest()
 	{
 		AutoHeroController->ServerStartQuickTest();
 	}
+}
+
+void UIngameHUDWidget::OnClientSelectableUnitsGenerated(EActorTeam InTeam, TArray<FGeneratedUnitInfoDTO> DTO)
+{
+	LoadListUnit();
 }

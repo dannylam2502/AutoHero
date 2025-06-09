@@ -115,6 +115,10 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 
 void AAutoHeroPlayerState::OnRep_CurGeneratedUnitsInfo()
 {
+	if (AAutoHeroPlayerController* AAPC = Cast<AAutoHeroPlayerController>(GetPlayerController()))
+	{
+		AAPC->UpdateSelectableUnitsUI(Team, CurGeneratedUnitsInfo);
+	}
 }
 
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)

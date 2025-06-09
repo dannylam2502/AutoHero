@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
 #include "GameFramework/PlayerController.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
+#include "Defines/GeneratedUnitInfoDTO.h"
 #include "Defines/PendingUnitData.h"
 #include "Templates/SubclassOf.h"
 #include "AutoHeroPlayerController.generated.h"
@@ -55,6 +57,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerStartQuickTest();
 
+	UFUNCTION()
+	void UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO);
+
 protected:
 	// Will be removed when server update
 	TArray<ABaseUnit*> LocalPendingUnits;
@@ -87,4 +92,5 @@ protected:
 	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition);
 	UFUNCTION()
 	void OnClientGamePhaseChanged(EGamePhase GamePhase);
+
 };

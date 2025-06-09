@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEnums.h"
+#include "Defines/GeneratedUnitInfoDTO.h"
 #include "GameFramework/Actor.h"
 #include "ClientGameEventManager.generated.h"
 
@@ -14,6 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitDragging, ABaseUnit*, B
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitSpawned, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitRemovedFromField, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientGamePhaseChanged, EGamePhase, GamePhase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientSelectableUnitsGenerated, EActorTeam, Team, TArray<FGeneratedUnitInfoDTO>, GeneratedUnitsDTO);
 
 UCLASS()
 class AUTOHERO_API AClientGameEventManager : public AActor
@@ -29,6 +32,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void BPBroadCastOnUnitDropped(ABaseUnit* InBaseUnit, FVector2D InDropPosition);
 
+	UFUNCTION()
+	void BroadSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,4 +57,6 @@ public:
 	// Called when client game phase had changed
 	UPROPERTY()
 	FOnClientGamePhaseChanged OnClientGamePhaseChanged;
+	UPROPERTY()
+	FOnClientSelectableUnitsGenerated OnClientSelectableUnitsGenerated;
 };

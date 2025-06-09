@@ -31,6 +31,11 @@ void AClientGameEventManager::BPBroadCastOnUnitDropped(ABaseUnit* BaseUnit, FVec
 	OnClientUnitDropped.Broadcast(BaseUnit, InDropPosition);
 }
 
+void AClientGameEventManager::BroadSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO)
+{
+	OnClientSelectableUnitsGenerated.Broadcast(Team, DTO);
+}
+
 // Called when the game starts or when spawned
 void AClientGameEventManager::BeginPlay()
 {

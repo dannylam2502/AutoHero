@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameEnums.h"
 #include "Components/Button.h"
+#include "Defines/GeneratedUnitInfoDTO.h"
 #include "UI/Widgets/BaseWidget.h"
 #include "IngameHUDWidget.generated.h"
 
@@ -67,4 +68,7 @@ public:
 	void OnClickBtnTest();
 
 	EActorTeam Team;
+
+	UFUNCTION()
+	void OnClientSelectableUnitsGenerated(EActorTeam InTeam, TArray<FGeneratedUnitInfoDTO> DTO);
 };

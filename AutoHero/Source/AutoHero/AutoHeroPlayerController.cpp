@@ -241,6 +241,7 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 		{
 			//FString CleanName = StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int64>(PlayerState->GetTeam()));
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, TEXT("Round 1 Blue Team Blue"));
+			// Blue Team, ask for the list, it will update player state and then the UI will be updated correctly after
 			ServerGenerateUnitList();
 		}
 		else
@@ -248,4 +249,9 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("Round 1 Blue Team Red"));
 		}
 	}
+}
+
+void AAutoHeroPlayerController::UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO)
+{
+	AClientGameEventManager::GetInstance(GetWorld())->BroadSelectableUnitsGeneratedEvent(Team, SelectableUnitsDTO);
 }
