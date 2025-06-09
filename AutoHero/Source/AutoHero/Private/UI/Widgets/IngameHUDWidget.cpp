@@ -32,10 +32,10 @@ void UIngameHUDWidget::LoadListUnit()
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
 	if (PlayerState)
 	{
-		TArray<int32> UnitIDs = PlayerState->CurGeneratedUnitIds;
-		for (auto UnitID : UnitIDs)
+		TArray<FGeneratedUnitInfoDTO> UnitsDTO = PlayerState->CurGeneratedUnitsInfo;
+		for (auto UnitDTO : UnitsDTO)
 		{
-			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitID);
+			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitDTO.UnitID);
 			if (UnitData)
 			{
 				UUnitSelectionSlot* UnitSelectionSlot = CreateWidget<UUnitSelectionSlot>(this, UnitSlotTemplate);

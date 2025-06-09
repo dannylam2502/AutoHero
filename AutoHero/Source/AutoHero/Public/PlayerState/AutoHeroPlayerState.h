@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameEnums.h"
+#include "Defines/GeneratedUnitInfoDTO.h"
 #include "Defines/PendingUnitData.h"
 #include "GameFramework/PlayerState.h"
 #include "AutoHeroPlayerState.generated.h"
@@ -27,11 +28,11 @@ public:
 	TArray<int32> SelectedUnitIds;
 
 	// The Current List of Units that this player can choose from, appear from the UI
-	UPROPERTY(Replicated)
-	TArray<int32> CurGeneratedUnitIds;
+	UPROPERTY(ReplicatedUsing = OnRep_CurGeneratedUnitsInfo)
+	TArray<FGeneratedUnitInfoDTO> CurGeneratedUnitsInfo;
 
 	void SetSelectedUnitIDs(const TArray<int32>& UnitIDs);
-	void SetCurGeneratedUnitIDs(const TArray<int32>& UnitIDs);
+	void SetCurGeneratedUnitIDs(const TArray<FGeneratedUnitInfoDTO>& UnitIDs);
 	
 	UFUNCTION()
 	void OnRep_SelectedUnitIds();
@@ -59,6 +60,9 @@ protected:
 	
 	UFUNCTION()
 	void OnRep_PlayerIndex();
+
+	UFUNCTION()
+	void OnRep_CurGeneratedUnitsInfo();
 
 	UPROPERTY(Replicated)
 	EActorTeam Team;

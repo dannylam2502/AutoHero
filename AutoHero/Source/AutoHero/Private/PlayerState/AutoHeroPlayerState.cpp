@@ -22,7 +22,7 @@ void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAutoHeroPlayerState, SelectedUnitIds);
-	DOREPLIFETIME(AAutoHeroPlayerState, CurGeneratedUnitIds);
+	DOREPLIFETIME(AAutoHeroPlayerState, CurGeneratedUnitsInfo);
 	DOREPLIFETIME(AAutoHeroPlayerState, PlayerIndex);
 	DOREPLIFETIME(AAutoHeroPlayerState, Team);
 }
@@ -72,9 +72,9 @@ void AAutoHeroPlayerState::SetSelectedUnitIDs(const TArray<int32>& UnitIDs)
 	SelectedUnitIds = UnitIDs;
 }
 
-void AAutoHeroPlayerState::SetCurGeneratedUnitIDs(const TArray<int32>& UnitIDs)
+void AAutoHeroPlayerState::SetCurGeneratedUnitIDs(const TArray<FGeneratedUnitInfoDTO>& UnitIDs)
 {
-	CurGeneratedUnitIds = UnitIDs;
+	CurGeneratedUnitsInfo = UnitIDs;
 }
 
 void AAutoHeroPlayerState::OnRep_SelectedUnitIds()
@@ -111,6 +111,10 @@ void AAutoHeroPlayerState::OnRep_PlayerIndex()
 			SpringArm->SetWorldRotation(SpringArmRotation);
 		}
 	}
+}
+
+void AAutoHeroPlayerState::OnRep_CurGeneratedUnitsInfo()
+{
 }
 
 void AAutoHeroPlayerState::OnClientUnitSpawned(ABaseUnit* BaseUnit)

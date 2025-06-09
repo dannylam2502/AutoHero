@@ -207,18 +207,20 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	TArray<int32> AllHeroIDs = {1,2,3,4,5}; // Assuming you have a way to get all hero IDs
 	FMath::RandInit(FDateTime::Now().GetMillisecond()); // Seed random generator
 
-	TArray<int32> RandomUnitIDs;
-	while (RandomUnitIDs.Num() < 10 && AllHeroIDs.Num() > 0)
+	TArray<FGeneratedUnitInfoDTO> RandomUnitsInfo;
+	while (RandomUnitsInfo.Num() < 10 && AllHeroIDs.Num() > 0)
 	{
 		int32 Index = FMath::RandRange(0, AllHeroIDs.Num() - 1);
-		RandomUnitIDs.Add(AllHeroIDs[Index]);
+		FGeneratedUnitInfoDTO dto;
+		dto.UnitID = AllHeroIDs[Index];
+		RandomUnitsInfo.Add(dto);
 		//AllHeroIDs.RemoveAt(Index);
 	}
 
 	AAutoHeroPlayerState* PS = GetPlayerState<AAutoHeroPlayerState>();
 	if (PS)
 	{
-		PS->SetCurGeneratedUnitIDs(RandomUnitIDs);
+		PS->SetCurGeneratedUnitIDs(RandomUnitsInfo);
 	}
 }
 
