@@ -53,13 +53,8 @@ void ANormalModeGameState::ServerOnLevelLoaded()
     //CurrentPhase = EGamePhase::Preparation_Round1_Blue;
 }
 
-bool ANormalModeGameState::Server_ProcessPendingUnits_Validate(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits)
-{
-    return true;
-}
-
-void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam Team,
-                                                                     const TArray<FPendingUnitData>& PendingUnits)
+void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
+                            const TArray<FPendingUnitData>& PendingUnits)
 {
     for (auto PendingUnitData : PendingUnits)
     {
@@ -126,6 +121,7 @@ void ANormalModeGameState::Server_ProcessPendingUnits_Implementation(EActorTeam 
         TeamToUnitMap.FindOrAdd(Team).Add(NewUnit);
         UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitID);
     }
+    ChangeToNextGamePhase();
 }
 
 void ANormalModeGameState::MulticastOnLevelLoaded_Implementation()
@@ -220,17 +216,17 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
 void ANormalModeGameState::ClientHandleGamePhaseChanged()
 {
     AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.Broadcast(CurrentGamePhase);
-    if (CurrentGamePhase == EGamePhase::Start)
+    if (CurrentGamePhase == EGamePhase::S1_Start)
     {
         
     }
-    else if (CurrentGamePhase == EGamePhase::Preparation_Round1_Blue)
+    else if (CurrentGamePhase == EGamePhase::S2_Preparation_Round1_Blue)
     {
         // Blue turn 1
     }
 }
 
-void ANormalModeGameState::ServerChangeToNextGamePhase()
+void ANormalModeGameState::ChangeToNextGamePhase()
 {
     CurrentGamePhase = GetNextGamePhase();
 }
@@ -239,7 +235,7 @@ EGamePhase ANormalModeGameState::GetNextGamePhase()
 {
     // Cast enum to int, increment, and clamp
     int32 NextPhaseIndex = static_cast<int32>(CurrentGamePhase) + 1;
-    int32 MaxPhaseIndex = static_cast<int32>(EGamePhase::Ended);
+    int32 MaxPhaseIndex = static_cast<int32>(EGamePhase::S9_Ended);
 
     if (NextPhaseIndex > MaxPhaseIndex)
     {

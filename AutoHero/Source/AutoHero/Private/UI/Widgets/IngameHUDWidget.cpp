@@ -34,6 +34,11 @@ void UIngameHUDWidget::LoadListUnit()
 	if (PlayerState)
 	{
 		TArray<FGeneratedUnitInfoDTO> UnitsDTO = PlayerState->CurGeneratedUnitsInfo;
+		if (UnitsDTO.Num() == 0)
+		{
+			UnitList->ClearChildren();
+			return;
+		}
 		for (auto UnitDTO : UnitsDTO)
 		{
 			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitDTO.UnitID);

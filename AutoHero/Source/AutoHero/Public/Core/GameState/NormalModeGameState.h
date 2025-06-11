@@ -12,15 +12,15 @@ UENUM(BlueprintType)
 enum class EGamePhase : uint8
 {
 	None,
-	Start,
-	Preparation_Round1_Blue,
-	Preparation_Round1_Red,
-	Preparation_Round2_Blue,
-	Preparation_Round2_Red,
-	Preparation_Round3_Blue,
-	Preparation_Round3_Red,
-	Battle,
-	Ended
+	S1_Start,
+	S2_Preparation_Round1_Blue,
+	S3_Preparation_Round1_Red,
+	S4_Preparation_Round2_Blue,
+	S5_Preparation_Round2_Red,
+	S6_Preparation_Round3_Blue,
+	S7_Preparation_Round3_Red,
+	S8_Battle,
+	S9_Ended
 };
 
 class ABaseUnit;
@@ -67,8 +67,7 @@ public:
 	void MulticastOnLevelLoaded();
 
 	// Process submitted units from Client
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
+	void ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
 
 	// Set the flag to control the AI behaviors
 	void UpdateAllAIBlackboardKeys(bool bCanExecute);
@@ -84,6 +83,6 @@ public:
 	void ClientHandleGamePhaseChanged();
 
 	// Change to the next game phase on server
-	void ServerChangeToNextGamePhase();
+	void ChangeToNextGamePhase();
 	EGamePhase GetNextGamePhase();
 };

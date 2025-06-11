@@ -59,12 +59,6 @@ void AAutoHeroPlayerController::OnCameraSymmetricTest()
 
 void AAutoHeroPlayerController::SubmitUnitsToServer()
 {
-	if (LocalPendingUnits.Num() == 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No pending units to submit!"));
-		return;
-	}
-
 	GEngine->AddOnScreenDebugMessage(1, 10.0f, FColor::Red, FString::Printf(TEXT("Submitted to Server Num = %d"), LocalPendingUnits.Num()));
 	// Send to Server
 	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
@@ -224,6 +218,20 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	}
 }
 
+void AAutoHeroPlayerController::ServerClearSelectableUnitsList_Implementation()
+{
+	AAutoHeroPlayerState* PS = GetPlayerState<AAutoHeroPlayerState>();
+	if (PS)
+	{
+		PS->SetCurGeneratedUnitIDs(TArray<FGeneratedUnitInfoDTO>());
+	}
+}
+
+bool AAutoHeroPlayerController::ServerClearSelectableUnitsList_Validate()
+{
+	return true;
+}
+
 void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)
 {
 	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitDropped"));
@@ -234,24 +242,36 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 {
 	FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(GamePhase);
 	GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, FString::Printf(TEXT("GamePhase = %s"), *PhaseName));
-	if (GamePhase == EGamePhase::Preparation_Round1_Blue)
+	AAutoHeroPlayerState* AAPlayerState = this->GetPlayerState<AAutoHeroPlayerState>();
+	// Blue Team cases
+	if (AAPlayerState->GetTeam() == EActorTeam::Blue)
 	{
-		AAutoHeroPlayerState* AAPlayerState = this->GetPlayerState<AAutoHeroPlayerState>();
-		if (AAPlayerState->GetTeam() == EActorTeam::Blue)
+		if (GamePhase == EGamePhase::S2_Preparation_Round1_Blue)
 		{
 			//FString CleanName = StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int64>(PlayerState->GetTeam()));
 			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Blue, TEXT("Round 1 Blue Team Blue"));
 			// Blue Team, ask for the list, it will update player state and then the UI will be updated correctly after
 			ServerGenerateUnitList();
 		}
-		else
+		else if (GamePhase == EGamePhase::S3_Preparation_Round1_Red)
 		{
-			GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("Round 1 Blue Team Red"));
+			ServerClearSelectableUnitsList();
+		}
+	}
+	else // Red Team cases
+	{
+		if (GamePhase == EGamePhase::S3_Preparation_Round1_Red)
+		{
+			ServerGenerateUnitList();
+		}
+		else if (GamePhase == EGamePhase::S2_Preparation_Round1_Blue)
+		{
+			ServerClearSelectableUnitsList();
 		}
 	}
 }
 
 void AAutoHeroPlayerController::UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO)
 {
-	AClientGameEventManager::GetInstance(GetWorld())->BroadSelectableUnitsGeneratedEvent(Team, SelectableUnitsDTO);
+	AClientGameEventManager::GetInstance(GetWorld())->BroadCastSelectableUnitsGeneratedEvent(Team, SelectableUnitsDTO);
 }

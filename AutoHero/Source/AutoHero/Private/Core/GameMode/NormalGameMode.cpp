@@ -49,7 +49,7 @@ void ANormalGameMode::BeginPlay()
 void ANormalGameMode::ChangeToNextGamePhase()
 {
 	ANormalModeGameState* CastGameState = GetGameState<ANormalModeGameState>();
-	CastGameState->ServerChangeToNextGamePhase();
+	CastGameState->ChangeToNextGamePhase();
 }
 
 void ANormalGameMode::PlayerReady(APlayerController* PlayerController)
@@ -95,7 +95,7 @@ void ANormalGameMode::StartGame()
 	if (NormalGameState && HasAuthority())
 	{
 		NormalGameState->StartLoadLevelSequence();
-		NormalGameState->SetCurrentGamePhase(EGamePhase::Start);
+		NormalGameState->SetCurrentGamePhase(EGamePhase::S1_Start);
 		GetWorldTimerManager().SetTimer(
 		PhaseChangeTimerHandle,
 		this,

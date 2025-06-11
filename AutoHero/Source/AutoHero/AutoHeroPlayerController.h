@@ -88,6 +88,9 @@ protected:
 	/** Generate a list of units */
 	void GenerateUnitList();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerClearSelectableUnitsList();
+
 	UFUNCTION()
 	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition);
 	UFUNCTION()

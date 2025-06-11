@@ -33,7 +33,7 @@ public:
 	void BPBroadCastOnUnitDropped(ABaseUnit* InBaseUnit, FVector2D InDropPosition);
 
 	UFUNCTION()
-	void BroadSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO);
+	void BroadCastSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

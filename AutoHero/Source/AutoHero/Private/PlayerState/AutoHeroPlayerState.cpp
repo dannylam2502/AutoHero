@@ -144,17 +144,17 @@ int AAutoHeroPlayerState::GetPlayerIndex()
 
 void AAutoHeroPlayerState::ServerProcessPendingUnits_Implementation(const TArray<FPendingUnitData>& PendingUnits)
 {
-	if (!HasAuthority()) return;
 	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
 	if (NMGameState)
 	{
 		//EActorTeam Team = PlayerIndex == 1 ? EActorTeam::Blue : EActorTeam::Red;
 		UE_LOG(LogTemp, Log, TEXT("Process Team = %hs"), Team == EActorTeam::Blue ? "Blue" : "Red");
-		NMGameState->Server_ProcessPendingUnits(Team, PendingUnits);
+		NMGameState->ProcessPendingUnits(Team, PendingUnits);
 	}
 }
 
 bool AAutoHeroPlayerState::ServerProcessPendingUnits_Validate(const TArray<FPendingUnitData>& PendingUnits)
 {
+	if (!HasAuthority()) return false;
 	return true;
 }

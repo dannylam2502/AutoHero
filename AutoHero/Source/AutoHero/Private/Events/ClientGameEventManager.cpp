@@ -31,7 +31,7 @@ void AClientGameEventManager::BPBroadCastOnUnitDropped(ABaseUnit* BaseUnit, FVec
 	OnClientUnitDropped.Broadcast(BaseUnit, InDropPosition);
 }
 
-void AClientGameEventManager::BroadSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO)
+void AClientGameEventManager::BroadCastSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO)
 {
 	OnClientSelectableUnitsGenerated.Broadcast(Team, DTO);
 }
