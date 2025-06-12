@@ -49,6 +49,9 @@ protected:
 	void OnRep_CurrentPhaseState();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void OnGamePhaseChanged();
+
 public:
 	void StartLoadLevelSequence();
 	UFUNCTION()
@@ -86,3 +89,4 @@ public:
 	void ChangeToNextGamePhase();
 	EGamePhase GetNextGamePhase();
 };
+
