@@ -3,6 +3,8 @@
 
 #include "Actors/UnitCell.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 AUnitCell::AUnitCell()
@@ -15,6 +17,14 @@ AUnitCell::AUnitCell()
 	RootComponent = CellMesh;
 }
 
+void AUnitCell::OnRep_bIsSpecial()
+{
+	if (bIsSpecial)
+	{
+		CellMesh->SetMaterial(0, SpecialMaterial);
+	}
+}
+
 // Called when the game starts or when spawned
 void AUnitCell::BeginPlay()
 {
@@ -22,15 +32,16 @@ void AUnitCell::BeginPlay()
 	// Set the default material
     if (DefaultMaterial)
     {
-        CellMesh->SetMaterial(0, DefaultMaterial);
+        CellMesh->SetMaterial(0, bIsSpecial ? SpecialMaterial : DefaultMaterial);
     }
 }
 
-void AUnitCell::InitializeCell(FVector Location, int32 Row, int32 Column)
+void AUnitCell::InitializeCell(FVector Location, int32 Row, int32 Column, bool IsSpecial)
 {
 	SetActorLocation(Location);
 	CellRow = Row;
 	CellColumn = Column;
+	bIsSpecial = IsSpecial;
 }
 
 void AUnitCell::HighlightCell(bool bHighlight)
@@ -41,11 +52,11 @@ void AUnitCell::HighlightCell(bool bHighlight)
 	}
 	if (bHighlight && HighlightMaterial)
 	{
-		CellMesh->SetMaterial(0, HighlightMaterial);
+		CellMesh->SetMaterial(0, bIsSpecial ? SpecialHighlightMaterial : HighlightMaterial);
 	}
 	else if (DefaultMaterial)
 	{
-		CellMesh->SetMaterial(0, DefaultMaterial);
+		CellMesh->SetMaterial(0, bIsSpecial ? SpecialMaterial : DefaultMaterial);
 	}
 }
 
@@ -56,12 +67,12 @@ void AUnitCell::SelectCell(bool bSelected)
 		if (bSelected && SelectMaterial)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("SelectCELL True"));
-			CellMesh->SetMaterial(0, SelectMaterial);
+			CellMesh->SetMaterial(0, bIsSpecial ? SpecialSelectMaterial : SelectMaterial);
 		}
 		else if (DefaultMaterial)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("SelectCELL FALSE"));
-			CellMesh->SetMaterial(0, DefaultMaterial);
+			CellMesh->SetMaterial(0, bIsSpecial ? SpecialSelectMaterial : SelectMaterial);
 		}
 		bIsSelected = bSelected;
 	}
@@ -70,6 +81,18 @@ void AUnitCell::SelectCell(bool bSelected)
 FVector AUnitCell::GetCellCenterLocation()
 {
 	return GetActorLocation();
+}
+
+bool AUnitCell::GetIsSpecial() const
+{
+	return bIsSpecial;
+}
+
+void AUnitCell::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnitCell, bIsSpecial);
 }
 
 // Called every frame

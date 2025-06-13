@@ -24,10 +24,10 @@ public:
 	FVector CellOffset;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	int32 Rows;
+	int32 NumRows;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	int32 Columns;
+	int32 NumCols;
 
 	// Sets default values for this actor's properties
 	AUnitGrid();
@@ -65,6 +65,12 @@ public:
 
 	void PlaceUnitOnCellLocally(ABaseUnit* BaseUnit);
 
+	UFUNCTION(BlueprintCallable)
+	AUnitCell* GetCellByPosition(EActorTeam InTeam, int32 Row, int32 Col);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AUnitCell*> GetCellsInRow(EActorTeam InTeam, int32 RowIndex);
+
 	// Need to construct data as: UnitID, In CellID?
 protected:
 	// Called when the game starts or when spawned
@@ -79,6 +85,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	AUnitCell* LastHighlightedCell;
 	TMap<AUnitCell*, class ABaseUnit*> OccupiedCells;
+	
+	UPROPERTY()
+	int32 SpecialCellIndex;
 
 	UFUNCTION()
 	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation);

@@ -13,8 +13,8 @@
 // Sets default values
 AUnitGrid::AUnitGrid()
 {
-	Rows = 5;
-	Columns = 4;
+	NumRows = 5;
+	NumCols = 4;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	LastHighlightedCell = nullptr;
@@ -72,26 +72,34 @@ void AUnitGrid::Tick(float DeltaTime)
 void AUnitGrid::InitializeGrid()
 {
 	if (!GridCellClass) return;
-	BottomGridCells.SetNum(Rows * Columns);
-	TopGridCells.SetNum(Rows * Columns);
+	BottomGridCells.SetNum(NumRows * NumCols);
+	TopGridCells.SetNum(NumRows * NumCols);
+
+	SpecialCellIndex = FMath::RandRange(0, NumRows * NumCols - 1);
 	
-	for (int32 Row = 0; Row < Rows; ++Row)
+	for (int32 Row = 0; Row < NumRows; ++Row)
 	{
-		for (int32 Column = 0; Column < Columns; ++Column)
+		for (int32 Column = 0; Column < NumCols; ++Column)
 		{
+			// Is Special Index?
+			bool IsSpecial = false;
+			if (Row * NumCols + Column == SpecialCellIndex)
+			{
+				IsSpecial = true;
+			}
 			FVector Location = GetGridCellLocation(Row, Column);
 			AUnitCell* NewBottomCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewBottomCell)
 			{
-				NewBottomCell->InitializeCell(Location, Row, Column);
-				BottomGridCells[Row * Columns + Column] = NewBottomCell;
+				NewBottomCell->InitializeCell(Location, Row, Column, IsSpecial);
+				BottomGridCells[Row * NumCols + Column] = NewBottomCell;
 			}
 			Location.Y = -Location.Y;
 			AUnitCell* NewTopCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewTopCell)
 			{
-				NewTopCell->InitializeCell(Location, Row, Column);
-				TopGridCells[Row * Columns + Column] = NewTopCell;
+				NewTopCell->InitializeCell(Location, Row, Column, IsSpecial);
+				TopGridCells[Row * NumCols + Column] = NewTopCell;
 			}
 		}
 	}
@@ -132,11 +140,11 @@ void AUnitGrid::HighlightNearestCell(EActorTeam Team, const FVector& WorldPositi
 	AUnitCell* NearestCell = nullptr;
 	float MinDistance = FLT_MAX;
 
-	for (int32 Row = 0; Row < Rows; ++Row)
+	for (int32 Row = 0; Row < NumRows; ++Row)
 	{
-		for (int32 Column = 0; Column < Columns; ++Column)
+		for (int32 Column = 0; Column < NumCols; ++Column)
 		{
-			AUnitCell* Cell = UnitCellsList[Row * Columns + Column];
+			AUnitCell* Cell = UnitCellsList[Row * NumCols + Column];
 			if (Cell && !Cell->IsHidden())
 			{
 				float Distance = FVector::Dist(WorldPosition, Cell->GetCellCenterLocation());
@@ -184,7 +192,7 @@ ABaseUnit* AUnitGrid::GetUnitInCell(AUnitCell* Cell)
 void AUnitGrid::HideRandomCells(int32 num)
 {
 	// Calculate total cells (assuming a 2D grid)
-	int32 TotalCells = Rows * Columns;
+	int32 TotalCells = NumRows * NumCols;
 
 	// Set to track generated random numbers
 	TSet<int32> GeneratedRandomNum;
@@ -197,26 +205,27 @@ void AUnitGrid::HideRandomCells(int32 num)
 			// Generate a unique random index
 			randomIndex = UKismetMathLibrary::RandomIntegerInRange(0, TotalCells - 1);
 		}
-		while (GeneratedRandomNum.Contains(randomIndex));  // Ensure it hasn't been used before
+		// Ensure it hasn't been used before and not a special index
+		while (randomIndex == SpecialCellIndex || GeneratedRandomNum.Contains(randomIndex));  
 
 		// Add the unique index to the set
 		GeneratedRandomNum.Add(randomIndex);
 
 		// Convert the 1D random index to a 2D grid position (row, column)
-		int32 Row = randomIndex / Columns;
-		int32 Column = randomIndex % Columns;
+		int32 Row = randomIndex / NumCols;
+		int32 Column = randomIndex % NumCols;
 
 		// Hide the corresponding cell in the BottomGridCells
-		if (BottomGridCells.IsValidIndex(Row * Columns + Column))
+		if (BottomGridCells.IsValidIndex(Row * NumCols + Column))
 		{
-			BottomGridCells[Row * Columns + Column]->SetActorHiddenInGame(true);
+			BottomGridCells[Row * NumCols + Column]->SetActorHiddenInGame(true);
 		}
 
-		int32 TopColumn = Columns - 1 - Column;
+		int32 TopColumn = NumCols - 1 - Column;
 		// Optionally hide the corresponding cell in TopGridCells (mirrored position)
-		if (TopGridCells.IsValidIndex(Row * Columns + TopColumn))
+		if (TopGridCells.IsValidIndex(Row * NumCols + TopColumn))
 		{
-			TopGridCells[Row * Columns + TopColumn]->SetActorHiddenInGame(true);
+			TopGridCells[Row * NumCols + TopColumn]->SetActorHiddenInGame(true);
 		}
 	}
 }
@@ -297,6 +306,44 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 		BaseUnit->SetCurrentCell(NearestCell);
 		NearestCell->HighlightCell(false);
 	}
+}
+
+AUnitCell* AUnitGrid::GetCellByPosition(EActorTeam InTeam, int32 Row, int32 Col)
+{
+	if (Row < 0 || Row >= NumRows || Col < 0 || Col >= NumCols)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid grid position (%d, %d)"), Row, Col);
+		return nullptr;
+	}
+
+	int32 Index = Row * NumCols + Col;
+	if (InTeam == EActorTeam::Blue)
+	{
+		return BottomGridCells.IsValidIndex(Index) ? BottomGridCells[Index] : nullptr;
+	}
+	return TopGridCells.IsValidIndex(Index) ? TopGridCells[Index] : nullptr;
+}
+
+TArray<AUnitCell*> AUnitGrid::GetCellsInRow(EActorTeam InTeam, int32 RowIndex)
+{
+	TArray<AUnitCell*> RowCells;
+
+	if (RowIndex < 0 || RowIndex >= NumRows)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid row index: %d"), RowIndex);
+		return RowCells;
+	}
+
+	for (int32 Col = 0; Col < NumCols; ++Col)
+	{
+		AUnitCell* Cell = GetCellByPosition(InTeam, RowIndex, Col);
+		if (Cell)
+		{
+			RowCells.Add(Cell);
+		}
+	}
+
+	return RowCells;
 }
 
 void AUnitGrid::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation)
