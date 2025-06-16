@@ -81,16 +81,16 @@ void AUnitGrid::InitializeGrid()
 	{
 		for (int32 Column = 0; Column < NumCols; ++Column)
 		{
-			// Is Special Index?
-			bool IsSpecial = false;
-			if (Row * NumCols + Column == SpecialCellIndex)
-			{
-				IsSpecial = true;
-			}
 			FVector Location = GetGridCellLocation(Row, Column);
 			AUnitCell* NewBottomCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewBottomCell)
 			{
+				// Is Special Index?
+				bool IsSpecial = false;
+				if (Row * NumCols + Column == SpecialCellIndex)
+				{
+					IsSpecial = true;
+				}
 				NewBottomCell->InitializeCell(Location, Row, Column, IsSpecial);
 				BottomGridCells[Row * NumCols + Column] = NewBottomCell;
 			}
@@ -98,8 +98,14 @@ void AUnitGrid::InitializeGrid()
 			AUnitCell* NewTopCell = GetWorld()->SpawnActor<AUnitCell>(GridCellClass, Location, FRotator::ZeroRotator);
 			if (NewTopCell)
 			{
-				NewTopCell->InitializeCell(Location, Row, Column, IsSpecial);
-				TopGridCells[Row * NumCols + Column] = NewTopCell;
+				int32 TopMirrorCol = NumCols - 1 - Column;
+				bool bIsSpecial = false;
+				if (Row * NumCols + TopMirrorCol == SpecialCellIndex)
+				{
+					bIsSpecial = true;
+				}
+				NewTopCell->InitializeCell(Location, Row, Column, bIsSpecial);
+				TopGridCells[Row * NumCols + TopMirrorCol] = NewTopCell;
 			}
 		}
 	}
