@@ -13,12 +13,12 @@ enum class EGamePhase : uint8
 {
 	None,
 	S1_Start,
-	S2_Preparation_Round1_Blue,
-	S3_Preparation_Round1_Red,
-	S4_Preparation_Round2_Red,
-	S5_Preparation_Round2_Blue,
-	S6_Preparation_Round3_Blue,
-	S7_Preparation_Round3_Red,
+	S2_Preparation_Turn1_Blue,
+	S3_Preparation_Turn1_Red,
+	S4_Preparation_Turn2_Red,
+	S5_Preparation_Turn2_Blue,
+	S6_Preparation_Turn3_Blue,
+	S7_Preparation_Turn3_Red,
 	S8_Battle,
 	S9_Ended
 };
