@@ -129,8 +129,8 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
     // TODO: May need to check the condition, let's keep it simple for now
     if (CurrentGamePhase == EGamePhase::S2_Preparation_Round1_Blue
         || CurrentGamePhase == EGamePhase::S3_Preparation_Round1_Red
-        || CurrentGamePhase == EGamePhase::S4_Preparation_Round2_Blue
-        || CurrentGamePhase == EGamePhase::S5_Preparation_Round2_Red
+        || CurrentGamePhase == EGamePhase::S5_Preparation_Round2_Blue
+        || CurrentGamePhase == EGamePhase::S4_Preparation_Round2_Red
         || CurrentGamePhase == EGamePhase::S6_Preparation_Round3_Blue
         || CurrentGamePhase == EGamePhase::S7_Preparation_Round3_Red)
     {

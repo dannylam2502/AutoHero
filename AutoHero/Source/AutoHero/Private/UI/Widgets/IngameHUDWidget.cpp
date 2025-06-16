@@ -33,12 +33,9 @@ void UIngameHUDWidget::LoadListUnit()
 	AAutoHeroPlayerState* PlayerState = Controller->GetPlayerState<AAutoHeroPlayerState>();
 	if (PlayerState)
 	{
+		UnitList->ClearChildren();
+		// TODO Consider doing pool here
 		TArray<FGeneratedUnitInfoDTO> UnitsDTO = PlayerState->CurGeneratedUnitsInfo;
-		if (UnitsDTO.Num() == 0)
-		{
-			UnitList->ClearChildren();
-			return;
-		}
 		for (auto UnitDTO : UnitsDTO)
 		{
 			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitDTO.UnitID);

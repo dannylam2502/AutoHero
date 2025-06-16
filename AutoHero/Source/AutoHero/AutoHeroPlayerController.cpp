@@ -247,7 +247,7 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 	if (AAPlayerState->GetTeam() == EActorTeam::Blue)
 	{
 		if (GamePhase == EGamePhase::S2_Preparation_Round1_Blue
-			|| GamePhase == EGamePhase::S4_Preparation_Round2_Blue
+			|| GamePhase == EGamePhase::S5_Preparation_Round2_Blue
 			|| GamePhase == EGamePhase::S6_Preparation_Round3_Blue)
 		{
 			//FString CleanName = StaticEnum<EGamePhase>()->GetNameStringByValue(static_cast<int64>(PlayerState->GetTeam()));
@@ -266,7 +266,7 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 	else // Red Team cases
 	{
 		if (GamePhase == EGamePhase::S3_Preparation_Round1_Red
-			|| GamePhase == EGamePhase::S5_Preparation_Round2_Red
+			|| GamePhase == EGamePhase::S4_Preparation_Round2_Red
 			|| GamePhase == EGamePhase::S7_Preparation_Round3_Red)
 		{
 			ServerGenerateUnitList();
