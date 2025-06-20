@@ -59,7 +59,7 @@ void ANormalModeGameState::ServerOnLevelLoaded()
 }
 
 void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
-                            const TArray<FPendingUnitData>& PendingUnits)
+                                               const TArray<FPendingUnitData>& PendingUnits)
 {
     for (auto PendingUnitData : PendingUnits)
     {

@@ -32,6 +32,12 @@ ABaseUnit::ABaseUnit()
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	}
 
+	CrownMesh = CreateDefaultSubobject<UStaticMeshComponent>("CrownMesh");
+	CrownMesh->SetupAttachment(GetMesh());
+	CrownMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	CrownMesh->SetRelativeRotation(FRotator::ZeroRotator);
+	CrownMesh->SetVisibility(false);
+
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
@@ -325,6 +331,11 @@ void ABaseUnit::RotateToFaceEnemy()
 void ABaseUnit::ClientRotateToFaceEnemy()
 {
 	RotateToFaceEnemy();
+}
+
+void ABaseUnit::ShowCrown(bool bIsShow)
+{
+	CrownMesh->SetHiddenInGame(!bIsShow);
 }
 
 void ABaseUnit::MulticastRotateToFaceEnemy_Implementation()

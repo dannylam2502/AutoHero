@@ -110,9 +110,13 @@ public:
 	void ClientRotateToFaceEnemy();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRotateToFaceEnemy();
+	void ShowCrown(bool bIsShow);
 protected:
 	UPROPERTY()
 	class AUnitCell* CurrentCell;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CrownMesh;
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called when the game starts or when spawned
