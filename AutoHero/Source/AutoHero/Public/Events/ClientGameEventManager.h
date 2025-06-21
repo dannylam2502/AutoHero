@@ -11,12 +11,14 @@
 enum class EGamePhase : uint8;
 class ABaseUnit;
 class UUnitSelectionSlot;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientUnitDropped, ABaseUnit*, BaseUnit, FVector2D, InDropPosition);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitDragging, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitSpawned, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientUnitRemovedFromField, ABaseUnit*, BaseUnit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientGamePhaseChanged, EGamePhase, GamePhase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientUnitDropped, ABaseUnit*, BaseUnit, FVector2D, InDropPosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientUnitOccupied, ABaseUnit*, BaseUnit, FVector2D, InGridPosition);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClientSelectableUnitsGenerated, EActorTeam, Team, TArray<FGeneratedUnitInfoDTO>, GeneratedUnitsDTO);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClientVacateCell, ABaseUnit*, BaseUnit);
 
 UCLASS()
 class AUTOHERO_API AClientGameEventManager : public AActor
@@ -34,6 +36,10 @@ public:
 
 	UFUNCTION()
 	void BroadCastSelectableUnitsGeneratedEvent(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> DTO);
+	UFUNCTION()
+	void BroadCastUnitOccupiedEvent(ABaseUnit* BaseUnit, FVector2D InGridPosition);
+	UFUNCTION()
+	void BroadCastVacateCellEvent(ABaseUnit* BaseUnit);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,4 +65,8 @@ public:
 	FOnClientGamePhaseChanged OnClientGamePhaseChanged;
 	UPROPERTY()
 	FOnClientSelectableUnitsGenerated OnClientSelectableUnitsGenerated;
+	UPROPERTY()
+	FOnClientUnitOccupied OnClientUnitOccupied;
+	UPROPERTY()
+	FOnClientVacateCell OnClientVacateCell;
 };

@@ -36,7 +36,7 @@ ABaseUnit::ABaseUnit()
 	CrownMesh->SetupAttachment(GetMesh());
 	CrownMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 	CrownMesh->SetRelativeRotation(FRotator::ZeroRotator);
-	CrownMesh->SetVisibility(false);
+	ShowCrown(false);
 
 	HealthWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthWidgetComp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);

@@ -266,6 +266,7 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 	{
 		this->VacateCell(OldCell);
 		OldCell->SelectCell(false);
+		AClientGameEventManager::GetInstance(GetWorld())->BroadCastVacateCellEvent(BaseUnit);
 	}
 	//FVector SnappedPosition = UnitGrid->GetNearestCellLocation(GetActorLocation());
 	if (AUnitCell* NearestCell = this->GetNearestCell())
@@ -311,6 +312,7 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 		this->OccupyCell(NearestCell, BaseUnit);
 		BaseUnit->SetCurrentCell(NearestCell);
 		NearestCell->HighlightCell(false);
+		AClientGameEventManager::GetInstance(GetWorld())->BroadCastUnitOccupiedEvent(BaseUnit, FVector2D());
 	}
 }
 

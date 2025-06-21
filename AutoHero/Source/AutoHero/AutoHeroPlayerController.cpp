@@ -5,6 +5,7 @@
 #include "AutoHeroGameMode.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Actors/UnitCell.h"
 #include "Engine/World.h"
 #include "Camera/AHPlayerCameraManager.h"
 #include "Core/GameMode/NormalGameMode.h"
@@ -64,15 +65,7 @@ void AAutoHeroPlayerController::SubmitUnitsToServer()
 	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
 	if (AAPlayerState)
 	{
-		TArray<FPendingUnitData> PendingUnitsData;
-		for (auto Unit : LocalPendingUnits)
-		{
-			FPendingUnitData UnitData;
-			UnitData.UnitID = Unit->GetUnitID();
-			UnitData.UnitLocation = Unit->GetActorLocation();
-			PendingUnitsData.Add(UnitData);
-		}
-		AAPlayerState->ServerProcessPendingUnits(PendingUnitsData);
+		AAPlayerState->ServerProcessPendingUnits(LocalPendingUnits);
 		RemoveLocalUnitsOnField();
 	}
 }
@@ -85,8 +78,8 @@ void AAutoHeroPlayerController::RemoveLocalUnitsOnField()
 		GEngine->AddOnScreenDebugMessage(3, 5.0f, FColor::Red, TEXT("Destroy Local Units"));
 		for (auto LocalUnit : LocalPendingUnits)
 		{
-			AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.Broadcast(LocalUnit);
-			LocalUnit->Destroy();
+			// AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.Broadcast(LocalUnit.BaseUnit);
+			LocalUnit.BaseUnit->Destroy();
 		}
 	}
 	LocalPendingUnits.Empty();
@@ -118,7 +111,11 @@ void AAutoHeroPlayerController::BeginPlay()
 	if (NetMode == NM_Standalone || NetMode == NM_Client)
 	{
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitDropped.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitOccupied.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitOccupied);
 		AClientGameEventManager::GetInstance(GetWorld())->OnClientGamePhaseChanged.AddDynamic(this, &AAutoHeroPlayerController::OnClientGamePhaseChanged);
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientVacateCell.AddDynamic(this, &AAutoHeroPlayerController::OnClientVacateCell);
+		AClientGameEventManager::GetInstance(GetWorld())->OnClientUnitRemovedFromField.AddDynamic(this, &AAutoHeroPlayerController::OnClientUnitRemovedFromField);
+	
 	}
 }
 
@@ -133,6 +130,10 @@ void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason
 		{
 			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
 			Manager->OnClientGamePhaseChanged.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientGamePhaseChanged);
+			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
+			Manager->OnClientUnitOccupied.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitOccupied);
+			Manager->OnClientVacateCell.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientVacateCell);
+			Manager->OnClientUnitRemovedFromField.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitRemovedFromField);
 		}
 	}
 }
@@ -234,8 +235,22 @@ bool AAutoHeroPlayerController::ServerClearSelectableUnitsList_Validate()
 
 void AAutoHeroPlayerController::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition)
 {
-	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitDropped"));
-	LocalPendingUnits.Add(BaseUnit);
+	
+}
+
+void AAutoHeroPlayerController::OnClientUnitOccupied(ABaseUnit* BaseUnit, FVector2D InGridPosition)
+{
+	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitOccupied"));
+	FPendingUnitData PendingData;
+	PendingData.UnitID = BaseUnit->UnitID;
+	PendingData.UnitLocation = BaseUnit->GetActorLocation();
+	PendingData.PlacementTime = GetWorld()->GetTimeSeconds();
+	PendingData.BaseUnit = BaseUnit;
+	PendingData.GridPosition.X = BaseUnit->GetCurrentCell()->GetCellCol();
+	PendingData.GridPosition.Y = BaseUnit->GetCurrentCell()->GetCellRow();
+	LocalPendingUnits.Add(PendingData);
+
+	UpdateCrownVisuals();
 }
 
 void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
@@ -278,7 +293,90 @@ void AAutoHeroPlayerController::OnClientGamePhaseChanged(EGamePhase GamePhase)
 	}
 }
 
+void AAutoHeroPlayerController::OnClientVacateCell(ABaseUnit* BaseUnit)
+{
+	for (int i = 0; i < LocalPendingUnits.Num(); i++)
+	{
+		if (LocalPendingUnits[i].BaseUnit == BaseUnit)
+		{
+			LocalPendingUnits.RemoveAt(i);
+			break;
+		}
+	}
+}
+
+void AAutoHeroPlayerController::OnClientUnitRemovedFromField(ABaseUnit* BaseUnit)
+{
+	for (int i = 0; i < LocalPendingUnits.Num(); i++)
+	{
+		if (LocalPendingUnits[i].BaseUnit == BaseUnit)
+		{
+			LocalPendingUnits.RemoveAt(i);
+			break;
+		}
+	}
+}
+
 void AAutoHeroPlayerController::UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO)
 {
 	AClientGameEventManager::GetInstance(GetWorld())->BroadCastSelectableUnitsGeneratedEvent(Team, SelectableUnitsDTO);
 }
+
+void AAutoHeroPlayerController::UpdateCrownVisuals()
+{
+	// Group units by row
+	TMap<int32, TArray<FPendingUnitData>> UnitsByRow;
+
+	for (const FPendingUnitData& Data : LocalPendingUnits)
+	{
+		int32 Row = static_cast<int32>(Data.GridPosition.Y);
+		UnitsByRow.FindOrAdd(Row).Add(Data);
+	}
+
+	// Clear all crowns first
+	for (const FPendingUnitData& Data : LocalPendingUnits)
+	{
+		if (IsValid(Data.BaseUnit))
+		{
+			Data.BaseUnit->ShowCrown(false);
+		}
+	}
+
+	// For each row, group by UnitID and check for duplicates
+	for (auto& RowPair : UnitsByRow)
+	{
+		TArray<FPendingUnitData>& RowUnits = RowPair.Value;
+
+		// Group units by UnitID within this row
+		TMap<int32, TArray<FPendingUnitData>> UnitsByID;
+
+		for (const FPendingUnitData& Data : RowUnits)
+		{
+			UnitsByID.FindOrAdd(Data.UnitID).Add(Data);
+		}
+
+		// For each group of same UnitID
+		for (auto& IDPair : UnitsByID)
+		{
+			TArray<FPendingUnitData>& SameUnits = IDPair.Value;
+
+			if (SameUnits.Num() < 2)
+			{
+				continue; // Skip if fewer than 2 of same unit
+			}
+
+			// Sort by PlacementTime (ascending)
+			SameUnits.Sort([](const FPendingUnitData& A, const FPendingUnitData& B)
+			{
+				return A.PlacementTime < B.PlacementTime;
+			});
+
+			// Show crown on first placed unit
+			if (IsValid(SameUnits[0].BaseUnit))
+			{
+				SameUnits[0].BaseUnit->ShowCrown(true);
+			}
+		}
+	}
+}
+

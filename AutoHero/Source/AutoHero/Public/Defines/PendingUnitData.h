@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "Actors/BaseUnit.h"
 #include "PendingUnitData.generated.h"
 USTRUCT(BlueprintType)
 struct FPendingUnitData
@@ -15,10 +16,19 @@ struct FPendingUnitData
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector UnitLocation;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	double PlacementTime;
+
+	// Don't use this property on Server, Client only
+	UPROPERTY(BlueprintReadWrite)
+	ABaseUnit* BaseUnit;
+
 	FPendingUnitData()
 	{
 		UnitID = 0;
 		GridPosition = FVector2D::ZeroVector;
 		UnitLocation = FVector::Zero();
+		PlacementTime = 0.0;
+		BaseUnit = nullptr;
 	}
 };

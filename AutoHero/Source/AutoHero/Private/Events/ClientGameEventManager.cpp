@@ -36,6 +36,16 @@ void AClientGameEventManager::BroadCastSelectableUnitsGeneratedEvent(EActorTeam 
 	OnClientSelectableUnitsGenerated.Broadcast(Team, DTO);
 }
 
+void AClientGameEventManager::BroadCastUnitOccupiedEvent(ABaseUnit* BaseUnit, FVector2D InGridPosition)
+{
+	OnClientUnitOccupied.Broadcast(BaseUnit, InGridPosition);
+}
+
+void AClientGameEventManager::BroadCastVacateCellEvent(ABaseUnit* BaseUnit)
+{
+	OnClientVacateCell.Broadcast(BaseUnit);
+}
+
 // Called when the game starts or when spawned
 void AClientGameEventManager::BeginPlay()
 {

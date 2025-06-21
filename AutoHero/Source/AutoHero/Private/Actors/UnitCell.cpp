@@ -93,6 +93,18 @@ void AUnitCell::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AUnitCell, bIsSpecial);
+	DOREPLIFETIME(AUnitCell, CellRow);
+	DOREPLIFETIME(AUnitCell, CellColumn);
+}
+
+int AUnitCell::GetCellRow()
+{
+	return CellRow;
+}
+
+int AUnitCell::GetCellCol()
+{
+	return CellColumn;
 }
 
 // Called every frame

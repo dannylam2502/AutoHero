@@ -30,6 +30,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	int GetCellRow();
+	int GetCellCol();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* CellMesh;
@@ -52,7 +54,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cell")
 	UMaterialInterface* SpecialHighlightMaterial;
 
+	UPROPERTY(Replicated)
 	int32 CellRow;
+	UPROPERTY(Replicated)
 	int32 CellColumn;
 
 	UPROPERTY()

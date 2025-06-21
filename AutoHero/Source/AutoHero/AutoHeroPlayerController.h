@@ -60,9 +60,11 @@ public:
 	UFUNCTION()
 	void UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO);
 
+	UFUNCTION()
+	void UpdateCrownVisuals();
 protected:
 	// Will be removed when server update
-	TArray<ABaseUnit*> LocalPendingUnits;
+	TArray<FPendingUnitData> LocalPendingUnits;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -94,6 +96,11 @@ protected:
 	UFUNCTION()
 	void OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D InDropPosition);
 	UFUNCTION()
+	void OnClientUnitOccupied(ABaseUnit* BaseUnit, FVector2D InGridPosition);
+	UFUNCTION()
 	void OnClientGamePhaseChanged(EGamePhase GamePhase);
-
+	UFUNCTION()
+	void OnClientVacateCell(ABaseUnit* BaseUnit);
+	UFUNCTION()
+	void OnClientUnitRemovedFromField(ABaseUnit* BaseUnit);
 };
