@@ -262,6 +262,8 @@ void ABaseUnit::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(1, 5.0f, FColor::Red, TEXT("Got A Unit Spawned By Server"));
 	}
 
+	TimeSpawned = GetWorld()->GetTimeSeconds();
+
 	// UnitGrid = Cast<AUnitGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AUnitGrid::StaticClass()));
 	// OnUnitRemovedFromField.AddDynamic(UnitGrid, &AUnitGrid::OnUnitRemovedFromField);
 }
@@ -487,6 +489,11 @@ void ABaseUnit::SetUnitID(int InUnitID)
 int ABaseUnit::GetUnitID()
 {
 	return UnitID;
+}
+
+double ABaseUnit::GetTimeSpawned()
+{
+	return TimeSpawned;
 }
 
 void ABaseUnit::SetUnitState(EUnitState NewState)

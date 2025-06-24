@@ -72,6 +72,7 @@ public:
 	FVector GetOffsetWhenPlace();
 	void SetUnitID(int InUnitID);
 	int GetUnitID();
+	double GetTimeSpawned();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -130,6 +131,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	EUnitState CurrentState;
+
+	UPROPERTY(BlueprintReadOnly)
+	float TimeSpawned = 0.f;
 
 	void HandleStateChange(EUnitState NewState);
 	

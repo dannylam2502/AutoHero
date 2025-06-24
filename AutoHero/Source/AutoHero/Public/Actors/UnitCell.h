@@ -26,7 +26,7 @@ public:
 
 	FVector GetCellCenterLocation();
 
-	bool GetIsSpecial() const;
+	bool IsSpecial() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

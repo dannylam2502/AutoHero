@@ -83,7 +83,7 @@ FVector AUnitCell::GetCellCenterLocation()
 	return GetActorLocation();
 }
 
-bool AUnitCell::GetIsSpecial() const
+bool AUnitCell::IsSpecial() const
 {
 	return bIsSpecial;
 }

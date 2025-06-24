@@ -130,7 +130,6 @@ void AAutoHeroPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason
 		{
 			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
 			Manager->OnClientGamePhaseChanged.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientGamePhaseChanged);
-			Manager->OnClientUnitDropped.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitDropped);
 			Manager->OnClientUnitOccupied.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitOccupied);
 			Manager->OnClientVacateCell.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientVacateCell);
 			Manager->OnClientUnitRemovedFromField.RemoveDynamic(this, &AAutoHeroPlayerController::OnClientUnitRemovedFromField);
@@ -244,7 +243,7 @@ void AAutoHeroPlayerController::OnClientUnitOccupied(ABaseUnit* BaseUnit, FVecto
 	FPendingUnitData PendingData;
 	PendingData.UnitID = BaseUnit->UnitID;
 	PendingData.UnitLocation = BaseUnit->GetActorLocation();
-	PendingData.PlacementTime = GetWorld()->GetTimeSeconds();
+	PendingData.PlacementTime = BaseUnit->GetTimeSpawned();
 	PendingData.BaseUnit = BaseUnit;
 	PendingData.GridPosition.X = BaseUnit->GetCurrentCell()->GetCellCol();
 	PendingData.GridPosition.Y = BaseUnit->GetCurrentCell()->GetCellRow();
@@ -303,6 +302,7 @@ void AAutoHeroPlayerController::OnClientVacateCell(ABaseUnit* BaseUnit)
 			break;
 		}
 	}
+	UpdateCrownVisuals();
 }
 
 void AAutoHeroPlayerController::OnClientUnitRemovedFromField(ABaseUnit* BaseUnit)
@@ -324,59 +324,72 @@ void AAutoHeroPlayerController::UpdateSelectableUnitsUI(EActorTeam Team, TArray<
 
 void AAutoHeroPlayerController::UpdateCrownVisuals()
 {
-	// Group units by row
-	TMap<int32, TArray<FPendingUnitData>> UnitsByRow;
+    // Group units by row
+    TMap<int32, TArray<FPendingUnitData>> UnitsByRow;
 
-	for (const FPendingUnitData& Data : LocalPendingUnits)
-	{
-		int32 Row = static_cast<int32>(Data.GridPosition.Y);
-		UnitsByRow.FindOrAdd(Row).Add(Data);
-	}
+    for (const FPendingUnitData& Data : LocalPendingUnits)
+    {
+        int32 Row = static_cast<int32>(Data.GridPosition.Y);
+        UnitsByRow.FindOrAdd(Row).Add(Data);
+    }
 
-	// Clear all crowns first
-	for (const FPendingUnitData& Data : LocalPendingUnits)
-	{
-		if (IsValid(Data.BaseUnit))
-		{
-			Data.BaseUnit->ShowCrown(false);
-		}
-	}
+    // Clear all crowns
+    for (const FPendingUnitData& Data : LocalPendingUnits)
+    {
+        if (IsValid(Data.BaseUnit))
+        {
+            Data.BaseUnit->ShowCrown(false);
+        }
+    }
 
-	// For each row, group by UnitID and check for duplicates
-	for (auto& RowPair : UnitsByRow)
-	{
-		TArray<FPendingUnitData>& RowUnits = RowPair.Value;
+    // Process each row
+    for (auto& RowPair : UnitsByRow)
+    {
+        TArray<FPendingUnitData>& RowUnits = RowPair.Value;
 
-		// Group units by UnitID within this row
-		TMap<int32, TArray<FPendingUnitData>> UnitsByID;
+        // Group units by UnitID within this row
+        TMap<int32, TArray<FPendingUnitData>> UnitsByID;
+        for (const FPendingUnitData& Data : RowUnits)
+        {
+            UnitsByID.FindOrAdd(Data.UnitID).Add(Data);
+        }
 
-		for (const FPendingUnitData& Data : RowUnits)
-		{
-			UnitsByID.FindOrAdd(Data.UnitID).Add(Data);
-		}
+        for (auto& IDPair : UnitsByID)
+        {
+            TArray<FPendingUnitData>& SameUnits = IDPair.Value;
 
-		// For each group of same UnitID
-		for (auto& IDPair : UnitsByID)
-		{
-			TArray<FPendingUnitData>& SameUnits = IDPair.Value;
+            if (SameUnits.Num() < 2)
+            {
+                continue; // Need at least 2 of the same unit ID
+            }
 
-			if (SameUnits.Num() < 2)
-			{
-				continue; // Skip if fewer than 2 of same unit
-			}
+            // Sort by PlacementTime (earliest first)
+            SameUnits.Sort([](const FPendingUnitData& A, const FPendingUnitData& B)
+            {
+                return A.PlacementTime < B.PlacementTime;
+            });
 
-			// Sort by PlacementTime (ascending)
-			SameUnits.Sort([](const FPendingUnitData& A, const FPendingUnitData& B)
-			{
-				return A.PlacementTime < B.PlacementTime;
-			});
+            // Try to find the first placed unit on a special cell
+            for (FPendingUnitData& Data : SameUnits)
+            {
+                if (IsValid(Data.BaseUnit) &&
+                    Data.BaseUnit->GetCurrentCell() &&
+                    Data.BaseUnit->GetCurrentCell()->IsSpecial())
+                {
+                    Data.BaseUnit->ShowCrown(true);
+                    goto NextIDGroup;
+                }
+            }
 
-			// Show crown on first placed unit
-			if (IsValid(SameUnits[0].BaseUnit))
-			{
-				SameUnits[0].BaseUnit->ShowCrown(true);
-			}
-		}
-	}
+            // If no special cell found, fallback to first placed unit
+            if (IsValid(SameUnits[0].BaseUnit))
+            {
+                SameUnits[0].BaseUnit->ShowCrown(true);
+            }
+
+        NextIDGroup:
+            continue;
+        }
+    }
 }
 

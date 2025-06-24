@@ -244,11 +244,17 @@ void AUnitGrid::OnUnitRemovedFromField(ABaseUnit* Unit)
 		CurCell->SelectCell(false);
 		CurCell->HighlightCell(false);
 		VacateCell(CurCell);
+		AClientGameEventManager::GetInstance(GetWorld())->BroadCastVacateCellEvent(Unit);
 		if (LastHighlightedCell)
 		{
 			LastHighlightedCell->HighlightCell(false);
 		}
 	}
+}
+
+void AUnitGrid::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation)
+{
+	PlaceUnitOnCellLocally(BaseUnit);
 }
 
 void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
@@ -305,6 +311,7 @@ void AUnitGrid::PlaceUnitOnCellLocally(ABaseUnit* BaseUnit)
 				if (NearestCellCurUnit)
 				{
 					NearestCellCurUnit->RemoveFromField();
+					OnUnitRemovedFromField(NearestCellCurUnit);
 				}
 			}
 		}
@@ -352,11 +359,6 @@ TArray<AUnitCell*> AUnitGrid::GetCellsInRow(EActorTeam InTeam, int32 RowIndex)
 	}
 
 	return RowCells;
-}
-
-void AUnitGrid::OnClientUnitDropped(ABaseUnit* BaseUnit, FVector2D UnitLocation)
-{
-	PlaceUnitOnCellLocally(BaseUnit);
 }
 
 void AUnitGrid::OnClientUnitDragging(ABaseUnit* BaseUnit)
