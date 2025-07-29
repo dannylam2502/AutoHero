@@ -39,7 +39,7 @@ public:
 
 	// Which ID?
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Data")
-	int UnitID;
+	int UnitType;
 
 	// The number *Star
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category="Unit Level")
@@ -70,8 +70,8 @@ public:
 	FVector GetOffsetWhenDragging() const;
 	UFUNCTION(BlueprintCallable)
 	FVector GetOffsetWhenPlace();
-	void SetUnitID(int InUnitID);
-	int GetUnitID();
+	void SetUnitType(int InUnitType);
+	int GetUnitType();
 	double GetTimeSpawned();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -112,6 +112,29 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRotateToFaceEnemy();
 	void ShowCrown(bool bIsShow);
+
+	UFUNCTION()
+	void UpgradeToStars(int32 NumStars);
+
+	UFUNCTION()
+	void MergeInto(ABaseUnit* TargetUnit);
+
+	UFUNCTION()
+	void SetGridPosition(FVector2D InGridPosition);
+
+	UFUNCTION()
+	FVector2D GetGridPosition();
+
+	UFUNCTION()
+	void SetPlacementTime(double InPlacementTime);
+
+	UFUNCTION()
+	double GetPlacementTime() const;
+
+	// Replications
+	UFUNCTION()
+	void OnRep_StarLevel();
+	
 protected:
 	UPROPERTY()
 	class AUnitCell* CurrentCell;
@@ -134,6 +157,18 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	float TimeSpawned = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bHasCrown = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_StarLevel)
+	int32 StarLevel = 1;
+
+	UPROPERTY(Replicated)
+	FVector2D GridPosition;
+
+	UPROPERTY(Replicated)
+	double PlacementTime;
 
 	void HandleStateChange(EUnitState NewState);
 	

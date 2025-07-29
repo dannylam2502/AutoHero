@@ -19,7 +19,8 @@ enum class EGamePhase : uint8
 	S5_Preparation_Turn2_Blue,
 	S6_Preparation_Turn3_Blue,
 	S7_Preparation_Turn3_Red,
-	S8_Battle,
+	S8_Merge,
+	S9_Battle,
 	S9_Ended
 };
 
@@ -69,6 +70,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastOnLevelLoaded();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnMergedPhase();
+
 	// Process submitted units from Client
 	void ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
 
@@ -88,5 +92,7 @@ public:
 	// Change to the next game phase on server
 	void ChangeToNextGamePhase();
 	EGamePhase GetNextGamePhase();
+
+	void HandleMergeLogic();
 };
 

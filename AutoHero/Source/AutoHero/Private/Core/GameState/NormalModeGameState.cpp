@@ -10,6 +10,8 @@
 #include "Events/ClientGameEventManager.h"
 #include "PlayerState/AutoHeroPlayerState.h"
 #include "Singletons/UnitDataManager.h"
+#include "Defines/Network/NetVisualUpgradeUnit.h"
+#include "Actors/UnitCell.h"
 
 ANormalModeGameState::ANormalModeGameState()
 {
@@ -58,16 +60,21 @@ void ANormalModeGameState::ServerOnLevelLoaded()
     //CurrentPhase = EGamePhase::Preparation_Round1_Blue;
 }
 
+void ANormalModeGameState::MulticastOnMergedPhase_Implementation()
+{
+    
+}
+
 void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
                                                const TArray<FPendingUnitData>& PendingUnits)
 {
     for (auto PendingUnitData : PendingUnits)
     {
         // 1. Retrieve Unit Data
-        FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(PendingUnitData.UnitID);
+        FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(PendingUnitData.UnitType);
         if (!UnitData)
         {
-            UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitID);
+            UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitType);
             continue; // Skip this iteration if UnitData is null
         }
 
@@ -75,7 +82,7 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
         TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
         if (!UnitTemplate)
         {
-            UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitID);
+            UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitType);
             continue; // Skip this iteration if UnitTemplate is null
         }
 
@@ -94,24 +101,26 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
         ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
         if (!NewUnit)
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitID);
+            UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitType);
             continue; // Skip this iteration if spawning fails
         }
         else
         {
             FVector ActualLocation = NewUnit->GetActorLocation();
             UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
-                PendingUnitData.UnitID,
+                PendingUnitData.UnitType,
                 *SpawnLocation.ToString(),
                 *ActualLocation.ToString()
             );
         }
 
         // 5. Initialize Unit
-        NewUnit->SetUnitID(UnitData->UnitID);
+        NewUnit->SetUnitType(UnitData->UnitType);
         NewUnit->SetUnitState(EUnitState::WaitingForBattle);
         NewUnit->SetReplicates(true);
         NewUnit->SetReplicateMovement(true);
+        NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
+        NewUnit->SetGridPosition(PendingUnitData.GridPosition);
         NewUnit->ETeam = Team;
         NewUnit->bIsClientPlaceHolder = false;
 
@@ -124,7 +133,7 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
 
         // 6. Add to ServerConfirmedUnits
         TeamToUnitMap.FindOrAdd(Team).Add(NewUnit);
-        UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitID);
+        UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitType);
     }
     // TODO: May need to check the condition, let's keep it simple for now
     if (CurrentGamePhase == EGamePhase::S2_Preparation_Turn1_Blue
@@ -214,16 +223,16 @@ void ANormalModeGameState::PossessUnitsInTeam(EActorTeam Team)
                 // Unit->SetActorLocation(SnappedLocation, false, nullptr, ETeleportType::TeleportPhysics);
 
                 UE_LOG(LogTemp, Log, TEXT("AIController possessed UnitID %d at %s"),
-                    Unit->GetUnitID(), *Unit->GetActorLocation().ToString());
+                    Unit->GetUnitType(), *Unit->GetActorLocation().ToString());
             }
             else
             {
-                UE_LOG(LogTemp, Warning, TEXT("Failed to spawn AIController for UnitID %d"), Unit->GetUnitID());
+                UE_LOG(LogTemp, Warning, TEXT("Failed to spawn AIController for UnitID %d"), Unit->GetUnitType());
             }
         }
         else
         {
-            UE_LOG(LogTemp, Warning, TEXT("No AIControllerClass set on UnitID %d"), Unit->GetUnitID());
+            UE_LOG(LogTemp, Warning, TEXT("No AIControllerClass set on UnitID %d"), Unit->GetUnitType());
         }
     }
 }
@@ -261,6 +270,93 @@ EGamePhase ANormalModeGameState::GetNextGamePhase()
     return static_cast<EGamePhase>(NextPhaseIndex);
 }
 
+void ANormalModeGameState::HandleMergeLogic()
+{
+    // Row -> List of units on that row
+    TMap<int32, TArray<ABaseUnit*>> UnitsByRow;
+    for (TPair<EActorTeam, TArray<ABaseUnit*>>& Pair : TeamToUnitMap)
+    {
+        for (ABaseUnit* Unit : Pair.Value)
+        {
+            if (!IsValid(Unit)) continue;
+
+            int32 RowIndex = Unit->GetGridPosition().Y;
+            UnitsByRow.FindOrAdd(RowIndex).Add(Unit);
+        }
+    }
+
+    TArray<FNetVisualUpgradeUnit> NetVisualUpgradeUnitDTO;
+
+    // Process each row
+    for (TPair<int32, TArray<ABaseUnit*>>& RowPair : UnitsByRow)
+    {
+        TArray<ABaseUnit*> RowUnits = RowPair.Value;
+
+        // Group units by UnitID within this row
+        TMap<int32, TArray<ABaseUnit*>> UnitsByType;
+        for (ABaseUnit* Unit : RowUnits)
+        {
+            UnitsByType.FindOrAdd(Unit->UnitType).Add(Unit);
+        }
+
+        for (TPair<int32, TArray<ABaseUnit*>>& IDPair : UnitsByType)
+        {
+            TArray<ABaseUnit*> SameUnits = IDPair.Value;
+
+            if (SameUnits.Num() < 2)
+            {
+                continue; // Need at least 2 of the same unit ID
+            }
+
+            // Sort by PlacementTime (earliest first)
+            Algo::Sort(SameUnits, [](ABaseUnit* A, ABaseUnit* B)
+            {
+                return A->GetPlacementTime() < B->GetPlacementTime();
+            });
+            // SameUnits.Sort([](ABaseUnit* A, ABaseUnit* B)
+            // {
+            //     return A->GetPlacementTime() < B->GetPlacementTime();
+            // });
+
+            bool bIsFoundInSpecial = false;
+            ABaseUnit* UpgradedUnit = nullptr;
+            // Try to find the first placed unit on a special cell
+            for (ABaseUnit* Unit : SameUnits)
+            {
+                if (IsValid(Unit) &&
+                    Unit->GetCurrentCell() &&
+                    Unit->GetCurrentCell()->IsSpecial())
+                {
+                    UpgradedUnit = Unit;
+                    bIsFoundInSpecial = true;
+                }
+            }
+
+            // If no special cell found, fallback to first placed unit
+            if (!bIsFoundInSpecial && IsValid(SameUnits[0]))
+            {
+                SameUnits[0]->ShowCrown(true);
+                UpgradedUnit = SameUnits[0];
+            }
+
+            // Found the Upgrade Unit, send it multicast to client and destroy the rest
+            if (UpgradedUnit)
+            {
+                FNetVisualUpgradeUnit VisualUpgradeUnit;
+                VisualUpgradeUnit.GridPosition = UpgradedUnit->GetGridPosition();
+                VisualUpgradeUnit.ToUnitID = UpgradedUnit->UnitType; // TODO
+                for (ABaseUnit* Unit : SameUnits)
+                {
+                    if (Unit != UpgradedUnit)
+                    {
+                        VisualUpgradeUnit.FromUnitIDs.Add(Unit->UnitType);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void ANormalModeGameState::OnRep_CurrentPhaseState()
 {
     FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(CurrentGamePhase);
@@ -272,10 +368,13 @@ void ANormalModeGameState::OnRep_CurrentPhaseState()
     }
 }
 
-
 void ANormalModeGameState::OnGamePhaseChanged()
 {
-    if (CurrentGamePhase == EGamePhase::S8_Battle)
+    if (CurrentGamePhase == EGamePhase::S8_Merge)
+    {
+        HandleMergeLogic();
+    }
+    else if (CurrentGamePhase == EGamePhase::S9_Battle)
     {
         StartBattle();
     }

@@ -8,7 +8,7 @@ struct FPendingUnitData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int UnitID;
+	int UnitType;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector2D GridPosition;
@@ -25,7 +25,7 @@ struct FPendingUnitData
 
 	FPendingUnitData()
 	{
-		UnitID = 0;
+		UnitType = 0;
 		GridPosition = FVector2D::ZeroVector;
 		UnitLocation = FVector::Zero();
 		PlacementTime = 0.0;

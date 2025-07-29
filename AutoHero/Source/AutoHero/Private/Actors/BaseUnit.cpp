@@ -72,8 +72,9 @@ void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABaseUnit, UnitLevel);
 	DOREPLIFETIME(ABaseUnit, Attributes);
 	DOREPLIFETIME(ABaseUnit, AbilitySystemComponent);
-	DOREPLIFETIME(ABaseUnit, UnitID);
+	DOREPLIFETIME(ABaseUnit, UnitType);
 	DOREPLIFETIME(ABaseUnit, bIsClientPlaceHolder);
+	DOREPLIFETIME(ABaseUnit, StarLevel);
 }
 
 
@@ -340,6 +341,42 @@ void ABaseUnit::ShowCrown(bool bIsShow)
 	CrownMesh->SetHiddenInGame(!bIsShow);
 }
 
+void ABaseUnit::OnRep_StarLevel()
+{
+}
+
+void ABaseUnit::UpgradeToStars(int32 NumStars)
+{
+	StarLevel = NumStars;
+	OnRep_StarLevel();
+}
+
+void ABaseUnit::MergeInto(ABaseUnit* TargetUnit)
+{
+	// Play move effect, then call Destroy()
+	Destroy();
+}
+
+void ABaseUnit::SetGridPosition(FVector2D InGridPosition)
+{
+	GridPosition = InGridPosition;
+}
+
+FVector2D ABaseUnit::GetGridPosition()
+{
+	return GridPosition;
+}
+
+void ABaseUnit::SetPlacementTime(double InPlacementTime)
+{
+	PlacementTime = InPlacementTime;
+}
+
+double ABaseUnit::GetPlacementTime() const
+{
+	return PlacementTime;
+}
+
 void ABaseUnit::MulticastRotateToFaceEnemy_Implementation()
 {
 	if (HasAuthority())
@@ -481,14 +518,14 @@ FVector ABaseUnit::GetOffsetWhenPlace()
 	return FVector(0.0f, 0.0f, 56.5f);
 }
 
-void ABaseUnit::SetUnitID(int InUnitID)
+void ABaseUnit::SetUnitType(int InUnitType)
 {
-	UnitID = InUnitID;
+	UnitType = InUnitType;
 }
 
-int ABaseUnit::GetUnitID()
+int ABaseUnit::GetUnitType()
 {
-	return UnitID;
+	return UnitType;
 }
 
 double ABaseUnit::GetTimeSpawned()

@@ -206,7 +206,7 @@ void AAutoHeroPlayerController::GenerateUnitList()
 	{
 		int32 Index = FMath::RandRange(0, AllHeroIDs.Num() - 1);
 		FGeneratedUnitInfoDTO dto;
-		dto.UnitID = AllHeroIDs[Index];
+		dto.UnitType = AllHeroIDs[Index];
 		RandomUnitsInfo.Add(dto);
 		//AllHeroIDs.RemoveAt(Index);
 	}
@@ -241,7 +241,7 @@ void AAutoHeroPlayerController::OnClientUnitOccupied(ABaseUnit* BaseUnit, FVecto
 {
 	GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, TEXT("OnClientUnitOccupied"));
 	FPendingUnitData PendingData;
-	PendingData.UnitID = BaseUnit->UnitID;
+	PendingData.UnitType = BaseUnit->UnitType;
 	PendingData.UnitLocation = BaseUnit->GetActorLocation();
 	PendingData.PlacementTime = BaseUnit->GetTimeSpawned();
 	PendingData.BaseUnit = BaseUnit;
@@ -351,7 +351,7 @@ void AAutoHeroPlayerController::UpdateCrownVisuals()
         TMap<int32, TArray<FPendingUnitData>> UnitsByID;
         for (const FPendingUnitData& Data : RowUnits)
         {
-            UnitsByID.FindOrAdd(Data.UnitID).Add(Data);
+            UnitsByID.FindOrAdd(Data.UnitType).Add(Data);
         }
 
         for (auto& IDPair : UnitsByID)
@@ -363,23 +363,23 @@ void AAutoHeroPlayerController::UpdateCrownVisuals()
                 continue; // Need at least 2 of the same unit ID
             }
 
+        	// Try to find the first placed unit on a special cell
+        	for (FPendingUnitData& Data : SameUnits)
+        	{
+        		if (IsValid(Data.BaseUnit) &&
+					Data.BaseUnit->GetCurrentCell() &&
+					Data.BaseUnit->GetCurrentCell()->IsSpecial())
+        		{
+        			Data.BaseUnit->ShowCrown(true);
+        			goto NextIDGroup;
+        		}
+        	}
+
             // Sort by PlacementTime (earliest first)
             SameUnits.Sort([](const FPendingUnitData& A, const FPendingUnitData& B)
             {
                 return A.PlacementTime < B.PlacementTime;
             });
-
-            // Try to find the first placed unit on a special cell
-            for (FPendingUnitData& Data : SameUnits)
-            {
-                if (IsValid(Data.BaseUnit) &&
-                    Data.BaseUnit->GetCurrentCell() &&
-                    Data.BaseUnit->GetCurrentCell()->IsSpecial())
-                {
-                    Data.BaseUnit->ShowCrown(true);
-                    goto NextIDGroup;
-                }
-            }
 
             // If no special cell found, fallback to first placed unit
             if (IsValid(SameUnits[0].BaseUnit))

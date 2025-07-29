@@ -9,7 +9,7 @@ struct FGeneratedUnitInfoDTO
 	GENERATED_BODY()
 
 	UPROPERTY()
-	int32 UnitID;
+	int32 UnitType;
 
 	UPROPERTY()
 	bool bIsUnlocked;
