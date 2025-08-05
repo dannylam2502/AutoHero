@@ -90,7 +90,9 @@ void AAutoHeroPlayerController::ServerStartQuickTest_Implementation()
 	ANormalModeGameState* GameState = GetWorld()->GetGameState<ANormalModeGameState>();
 	if (GameState)
 	{
-		GameState->StartBattle();
+		// Hack
+		GameState->SetCurrentGamePhase(EGamePhase::S7_Preparation_Turn3_Red);
+		GameState->ChangeToNextGamePhase();
 	}
 }
 

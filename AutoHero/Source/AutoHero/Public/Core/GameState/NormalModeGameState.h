@@ -6,6 +6,7 @@
 #include "Defines/PendingUnitData.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameEnums.h"
+#include "Defines/Network/MergeVisualDissolveData.h"
 #include "NormalModeGameState.generated.h"
 
 UENUM(BlueprintType)
@@ -72,6 +73,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastOnMergedPhase();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastVisualMergeDelete(const TArray<FMergeVisualDissolveData>& MergeDataList);
 
 	// Process submitted units from Client
 	void ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);

@@ -12,6 +12,7 @@
 #include "Singletons/UnitDataManager.h"
 #include "Defines/Network/NetVisualUpgradeUnit.h"
 #include "Actors/UnitCell.h"
+#include "Defines/Network/MergeVisualDissolveData.h"
 
 ANormalModeGameState::ANormalModeGameState()
 {
@@ -63,6 +64,15 @@ void ANormalModeGameState::ServerOnLevelLoaded()
 void ANormalModeGameState::MulticastOnMergedPhase_Implementation()
 {
     
+}
+
+void ANormalModeGameState::MulticastVisualMergeDelete_Implementation(
+    const TArray<FMergeVisualDissolveData>& MergeDataList)
+{
+    for (const FMergeVisualDissolveData& MergeData : MergeDataList)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MergeData.EffectTag = %s"), *MergeData.EffectTag.ToString());
+    }
 }
 
 void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
@@ -144,7 +154,6 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
         || CurrentGamePhase == EGamePhase::S7_Preparation_Turn3_Red)
     {
         ChangeToNextGamePhase();
-        OnGamePhaseChanged();
     }
 }
 
@@ -253,6 +262,7 @@ void ANormalModeGameState::ClientHandleGamePhaseChanged()
 void ANormalModeGameState::ChangeToNextGamePhase()
 {
     CurrentGamePhase = GetNextGamePhase();
+    OnGamePhaseChanged();
 }
 
 EGamePhase ANormalModeGameState::GetNextGamePhase()
@@ -286,7 +296,7 @@ void ANormalModeGameState::HandleMergeLogic()
     }
 
     TArray<FNetVisualUpgradeUnit> NetVisualUpgradeUnitDTO;
-
+    TArray<FMergeVisualDissolveData> MergeDataList;
     // Process each row
     for (TPair<int32, TArray<ABaseUnit*>>& RowPair : UnitsByRow)
     {
@@ -335,26 +345,41 @@ void ANormalModeGameState::HandleMergeLogic()
             // If no special cell found, fallback to first placed unit
             if (!bIsFoundInSpecial && IsValid(SameUnits[0]))
             {
-                SameUnits[0]->ShowCrown(true);
+                //SameUnits[0]->ShowCrown(true);
                 UpgradedUnit = SameUnits[0];
             }
 
             // Found the Upgrade Unit, send it multicast to client and destroy the rest
             if (UpgradedUnit)
             {
-                FNetVisualUpgradeUnit VisualUpgradeUnit;
-                VisualUpgradeUnit.GridPosition = UpgradedUnit->GetGridPosition();
-                VisualUpgradeUnit.ToUnitID = UpgradedUnit->UnitType; // TODO
+                // FNetVisualUpgradeUnit VisualUpgradeUnit;
+                // VisualUpgradeUnit.GridPosition = UpgradedUnit->GetGridPosition();
+                // VisualUpgradeUnit.ToUnitID = UpgradedUnit->UnitType; // TODO UnitType->UnitID
+                // for (ABaseUnit* Unit : SameUnits)
+                // {
+                //     if (Unit != UpgradedUnit)
+                //     {
+                //         VisualUpgradeUnit.FromUnitIDs.Add(Unit->UnitType);
+                //     }
+                // }
+                FMergeVisualDissolveData MergeData;
+                MergeData.TargetGridPosition = UpgradedUnit->GetGridPosition();
+                MergeData.EffectTag = "Tags I Choose";
+                //MergeData.target = UpgradedUnit->UnitType; // TODO UnitType->UnitID
                 for (ABaseUnit* Unit : SameUnits)
                 {
                     if (Unit != UpgradedUnit)
                     {
-                        VisualUpgradeUnit.FromUnitIDs.Add(Unit->UnitType);
+                        MergeData.FromUnitInstanceIDs.Add(Unit->UnitType);
                     }
                 }
+                MergeDataList.Add(MergeData);
             }
         }
     }
+
+    // Send Multicast Dissolve
+    MulticastVisualMergeDelete(MergeDataList);
 }
 
 void ANormalModeGameState::OnRep_CurrentPhaseState()

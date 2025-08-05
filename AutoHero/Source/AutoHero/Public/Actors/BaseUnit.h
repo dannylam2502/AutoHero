@@ -139,6 +139,12 @@ protected:
 	UPROPERTY()
 	class AUnitCell* CurrentCell;
 
+	// Unit InstanceID
+	UPROPERTY(Replicated)
+	int32 UnitInstanceID = -1;
+
+	int32 GetUnitInstanceID() const { return UnitInstanceID; }
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CrownMesh;
 	

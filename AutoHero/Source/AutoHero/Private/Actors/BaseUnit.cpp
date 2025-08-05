@@ -75,6 +75,7 @@ void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ABaseUnit, UnitType);
 	DOREPLIFETIME(ABaseUnit, bIsClientPlaceHolder);
 	DOREPLIFETIME(ABaseUnit, StarLevel);
+	DOREPLIFETIME(ABaseUnit, UnitInstanceID);
 }
 
 
