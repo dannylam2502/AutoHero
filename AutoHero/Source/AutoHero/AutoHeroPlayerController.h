@@ -57,6 +57,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerStartQuickTest();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerNotifyClientMergeReady();
+
 	UFUNCTION()
 	void UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO);
 

@@ -9,6 +9,8 @@
 #include "Defines/Network/MergeVisualDissolveData.h"
 #include "NormalModeGameState.generated.h"
 
+class AAutoHeroPlayerController;
+
 UENUM(BlueprintType)
 enum class EGamePhase : uint8
 {
@@ -46,6 +48,9 @@ protected:
 
 	// For Team, Players
 	TMap<EActorTeam, TArray<ABaseUnit*>> TeamToUnitMap;
+
+	UPROPERTY()
+	TArray<APlayerController*> ReadyToMergeControllers;
 
 	UFUNCTION()
 	void OnRep_CurrentPhaseState();
@@ -98,5 +103,10 @@ public:
 	EGamePhase GetNextGamePhase();
 
 	void HandleMergeLogic();
+
+	AAutoHeroPlayerController* GetLocalPlayerControllerOnClient();
+
+	UFUNCTION()
+	void OnClientReportedMergeReady(AAutoHeroPlayerController* PlayerController);
 };
 

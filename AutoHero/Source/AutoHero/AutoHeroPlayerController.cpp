@@ -319,6 +319,20 @@ void AAutoHeroPlayerController::OnClientUnitRemovedFromField(ABaseUnit* BaseUnit
 	}
 }
 
+void AAutoHeroPlayerController::ServerNotifyClientMergeReady_Implementation()
+{
+	ANormalModeGameState* GameState = GetWorld() ? GetWorld()->GetGameState<ANormalModeGameState>() : nullptr;
+	if (GameState)
+	{
+		GameState->OnClientReportedMergeReady(this);
+	}
+}
+
+bool AAutoHeroPlayerController::ServerNotifyClientMergeReady_Validate()
+{
+	return true;
+}
+
 void AAutoHeroPlayerController::UpdateSelectableUnitsUI(EActorTeam Team, TArray<FGeneratedUnitInfoDTO> SelectableUnitsDTO)
 {
 	AClientGameEventManager::GetInstance(GetWorld())->BroadCastSelectableUnitsGeneratedEvent(Team, SelectableUnitsDTO);

@@ -12,6 +12,7 @@
 #include "Singletons/UnitDataManager.h"
 #include "Defines/Network/NetVisualUpgradeUnit.h"
 #include "Actors/UnitCell.h"
+#include "AutoHero/AutoHeroPlayerController.h"
 #include "Defines/Network/MergeVisualDissolveData.h"
 
 ANormalModeGameState::ANormalModeGameState()
@@ -72,7 +73,24 @@ void ANormalModeGameState::MulticastVisualMergeDelete_Implementation(
     for (const FMergeVisualDissolveData& MergeData : MergeDataList)
     {
         UE_LOG(LogTemp, Warning, TEXT("MergeData.EffectTag = %s"), *MergeData.EffectTag.ToString());
+
+        // for (int32 FromUnitID : MergeData.FromUnitInstanceIDs)
+        // {
+        //     ABaseUnit* FromUnit = FindUnitByInstanceID(FromUnitID);
+        //     if (!IsValid(FromUnit))
+        //     {
+        //         UE_LOG(LogTemp, Warning, TEXT("Failed to find unit with ID %d"), FromUnitID);
+        //         continue;
+        //     }
+        //
+        //     // Play the dissolve effect (Blueprint or native)
+        //     FromUnit->PlayDissolveEffect(MergeData.TargetLocation, MergeData.DissolveDelay, MergeData.EffectTag);
+        // }
     }
+    // First way of ready to merge
+    // Get Player Controller here, if isAuth, send a ready back to server
+    AAutoHeroPlayerController* MyPC = GetLocalPlayerControllerOnClient();
+    MyPC->ServerNotifyClientMergeReady();
 }
 
 void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
@@ -380,6 +398,41 @@ void ANormalModeGameState::HandleMergeLogic()
 
     // Send Multicast Dissolve
     MulticastVisualMergeDelete(MergeDataList);
+}
+
+AAutoHeroPlayerController* ANormalModeGameState::GetLocalPlayerControllerOnClient()
+{
+    for (APlayerState* PS : PlayerArray)
+    {
+        if (IsValid(PS))
+        {
+            AAutoHeroPlayerController* PC = Cast<AAutoHeroPlayerController>(PS->GetOwner());
+            if (IsValid(PC) && PC->IsLocalController())
+            {
+                return PC;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController* PlayerController)
+{
+    if (!PlayerController) return;
+
+    // Track ready controllers
+    ReadyToMergeControllers.AddUnique(PlayerController);
+
+    UE_LOG(LogTemp, Warning, TEXT("Client %s reported ready for merge. (%d / %d)"),
+        *PlayerController->GetName(),
+        ReadyToMergeControllers.Num(),
+        PlayerArray.Num());
+
+    if (ReadyToMergeControllers.Num() >= PlayerArray.Num())
+    {
+        // All clients are ready — now trigger merge VFX
+        //TriggerFinalMergeVFX(); // You implement this
+    }
 }
 
 void ANormalModeGameState::OnRep_CurrentPhaseState()
