@@ -64,6 +64,11 @@ ABaseUnit::ABaseUnit()
 	DetectionSphere->SetSphereRadius(DETECTION_RADIUS);*/
 }
 
+void ABaseUnit::SetUnitInstanceID(int32 InUnitInstanceID)
+{
+	UnitInstanceID = InUnitInstanceID;
+}
+
 void ABaseUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

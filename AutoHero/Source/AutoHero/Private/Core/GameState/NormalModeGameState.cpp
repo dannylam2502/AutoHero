@@ -15,6 +15,8 @@
 #include "AutoHero/AutoHeroPlayerController.h"
 #include "Defines/Network/MergeVisualDissolveData.h"
 
+static int GlobalUnitCounter = 0;
+
 ANormalModeGameState::ANormalModeGameState()
 {
     CurrentGamePhase = EGamePhase::None;
@@ -68,9 +70,9 @@ void ANormalModeGameState::MulticastOnMergedPhase_Implementation()
 }
 
 void ANormalModeGameState::MulticastVisualMergeDelete_Implementation(
-    const TArray<FMergeVisualDissolveData>& MergeDataList)
+    const TArray<FMergeVisualDissolveData>& InMergeDataList)
 {
-    for (const FMergeVisualDissolveData& MergeData : MergeDataList)
+    for (const FMergeVisualDissolveData& MergeData : InMergeDataList)
     {
         UE_LOG(LogTemp, Warning, TEXT("MergeData.EffectTag = %s"), *MergeData.EffectTag.ToString());
 
@@ -143,6 +145,7 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
         }
 
         // 5. Initialize Unit
+        NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
         NewUnit->SetUnitType(UnitData->UnitType);
         NewUnit->SetUnitState(EUnitState::WaitingForBattle);
         NewUnit->SetReplicates(true);
@@ -314,7 +317,7 @@ void ANormalModeGameState::HandleMergeLogic()
     }
 
     TArray<FNetVisualUpgradeUnit> NetVisualUpgradeUnitDTO;
-    TArray<FMergeVisualDissolveData> MergeDataList;
+    MergeDataList.Empty();
     // Process each row
     for (TPair<int32, TArray<ABaseUnit*>>& RowPair : UnitsByRow)
     {
@@ -386,10 +389,7 @@ void ANormalModeGameState::HandleMergeLogic()
                 //MergeData.target = UpgradedUnit->UnitType; // TODO UnitType->UnitID
                 for (ABaseUnit* Unit : SameUnits)
                 {
-                    if (Unit != UpgradedUnit)
-                    {
-                        MergeData.FromUnitInstanceIDs.Add(Unit->UnitType);
-                    }
+                    MergeData.FromUnitInstanceIDs.Add(Unit->GetUnitInstanceID());
                 }
                 MergeDataList.Add(MergeData);
             }
@@ -432,7 +432,31 @@ void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController*
     {
         // All clients are ready — now trigger merge VFX
         //TriggerFinalMergeVFX(); // You implement this
+        for (FMergeVisualDissolveData Merge : MergeDataList)
+        {
+            for (int32 UnitID : Merge.FromUnitInstanceIDs)
+            {
+                ABaseUnit* Unit = FindUnitByInstanceID(UnitID);
+                Unit->Destroy();
+            }
+        }
     }
+}
+
+ABaseUnit* ANormalModeGameState::FindUnitByInstanceID(int32 InUnitInstanceID)
+{
+    ABaseUnit* Result = nullptr;
+    for (auto Team : TeamToUnitMap)
+    {
+        for (ABaseUnit* Unit : Team.Value)
+        {
+            if (Unit->GetUnitInstanceID() == InUnitInstanceID)
+            {
+                Result = Unit;
+            }
+        }
+    }
+    return Result;
 }
 
 void ANormalModeGameState::OnRep_CurrentPhaseState()

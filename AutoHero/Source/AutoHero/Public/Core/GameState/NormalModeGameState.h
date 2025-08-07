@@ -59,6 +59,9 @@ protected:
 
 	void OnGamePhaseChanged();
 
+	// Hold this list until the sequence is finished
+	TArray<FMergeVisualDissolveData> MergeDataList;
+
 public:
 	void StartLoadLevelSequence();
 	UFUNCTION()
@@ -80,7 +83,7 @@ public:
 	void MulticastOnMergedPhase();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastVisualMergeDelete(const TArray<FMergeVisualDissolveData>& MergeDataList);
+	void MulticastVisualMergeDelete(const TArray<FMergeVisualDissolveData>& InMergeDataList);
 
 	// Process submitted units from Client
 	void ProcessPendingUnits(EActorTeam Team, const TArray<FPendingUnitData>& PendingUnits);
@@ -108,5 +111,8 @@ public:
 
 	UFUNCTION()
 	void OnClientReportedMergeReady(AAutoHeroPlayerController* PlayerController);
+
+	UFUNCTION()
+	ABaseUnit* FindUnitByInstanceID(int32 InUnitInstanceID);
 };
 

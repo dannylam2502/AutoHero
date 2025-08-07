@@ -134,6 +134,9 @@ public:
 	// Replications
 	UFUNCTION()
 	void OnRep_StarLevel();
+
+	int32 GetUnitInstanceID() const { return UnitInstanceID; }
+	void SetUnitInstanceID(int32 InUnitInstanceID);
 	
 protected:
 	UPROPERTY()
@@ -142,8 +145,6 @@ protected:
 	// Unit InstanceID
 	UPROPERTY(Replicated)
 	int32 UnitInstanceID = -1;
-
-	int32 GetUnitInstanceID() const { return UnitInstanceID; }
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CrownMesh;
