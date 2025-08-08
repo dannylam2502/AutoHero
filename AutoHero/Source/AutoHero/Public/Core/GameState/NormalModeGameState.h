@@ -114,5 +114,9 @@ public:
 
 	UFUNCTION()
 	ABaseUnit* FindUnitByInstanceID(int32 InUnitInstanceID);
+
+	UFUNCTION()
+	ABaseUnit* SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+		const FPendingUnitData& PendingUnitData);
 };
 

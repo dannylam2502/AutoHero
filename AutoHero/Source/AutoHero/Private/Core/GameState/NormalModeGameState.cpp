@@ -122,49 +122,8 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
             UE_LOG(LogTemp, Error, TEXT("GetWorld() returned NULL!"));
             return;  // Cannot spawn without a valid world
         }
-
-        // 4. Spawn the Unit
-        FVector SpawnLocation = PendingUnitData.UnitLocation;
-        FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
-        if (!NewUnit)
-        {
-            UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), UnitData->UnitType);
-            continue; // Skip this iteration if spawning fails
-        }
-        else
-        {
-            FVector ActualLocation = NewUnit->GetActorLocation();
-            UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
-                PendingUnitData.UnitType,
-                *SpawnLocation.ToString(),
-                *ActualLocation.ToString()
-            );
-        }
-
-        // 5. Initialize Unit
-        NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
-        NewUnit->SetUnitType(UnitData->UnitType);
-        NewUnit->SetUnitState(EUnitState::WaitingForBattle);
-        NewUnit->SetReplicates(true);
-        NewUnit->SetReplicateMovement(true);
-        NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
-        NewUnit->SetGridPosition(PendingUnitData.GridPosition);
-        NewUnit->ETeam = Team;
-        NewUnit->bIsClientPlaceHolder = false;
-
-        // If Team Red Rotate Y to face Enemy
-        if (NewUnit->ETeam == EActorTeam::Red)
-        {
-            NewUnit->RotateToFaceEnemy();
-            //NewUnit->MulticastRotateToFaceEnemy();
-        }
-
-        // 6. Add to ServerConfirmedUnits
-        TeamToUnitMap.FindOrAdd(Team).Add(NewUnit);
-        UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitData->UnitType);
+        // 4. Spawn New Unit
+        ABaseUnit* NewUnit = SpawnNewUnit(Team, UnitTemplate, PendingUnitData);
     }
     // TODO: May need to check the condition, let's keep it simple for now
     if (CurrentGamePhase == EGamePhase::S2_Preparation_Turn1_Blue
@@ -457,6 +416,53 @@ ABaseUnit* ANormalModeGameState::FindUnitByInstanceID(int32 InUnitInstanceID)
         }
     }
     return Result;
+}
+
+ABaseUnit* ANormalModeGameState::SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+        const FPendingUnitData& PendingUnitData)
+{
+    FVector SpawnLocation = PendingUnitData.UnitLocation;
+    FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
+    if (!NewUnit)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), PendingUnitData.UnitType);
+        return nullptr; // Skip this iteration if spawning fails
+    }
+    FVector ActualLocation = NewUnit->GetActorLocation();
+    UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
+        PendingUnitData.UnitType,
+        *SpawnLocation.ToString(),
+        *ActualLocation.ToString()
+    );
+
+    NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
+    NewUnit->SetUnitType(PendingUnitData.UnitType);
+    NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+    NewUnit->SetReplicates(true);
+    NewUnit->SetReplicateMovement(true);
+    NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
+    NewUnit->SetGridPosition(PendingUnitData.GridPosition);
+    NewUnit->ETeam = InTeam;
+    NewUnit->bIsClientPlaceHolder = false;
+
+    // If Team Red Rotate Y to face Enemy
+    if (NewUnit->ETeam == EActorTeam::Red)
+    {
+        NewUnit->RotateToFaceEnemy();
+        //NewUnit->MulticastRotateToFaceEnemy();
+    }
+
+    if (NewUnit)
+    {
+        // 5. Add to ServerConfirmedUnits
+        TeamToUnitMap.FindOrAdd(InTeam).Add(NewUnit);
+    }
+    UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), PendingUnitData.UnitType);
+    
+    return NewUnit;
 }
 
 void ANormalModeGameState::OnRep_CurrentPhaseState()
