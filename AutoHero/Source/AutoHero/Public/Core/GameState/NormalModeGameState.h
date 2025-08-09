@@ -116,7 +116,14 @@ public:
 	ABaseUnit* FindUnitByInstanceID(int32 InUnitInstanceID);
 
 	UFUNCTION()
-	ABaseUnit* SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+	ABaseUnit* SpawnNewUnitFromPending(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
 		const FPendingUnitData& PendingUnitData);
+
+	UFUNCTION()
+	ABaseUnit* SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+		FVector SpawnLocation,
+		int32 UnitType,
+		double PlacementTime,
+		FVector2D GridPosition);
 };
 

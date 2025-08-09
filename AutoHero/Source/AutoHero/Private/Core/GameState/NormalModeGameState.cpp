@@ -123,7 +123,7 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
             return;  // Cannot spawn without a valid world
         }
         // 4. Spawn New Unit
-        ABaseUnit* NewUnit = SpawnNewUnit(Team, UnitTemplate, PendingUnitData);
+        ABaseUnit* NewUnit = SpawnNewUnitFromPending(Team, UnitTemplate, PendingUnitData);
     }
     // TODO: May need to check the condition, let's keep it simple for now
     if (CurrentGamePhase == EGamePhase::S2_Preparation_Turn1_Blue
@@ -399,6 +399,24 @@ void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController*
                 Unit->Destroy();
             }
         }
+        // for (FMergeVisualDissolveData Merge : MergeDataList)
+        // {
+        //     // Spawn New Unit
+        //     // 1. Retrieve Unit Data
+        //     FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(Merge);
+        //     if (!UnitData)
+        //     {
+        //         UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitType);
+        //     }
+        //
+        //     // 2. Retrieve Unit Template
+        //     TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
+        //     if (!UnitTemplate)
+        //     {
+        //         UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitType);
+        //     }
+        //     SpawnNewUnit(EActorTeam::Blue, )
+        // }
     }
 }
 
@@ -418,33 +436,86 @@ ABaseUnit* ANormalModeGameState::FindUnitByInstanceID(int32 InUnitInstanceID)
     return Result;
 }
 
-ABaseUnit* ANormalModeGameState::SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+ABaseUnit* ANormalModeGameState::SpawnNewUnitFromPending(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
         const FPendingUnitData& PendingUnitData)
 {
-    FVector SpawnLocation = PendingUnitData.UnitLocation;
+    // FVector SpawnLocation = PendingUnitData.UnitLocation;
+    // FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
+    // FActorSpawnParameters SpawnParams;
+    // SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    // ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
+    // if (!NewUnit)
+    // {
+    //     UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), PendingUnitData.UnitType);
+    //     return nullptr; // Skip this iteration if spawning fails
+    // }
+    // FVector ActualLocation = NewUnit->GetActorLocation();
+    // UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
+    //     PendingUnitData.UnitType,
+    //     *SpawnLocation.ToString(),
+    //     *ActualLocation.ToString()
+    // );
+    //
+    // NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
+    // NewUnit->SetUnitType(PendingUnitData.UnitType);
+    // NewUnit->SetUnitState(EUnitState::WaitingForBattle);
+    // NewUnit->SetReplicates(true);
+    // NewUnit->SetReplicateMovement(true);
+    // NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
+    // NewUnit->SetGridPosition(PendingUnitData.GridPosition);
+    // NewUnit->ETeam = InTeam;
+    // NewUnit->bIsClientPlaceHolder = false;
+    //
+    // // If Team Red Rotate Y to face Enemy
+    // if (NewUnit->ETeam == EActorTeam::Red)
+    // {
+    //     NewUnit->RotateToFaceEnemy();
+    //     //NewUnit->MulticastRotateToFaceEnemy();
+    // }
+    //
+    // if (NewUnit)
+    // {
+    //     // 5. Add to ServerConfirmedUnits
+    //     TeamToUnitMap.FindOrAdd(InTeam).Add(NewUnit);
+    // }
+    // UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), PendingUnitData.UnitType);
+    //
+    const FVector& SpawnLocation = PendingUnitData.UnitLocation;
+    const int32& UnitType = PendingUnitData.UnitType;
+    const double& PlacementTime = PendingUnitData.PlacementTime;
+    const FVector2D& GridPosition = PendingUnitData.GridPosition;
+    return SpawnNewUnit(InTeam, UnitTemplate, SpawnLocation, UnitType, PlacementTime, GridPosition);
+}
+
+ABaseUnit* ANormalModeGameState::SpawnNewUnit(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
+        FVector SpawnLocation,
+        int32 UnitType,
+        double PlacementTime,
+        FVector2D GridPosition)
+{
     FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
     if (!NewUnit)
     {
-        UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), PendingUnitData.UnitType);
+        UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for Unit Type: %d"), UnitType);
         return nullptr; // Skip this iteration if spawning fails
     }
     FVector ActualLocation = NewUnit->GetActorLocation();
     UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
-        PendingUnitData.UnitType,
+        UnitType,
         *SpawnLocation.ToString(),
         *ActualLocation.ToString()
     );
 
     NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
-    NewUnit->SetUnitType(PendingUnitData.UnitType);
+    NewUnit->SetUnitType(UnitType);
     NewUnit->SetUnitState(EUnitState::WaitingForBattle);
     NewUnit->SetReplicates(true);
     NewUnit->SetReplicateMovement(true);
-    NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
-    NewUnit->SetGridPosition(PendingUnitData.GridPosition);
+    NewUnit->SetPlacementTime(PlacementTime);
+    NewUnit->SetGridPosition(GridPosition);
     NewUnit->ETeam = InTeam;
     NewUnit->bIsClientPlaceHolder = false;
 
@@ -460,7 +531,7 @@ ABaseUnit* ANormalModeGameState::SpawnNewUnit(EActorTeam InTeam, const TSubclass
         // 5. Add to ServerConfirmedUnits
         TeamToUnitMap.FindOrAdd(InTeam).Add(NewUnit);
     }
-    UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), PendingUnitData.UnitType);
+    UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), UnitType);
     
     return NewUnit;
 }
