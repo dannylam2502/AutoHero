@@ -38,7 +38,7 @@ void UIngameHUDWidget::LoadListUnit()
 		TArray<FGeneratedUnitInfoDTO> UnitsDTO = PlayerState->CurGeneratedUnitsInfo;
 		for (auto UnitDTO : UnitsDTO)
 		{
-			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(UnitDTO.UnitType);
+			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByType(UnitDTO.UnitType);
 			if (UnitData)
 			{
 				UUnitSelectionSlot* UnitSelectionSlot = CreateWidget<UUnitSelectionSlot>(this, UnitSlotTemplate);
@@ -102,7 +102,7 @@ void UIngameHUDWidget::NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, 
 		// Don't do anything if not current selected widget
 		if (CurrentSelectedSlot)
 		{
-			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(CurrentSelectedSlot->UnitID);
+			FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByType(CurrentSelectedSlot->UnitID);
 			TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
 			if (UnitTemplate && GetWorld())
 			{

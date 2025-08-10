@@ -12,6 +12,12 @@ struct FMergeVisualDissolveData
 	UPROPERTY()
 	TArray<int32> FromUnitInstanceIDs;
 
+	UPROPERTY()
+	EActorTeam Team;
+
+	UPROPERTY()
+	int32 UpgradeUnitType;
+
 	// Location where the new merged unit will appear
 	UPROPERTY()
 	FVector TargetLocation;

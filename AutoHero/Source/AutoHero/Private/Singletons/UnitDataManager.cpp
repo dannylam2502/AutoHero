@@ -34,7 +34,7 @@ void UUnitDataManager::Initialize()
     // }
 }
 
-FUnitData* UUnitDataManager::GetUnitDataByID(int32 UnitID)
+FUnitData* UUnitDataManager::GetUnitDataByType(int32 UnitID)
 {
 	FUnitData* UnitData = UnitDataMap.Find(UnitID);
 	return UnitData;

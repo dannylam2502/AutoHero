@@ -101,7 +101,7 @@ void ANormalModeGameState::ProcessPendingUnits(EActorTeam Team,
     for (auto PendingUnitData : PendingUnits)
     {
         // 1. Retrieve Unit Data
-        FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(PendingUnitData.UnitType);
+        FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByType(PendingUnitData.UnitType);
         if (!UnitData)
         {
             UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitType);
@@ -345,7 +345,9 @@ void ANormalModeGameState::HandleMergeLogic()
                 FMergeVisualDissolveData MergeData;
                 MergeData.TargetGridPosition = UpgradedUnit->GetGridPosition();
                 MergeData.EffectTag = "Tags I Choose";
-                //MergeData.target = UpgradedUnit->UnitType; // TODO UnitType->UnitID
+                MergeData.UpgradeUnitType = UpgradedUnit->UnitType;
+                MergeData.TargetLocation = UpgradedUnit->GetActorLocation();
+                MergeData.Team = UpgradedUnit->ETeam;
                 for (ABaseUnit* Unit : SameUnits)
                 {
                     MergeData.FromUnitInstanceIDs.Add(Unit->GetUnitInstanceID());
@@ -399,24 +401,24 @@ void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController*
                 Unit->Destroy();
             }
         }
-        // for (FMergeVisualDissolveData Merge : MergeDataList)
-        // {
-        //     // Spawn New Unit
-        //     // 1. Retrieve Unit Data
-        //     FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByID(Merge);
-        //     if (!UnitData)
-        //     {
-        //         UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for UnitID: %d"), PendingUnitData.UnitType);
-        //     }
-        //
-        //     // 2. Retrieve Unit Template
-        //     TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
-        //     if (!UnitTemplate)
-        //     {
-        //         UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for UnitID: %d"), UnitData->UnitType);
-        //     }
-        //     SpawnNewUnit(EActorTeam::Blue, )
-        // }
+        for (FMergeVisualDissolveData Merge : MergeDataList)
+        {
+            // Spawn New Unit
+            // 1. Retrieve Unit Data
+            FUnitData* UnitData = UUnitDataManager::Get()->GetUnitDataByType(Merge.UpgradeUnitType);
+            if (!UnitData)
+            {
+                UE_LOG(LogTemp, Error, TEXT("UnitData is NULL for Unit Type: %d"), Merge.UpgradeUnitType);
+            }
+        
+            // 2. Retrieve Unit Template
+            TSubclassOf<ABaseUnit> UnitTemplate = UnitData->UnitActorInstance;
+            if (!UnitTemplate)
+            {
+                UE_LOG(LogTemp, Error, TEXT("UnitTemplate is NULL for Unit Type: %d"), UnitData->UnitType);
+            }
+            SpawnNewUnit(Merge.Team, UnitTemplate, Merge.TargetLocation, Merge.UpgradeUnitType, 0.0, Merge.TargetGridPosition);
+        }
     }
 }
 

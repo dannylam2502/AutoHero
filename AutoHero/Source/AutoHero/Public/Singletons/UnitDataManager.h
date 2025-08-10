@@ -19,7 +19,7 @@ public:
 
 	void Initialize();
 	//FUnit 
-	FUnitData* GetUnitDataByID(int32 UnitID);
+	FUnitData* GetUnitDataByType(int32 UnitID);
 private:
 	UPROPERTY()
 	UDataTable* UnitDataTable;
