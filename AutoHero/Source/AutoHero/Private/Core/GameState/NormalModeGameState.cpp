@@ -89,6 +89,12 @@ void ANormalModeGameState::MulticastVisualMergeDelete_Implementation(
         //     FromUnit->PlayDissolveEffect(MergeData.TargetLocation, MergeData.DissolveDelay, MergeData.EffectTag);
         // }
     }
+    
+    // ---- Notify ready: CLIENTS ONLY ----
+    if (GetNetMode() != NM_Client)    // prevents server/standalone from sending
+    {
+        return;
+    }
     // First way of ready to merge
     // Get Player Controller here, if isAuth, send a ready back to server
     AAutoHeroPlayerController* MyPC = GetLocalPlayerControllerOnClient();
@@ -264,8 +270,13 @@ void ANormalModeGameState::HandleMergeLogic()
 {
     // Row -> List of units on that row
     TMap<int32, TArray<ABaseUnit*>> UnitsByRow;
+    TArray<FNetVisualUpgradeUnit> NetVisualUpgradeUnitDTO;
+    MergeDataList.Empty();
+
+    // Process each team
     for (TPair<EActorTeam, TArray<ABaseUnit*>>& Pair : TeamToUnitMap)
     {
+        UnitsByRow.Empty();
         for (ABaseUnit* Unit : Pair.Value)
         {
             if (!IsValid(Unit)) continue;
@@ -273,89 +284,87 @@ void ANormalModeGameState::HandleMergeLogic()
             int32 RowIndex = Unit->GetGridPosition().Y;
             UnitsByRow.FindOrAdd(RowIndex).Add(Unit);
         }
-    }
-
-    TArray<FNetVisualUpgradeUnit> NetVisualUpgradeUnitDTO;
-    MergeDataList.Empty();
-    // Process each row
-    for (TPair<int32, TArray<ABaseUnit*>>& RowPair : UnitsByRow)
-    {
-        TArray<ABaseUnit*> RowUnits = RowPair.Value;
-
-        // Group units by UnitID within this row
-        TMap<int32, TArray<ABaseUnit*>> UnitsByType;
-        for (ABaseUnit* Unit : RowUnits)
+        // Process each row
+        for (TPair<int32, TArray<ABaseUnit*>>& RowPair : UnitsByRow)
         {
-            UnitsByType.FindOrAdd(Unit->UnitType).Add(Unit);
-        }
+            TArray<ABaseUnit*> RowUnits = RowPair.Value;
 
-        for (TPair<int32, TArray<ABaseUnit*>>& IDPair : UnitsByType)
-        {
-            TArray<ABaseUnit*> SameUnits = IDPair.Value;
-
-            if (SameUnits.Num() < 2)
+            // Group units by UnitID within this row
+            TMap<int32, TArray<ABaseUnit*>> UnitsByType;
+            for (ABaseUnit* Unit : RowUnits)
             {
-                continue; // Need at least 2 of the same unit ID
+                UnitsByType.FindOrAdd(Unit->UnitType).Add(Unit);
             }
 
-            // Sort by PlacementTime (earliest first)
-            Algo::Sort(SameUnits, [](ABaseUnit* A, ABaseUnit* B)
+            for (TPair<int32, TArray<ABaseUnit*>>& IDPair : UnitsByType)
             {
-                return A->GetPlacementTime() < B->GetPlacementTime();
-            });
-            // SameUnits.Sort([](ABaseUnit* A, ABaseUnit* B)
-            // {
-            //     return A->GetPlacementTime() < B->GetPlacementTime();
-            // });
+                TArray<ABaseUnit*> SameUnits = IDPair.Value;
 
-            bool bIsFoundInSpecial = false;
-            ABaseUnit* UpgradedUnit = nullptr;
-            // Try to find the first placed unit on a special cell
-            for (ABaseUnit* Unit : SameUnits)
-            {
-                if (IsValid(Unit) &&
-                    Unit->GetCurrentCell() &&
-                    Unit->GetCurrentCell()->IsSpecial())
+                if (SameUnits.Num() < 2)
                 {
-                    UpgradedUnit = Unit;
-                    bIsFoundInSpecial = true;
+                    continue; // Need at least 2 of the same unit ID
                 }
-            }
 
-            // If no special cell found, fallback to first placed unit
-            if (!bIsFoundInSpecial && IsValid(SameUnits[0]))
-            {
-                //SameUnits[0]->ShowCrown(true);
-                UpgradedUnit = SameUnits[0];
-            }
-
-            // Found the Upgrade Unit, send it multicast to client and destroy the rest
-            if (UpgradedUnit)
-            {
-                // FNetVisualUpgradeUnit VisualUpgradeUnit;
-                // VisualUpgradeUnit.GridPosition = UpgradedUnit->GetGridPosition();
-                // VisualUpgradeUnit.ToUnitID = UpgradedUnit->UnitType; // TODO UnitType->UnitID
-                // for (ABaseUnit* Unit : SameUnits)
+                // Sort by PlacementTime (earliest first)
+                Algo::Sort(SameUnits, [](ABaseUnit* A, ABaseUnit* B)
+                {
+                    return A->GetPlacementTime() < B->GetPlacementTime();
+                });
+                // SameUnits.Sort([](ABaseUnit* A, ABaseUnit* B)
                 // {
-                //     if (Unit != UpgradedUnit)
-                //     {
-                //         VisualUpgradeUnit.FromUnitIDs.Add(Unit->UnitType);
-                //     }
-                // }
-                FMergeVisualDissolveData MergeData;
-                MergeData.TargetGridPosition = UpgradedUnit->GetGridPosition();
-                MergeData.EffectTag = "Tags I Choose";
-                MergeData.UpgradeUnitType = UpgradedUnit->UnitType;
-                MergeData.TargetLocation = UpgradedUnit->GetActorLocation();
-                MergeData.Team = UpgradedUnit->ETeam;
+                //     return A->GetPlacementTime() < B->GetPlacementTime();
+                // });
+
+                bool bIsFoundInSpecial = false;
+                ABaseUnit* UpgradedUnit = nullptr;
+                // Try to find the first placed unit on a special cell
                 for (ABaseUnit* Unit : SameUnits)
                 {
-                    MergeData.FromUnitInstanceIDs.Add(Unit->GetUnitInstanceID());
+                    if (IsValid(Unit) &&
+                        Unit->GetCurrentCell() &&
+                        Unit->GetCurrentCell()->IsSpecial())
+                    {
+                        UpgradedUnit = Unit;
+                        bIsFoundInSpecial = true;
+                    }
                 }
-                MergeDataList.Add(MergeData);
+
+                // If no special cell found, fallback to first placed unit
+                if (!bIsFoundInSpecial && IsValid(SameUnits[0]))
+                {
+                    //SameUnits[0]->ShowCrown(true);
+                    UpgradedUnit = SameUnits[0];
+                }
+
+                // Found the Upgrade Unit, send it multicast to client and destroy the rest
+                if (UpgradedUnit)
+                {
+                    // FNetVisualUpgradeUnit VisualUpgradeUnit;
+                    // VisualUpgradeUnit.GridPosition = UpgradedUnit->GetGridPosition();
+                    // VisualUpgradeUnit.ToUnitID = UpgradedUnit->UnitType; // TODO UnitType->UnitID
+                    // for (ABaseUnit* Unit : SameUnits)
+                    // {
+                    //     if (Unit != UpgradedUnit)
+                    //     {
+                    //         VisualUpgradeUnit.FromUnitIDs.Add(Unit->UnitType);
+                    //     }
+                    // }
+                    FMergeVisualDissolveData MergeData;
+                    MergeData.TargetGridPosition = UpgradedUnit->GetGridPosition();
+                    MergeData.EffectTag = "Tags I Choose";
+                    MergeData.UpgradeUnitType = UpgradedUnit->UnitType;
+                    MergeData.TargetLocation = UpgradedUnit->GetActorLocation();
+                    MergeData.Team = UpgradedUnit->ETeam;
+                    for (ABaseUnit* Unit : SameUnits)
+                    {
+                        MergeData.FromUnitInstanceIDs.Add(Unit->GetUnitInstanceID());
+                    }
+                    MergeDataList.Add(MergeData);
+                }
             }
         }
     }
+    
 
     // Send Multicast Dissolve
     MulticastVisualMergeDelete(MergeDataList);
@@ -389,7 +398,7 @@ void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController*
         ReadyToMergeControllers.Num(),
         PlayerArray.Num());
 
-    if (ReadyToMergeControllers.Num() >= PlayerArray.Num())
+    if (ReadyToMergeControllers.Num() >= PlayerArray.Num() - 1) // Don't count server
     {
         // All clients are ready — now trigger merge VFX
         //TriggerFinalMergeVFX(); // You implement this
@@ -441,47 +450,6 @@ ABaseUnit* ANormalModeGameState::FindUnitByInstanceID(int32 InUnitInstanceID)
 ABaseUnit* ANormalModeGameState::SpawnNewUnitFromPending(EActorTeam InTeam, const TSubclassOf<ABaseUnit>& UnitTemplate,
         const FPendingUnitData& PendingUnitData)
 {
-    // FVector SpawnLocation = PendingUnitData.UnitLocation;
-    // FRotator SpawnRotation = FRotator::ZeroRotator;  // or a custom rotation
-    // FActorSpawnParameters SpawnParams;
-    // SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    // ABaseUnit* NewUnit = GetWorld()->SpawnActor<ABaseUnit>(UnitTemplate, SpawnLocation, SpawnRotation, SpawnParams);
-    // if (!NewUnit)
-    // {
-    //     UE_LOG(LogTemp, Error, TEXT("Failed to spawn unit for UnitID: %d"), PendingUnitData.UnitType);
-    //     return nullptr; // Skip this iteration if spawning fails
-    // }
-    // FVector ActualLocation = NewUnit->GetActorLocation();
-    // UE_LOG(LogTemp, Error, TEXT("UnitID %d — Requested Location: %s | Actual Spawned Location: %s"),
-    //     PendingUnitData.UnitType,
-    //     *SpawnLocation.ToString(),
-    //     *ActualLocation.ToString()
-    // );
-    //
-    // NewUnit->SetUnitInstanceID(++GlobalUnitCounter);
-    // NewUnit->SetUnitType(PendingUnitData.UnitType);
-    // NewUnit->SetUnitState(EUnitState::WaitingForBattle);
-    // NewUnit->SetReplicates(true);
-    // NewUnit->SetReplicateMovement(true);
-    // NewUnit->SetPlacementTime(PendingUnitData.PlacementTime);
-    // NewUnit->SetGridPosition(PendingUnitData.GridPosition);
-    // NewUnit->ETeam = InTeam;
-    // NewUnit->bIsClientPlaceHolder = false;
-    //
-    // // If Team Red Rotate Y to face Enemy
-    // if (NewUnit->ETeam == EActorTeam::Red)
-    // {
-    //     NewUnit->RotateToFaceEnemy();
-    //     //NewUnit->MulticastRotateToFaceEnemy();
-    // }
-    //
-    // if (NewUnit)
-    // {
-    //     // 5. Add to ServerConfirmedUnits
-    //     TeamToUnitMap.FindOrAdd(InTeam).Add(NewUnit);
-    // }
-    // UE_LOG(LogTemp, Log, TEXT("Successfully added UnitID: %d to ServerConfirmedUnits"), PendingUnitData.UnitType);
-    //
     const FVector& SpawnLocation = PendingUnitData.UnitLocation;
     const int32& UnitType = PendingUnitData.UnitType;
     const double& PlacementTime = PendingUnitData.PlacementTime;
