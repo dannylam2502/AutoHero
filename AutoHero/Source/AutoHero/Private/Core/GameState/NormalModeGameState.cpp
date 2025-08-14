@@ -429,6 +429,12 @@ void ANormalModeGameState::OnClientReportedMergeReady(AAutoHeroPlayerController*
             SpawnNewUnit(Merge.Team, UnitTemplate, Merge.TargetLocation, Merge.UpgradeUnitType, 0.0, Merge.TargetGridPosition);
         }
     }
+    // Change state after 3 seconds
+    GetWorld()->GetTimerManager().SetTimer(ChangeToBattlePhaseTimerHandle,
+        this,
+        &ANormalModeGameState::ChangeToNextGamePhase,
+        3.0f,
+        false);
 }
 
 ABaseUnit* ANormalModeGameState::FindUnitByInstanceID(int32 InUnitInstanceID)

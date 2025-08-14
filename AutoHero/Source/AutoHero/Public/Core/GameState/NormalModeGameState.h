@@ -45,6 +45,7 @@ protected:
 
 	FTimerHandle RoundTimerHandle;
 	FTimerHandle PreparationTimerHandle;
+	FTimerHandle ChangeToBattlePhaseTimerHandle;
 
 	// For Team, Players
 	TMap<EActorTeam, TArray<ABaseUnit*>> TeamToUnitMap;
