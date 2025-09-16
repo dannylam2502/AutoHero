@@ -17,6 +17,15 @@ EActorTeam AAutoHeroPlayerState::GetTeam()
 	return Team;
 }
 
+void AAutoHeroPlayerState::SendCheatToGameState(int CheatID)
+{
+	ANormalModeGameState* NMGameState = GetWorld()->GetGameState<ANormalModeGameState>();
+	if (NMGameState)
+	{
+		NMGameState->CheatGameState(CheatID);
+	}
+}
+
 void AAutoHeroPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

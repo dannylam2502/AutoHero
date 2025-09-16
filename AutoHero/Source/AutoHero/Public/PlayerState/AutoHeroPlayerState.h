@@ -50,6 +50,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	EActorTeam GetTeam();
+
+	/*
+	 * Send cheat to gamemode
+	 */
+	void SendCheatToGameState(int CheatID);
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

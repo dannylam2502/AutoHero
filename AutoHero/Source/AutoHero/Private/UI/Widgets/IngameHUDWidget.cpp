@@ -23,6 +23,7 @@ void UIngameHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 	BtnSubmit->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnSubmit);
 	BtnTestQuickPlay->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnTest);
+	BtnTestScript->OnClicked.AddDynamic(this, &UIngameHUDWidget::OnClickBtnTestScript);
 	AClientGameEventManager::GetInstance(GetWorld())->OnClientSelectableUnitsGenerated.AddDynamic(this, &UIngameHUDWidget::OnClientSelectableUnitsGenerated);
 }
 
@@ -157,6 +158,15 @@ void UIngameHUDWidget::OnClickBtnTest()
 	if (AAutoHeroPlayerController* AutoHeroController = Cast<AAutoHeroPlayerController>(Controller))
 	{
 		AutoHeroController->ServerStartQuickTest();
+	}
+}
+
+void UIngameHUDWidget::OnClickBtnTestScript()
+{
+	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
+	if (AAutoHeroPlayerController* AutoHeroController = Cast<AAutoHeroPlayerController>(Controller))
+	{
+		AutoHeroController->SendCheatToServer(1);
 	}
 }
 

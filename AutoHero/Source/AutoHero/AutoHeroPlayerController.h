@@ -65,6 +65,12 @@ public:
 
 	UFUNCTION()
 	void UpdateCrownVisuals();
+
+	/*
+	 * Send cheat to server
+	 */
+	UFUNCTION(Server, Reliable, WithValidation)
+	void SendCheatToServer(int CheatID);
 protected:
 	// Will be removed when server update
 	TArray<FPendingUnitData> LocalPendingUnits;

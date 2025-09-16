@@ -512,6 +512,12 @@ ABaseUnit* ANormalModeGameState::SpawnNewUnit(EActorTeam InTeam, const TSubclass
     return NewUnit;
 }
 
+void ANormalModeGameState::CheatGameState(int CheatID)
+{
+    UE_LOG(LogTemp, Display, TEXT("CHEAT TEST TEAM"));
+    
+}
+
 void ANormalModeGameState::OnRep_CurrentPhaseState()
 {
     FString PhaseName = StaticEnum<EGamePhase>()->GetValueAsString(CurrentGamePhase);

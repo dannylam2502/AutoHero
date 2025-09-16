@@ -33,6 +33,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UButton* BtnTestQuickPlay;
 
+	UPROPERTY(meta=(BindWidget))
+	UButton* BtnTestScript;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Slot")
 	TSubclassOf<UBaseWidget> UnitSlotTemplate;
 
@@ -66,6 +69,9 @@ public:
 
 	UFUNCTION()
 	void OnClickBtnTest();
+
+	UFUNCTION()
+	void OnClickBtnTestScript();
 
 	EActorTeam Team;
 

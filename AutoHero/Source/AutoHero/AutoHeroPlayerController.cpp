@@ -409,3 +409,17 @@ void AAutoHeroPlayerController::UpdateCrownVisuals()
     }
 }
 
+void AAutoHeroPlayerController::SendCheatToServer_Implementation(int CheatID)
+{
+	AAutoHeroPlayerState* AAPlayerState = GetPlayerState<AAutoHeroPlayerState>();
+	if (AAPlayerState)
+	{
+		AAPlayerState->SendCheatToGameState(CheatID);
+	}
+}
+
+bool AAutoHeroPlayerController::SendCheatToServer_Validate(int CheatID)
+{
+	return true;
+}
+

@@ -126,5 +126,10 @@ public:
 		int32 UnitType,
 		double PlacementTime,
 		FVector2D GridPosition);
+
+	/*
+	 * Cheat
+	 */
+	void CheatGameState(int CheatID);
 };
 
